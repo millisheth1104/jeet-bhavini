@@ -432,3 +432,37 @@ approach, and `gen_bird_frames.py` now does the shared-box crop itself.
 The old `bird_*_up/down.png` moved to `assets/unused/`.
 
 Verified: no console errors, no broken images, no clipping, no overflow.
+
+---
+
+## 2026-09-09 — Wingbeat slowed, pushed to GitHub
+
+**Birds slowed.** Cycle `.52s → .95s` (bird A) and `.6s → 1.15s` (bird B) —
+roughly 4.2 and 3.5 frames per second, down from 7.7 and 6.7. Still offset from
+each other so they never beat in lockstep.
+
+**Published** to <https://github.com/millisheth1104/jeet-bhavini> — 59 files,
+22 MB, on `main`.
+
+Before pushing, the project was scanned for key material. The only hit was the
+`export FAL_KEY="..."` placeholder in this log; **no real key is in the repo**.
+`.gitignore` covers `.env*` and `*.key`. The generation scripts read `FAL_KEY`
+from the environment.
+
+Added a `README.md` covering how to run it, that `content.js` is the single
+source of truth, which fields are still blank, and the two hard-won asset
+lessons (BiRefNet for thin subjects; sprite sheets for animation frames).
+
+### Privacy note
+
+The repo is **public**, and this was raised with the user before pushing. They
+chose to publish as-is. Publicly visible and search-indexable:
+
+- `content.js` — the WhatsApp number `917738047555` and ~30 family names
+  including 10 children's first names
+- `assets/source/` — the three Gujarati કંકોત્રી images
+- `assets/photos/` — the couple's engagement photos
+- `Wedding Invite Details.xlsx` — the original spreadsheet, contact included
+
+If that is ever reconsidered, note that making the repo private later does not
+un-index what was already crawled; the contact number would need changing too.
