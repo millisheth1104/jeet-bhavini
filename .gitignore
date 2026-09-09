@@ -1,0 +1,16 @@
+# Secrets — the fal.ai key is read from the environment, never committed
+.env
+.env.*
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Scratch
+_devcheck/

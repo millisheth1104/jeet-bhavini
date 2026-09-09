@@ -1,0 +1,1183 @@
+/* ===========================================================================
+   Jeet × Bhavini — 1–2 December 2026
+   Shell: pale grey-ivory, mogra garlands, brass. Events: one accent each.
+   =========================================================================== */
+
+:root {
+  /* ---- ground & ink ---- */
+  --paper:        #F2F1ED;
+  --paper-warm:   #EDE9E0;
+  --ink:          #33322E;
+  --ink-soft:     #6B6862;
+  --ink-faint:    #9C988F;
+  --hairline:     #D8D4CA;
+
+  /* ---- accents ---- */
+  --rose:         #C08478;
+  --brass:        #A8894F;
+  --brass-light:  #C9B27C;
+  --sage:         #6E7F63;
+  --charcoal:     #3A3A38;
+  --terracotta:   #B4674A;
+  --magenta:      #A63A62;
+
+  /* ---- night half (rsvp + countdown) ----
+     Deep oxblood rather than navy, so the dark end of the site stays in the
+     same warm family as the terracotta and magenta event accents. Change
+     these four and the whole section follows. */
+  --night:        #3B1220;
+  --night-deep:   #260A15;
+  --night-ink:    #F2E6DA;
+  --gold:         #D8B26A;
+
+  /* ---- type ---- */
+  --serif:  "Cormorant Garamond", "Iowan Old Style", Palatino, Georgia, serif;
+  /* Jost has no Gujarati glyphs, so Noto sits in the stack behind it to
+     catch stray Gujarati in otherwise-Latin runs (e.g. the Hastamelap
+     label) rather than letting the OS pick. */
+  --sans:   "Jost", "Noto Serif Gujarati", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --gujarati: "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
+  /* Rasa is a display Gujarati serif — heavier and more calligraphic than
+     Noto, which is what the reference cards use for their event titles.
+     Great Vibes carries the English name beneath it. */
+  --gu-display: "Rasa", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
+  --script: "Great Vibes", "Apple Chancery", "Segoe Script", cursive;
+
+  /* ---- rhythm ---- */
+  --gutter: clamp(1.25rem, 5vw, 3.5rem);
+  --section-y: clamp(4.5rem, 12vw, 9rem);
+  --measure: 34rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  overflow-x: hidden;
+  /* paper grain, kept faint */
+  background-image: url("assets/generated/paper_grain.png");
+  background-size: 520px;
+  background-blend-mode: multiply;
+}
+
+img { max-width: 100%; display: block; }
+[hidden] { display: none !important; }
+
+/* --------------------------------------------------------------------------
+   Type primitives
+   -------------------------------------------------------------------------- */
+
+.eyebrow {
+  font-size: clamp(.62rem, 1.6vw, .72rem);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin: 0 0 1.1em;
+  font-weight: 500;
+}
+
+.display {
+  font-family: var(--serif);
+  font-weight: 300;
+  line-height: 1.02;
+  letter-spacing: -.005em;
+  margin: 0;
+}
+
+.gu {
+  font-family: var(--gujarati);
+  font-weight: 500;
+  line-height: 1.5;   /* Gujarati needs headroom for matras */
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2rem, 6vw, 3.1rem);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.lede {
+  max-width: var(--measure);
+  margin-inline: auto;
+  color: var(--ink-soft);
+  font-size: clamp(.95rem, 2.4vw, 1.02rem);
+}
+
+/* ornamental rule ------------------------------------------------------- */
+.rule {
+  display: block;
+  width: min(320px, 62%);
+  margin: 1.6rem auto;
+  color: var(--brass);
+}
+.rule svg { width: 100%; height: auto; display: block; }
+
+/* --------------------------------------------------------------------------
+   Layout
+   -------------------------------------------------------------------------- */
+
+.section {
+  position: relative;
+  padding: var(--section-y) var(--gutter);
+}
+.section--center { text-align: center; }
+
+.wrap { max-width: 68rem; margin-inline: auto; }
+.wrap--narrow { max-width: 40rem; margin-inline: auto; }
+
+/* --------------------------------------------------------------------------
+   Intro screen
+   The strike lands at 58% of a 3.6s timeline; the elephant and the bell share
+   that duration so the swing reads as a consequence of the reach.
+   -------------------------------------------------------------------------- */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--paper);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  overflow: hidden;
+  transition: opacity .9s ease, visibility .9s;
+}
+body.intro-open { overflow: hidden; }
+
+.intro.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro__scene {
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.intro__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
+  animation: introFade 1.2s ease both;
+}
+
+/* Bell + elephant in one aspect-locked box, so their geometry survives any
+   viewport. All figures measured off the trimmed PNGs and the backdrop:
+
+     backdrop  arch apex sits at 50% across, 42% down; dry courtyard from 80%
+     elephant  raised trunk tip at 25.4% across, 0% down its own image
+     bell      hook at 51% across, body bottom at 100% down
+
+   The box is one elephant-width wide. The bell hangs from the box's top so
+   its hook can be pinned to the arch apex, and the elephant sits at the
+   bottom with its trunk tip just under the bell's rim. Pinning is done by
+   translating the box left by 25.4% of its OWN width, which puts the hook
+   exactly on the 50% mark. */
+.intro__pair {
+  position: absolute;
+  left: 50%;                      /* the arch apex, horizontally */
+  top: 42%;                       /* the arch apex, vertically */
+  height: 48%;                    /* elephant's feet then land at 90% */
+  aspect-ratio: 76.5 / 100;
+  translate: -25.4% 0;            /* puts the bell's hook on the 50% mark */
+}
+
+.intro__bell {
+  position: absolute;
+  left: 18.33%;
+  top: 0;                         /* hangs from the arch apex */
+  height: 30%;
+  width: auto;
+  transform-origin: top center;   /* swings from the hook */
+  animation: introFade .8s ease .3s both,
+             bellSwing 3.6s cubic-bezier(.32,.72,.4,1) .3s both;
+}
+
+.intro__elephant {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;                    /* = one elephant-width, by construction */
+  height: auto;
+  transform-origin: 70% 100%;     /* pivots on its back feet */
+  animation: introRise 1s cubic-bezier(.22,.61,.36,1) .2s both,
+             elephantRing 3.6s cubic-bezier(.32,.72,.4,1) .3s both;
+}
+
+.intro__copy {
+  text-align: center;
+  padding: clamp(1.2rem, 4vh, 2.4rem) var(--gutter) clamp(2rem, 6vh, 3.4rem);
+  background: var(--paper);
+  position: relative;
+  z-index: 2;
+}
+.intro__copy .eyebrow { animation: introFade .9s ease 1.9s both; margin-bottom: .7em; }
+.intro__names {
+  font-size: clamp(2.2rem, 9vw, 3.6rem);
+  animation: introFade 1s ease 2.1s both;
+}
+.intro__names em { font-style: italic; color: var(--rose); font-size: .58em; }
+.intro__gu {
+  font-size: clamp(.9rem, 3vw, 1.1rem);
+  color: var(--ink-soft);
+  margin: .5rem 0 0;
+  animation: introFade 1s ease 2.3s both;
+}
+
+.intro__skip {
+  position: absolute;
+  top: clamp(.8rem, 2vh, 1.4rem);
+  right: clamp(.9rem, 3vw, 1.6rem);
+  z-index: 3;
+  border: 1px solid var(--hairline);
+  background: rgba(255,255,255,.7);
+  backdrop-filter: blur(4px);
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: .64rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  padding: .55rem 1.1rem;
+  cursor: pointer;
+  animation: introFade .6s ease 1.2s both;
+}
+.intro__skip:hover { color: var(--ink); border-color: var(--brass); }
+
+@keyframes introFade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes introRise {
+  from { opacity: 0; translate: 0 26px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+/* the reach: a lift onto the front feet, then a smaller second tap */
+@keyframes elephantRing {
+  0%, 52%   { transform: translateY(0)    rotate(0deg); }
+  58%       { transform: translateY(-10px) rotate(-2.6deg); }
+  66%       { transform: translateY(0)    rotate(0deg); }
+  73%       { transform: translateY(-6px) rotate(-1.5deg); }
+  80%, 100% { transform: translateY(0)    rotate(0deg); }
+}
+
+/* the swing: struck at 58%, then damping out */
+@keyframes bellSwing {
+  0%, 57%  { transform: rotate(0deg); }
+  62%      { transform: rotate(12deg); }
+  68%      { transform: rotate(-8.5deg); }
+  74%      { transform: rotate(5.5deg); }
+  80%      { transform: rotate(-3.4deg); }
+  86%      { transform: rotate(2deg); }
+  92%      { transform: rotate(-1deg); }
+  100%     { transform: rotate(0deg); }
+}
+
+@media (max-width: 560px) {
+  .intro__pair { height: 44%; }
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  /* Content sits high, with the garden filling the space beneath it — the
+     arrangement on the reel's names screen — rather than centred. */
+  place-items: start center;
+  padding: clamp(4.5rem, 13vh, 8rem) var(--gutter) clamp(4rem, 10vh, 6rem);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* faint palace skyline along the base */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 74%;
+  /* the reel's second screen: a watercolour garden with blue domes and a
+     fountain, held back so the names stay dominant */
+  background: url("assets/generated/hero_garden.png") bottom center / cover no-repeat;
+  opacity: .42;
+  z-index: -2;
+  pointer-events: none;
+  /* fade it out upward so it sits behind the type instead of competing */
+  -webkit-mask-image: linear-gradient(transparent, #000 42%);
+          mask-image: linear-gradient(transparent, #000 42%);
+}
+
+.hero__inner { position: relative; z-index: 2; text-align: center; }
+/* A soft scrim of the paper colour, so the names, date and venue stay legible
+   over the garden's fountain and domes without hiding them. */
+.hero__inner::before {
+  content: "";
+  position: absolute;
+  inset: -10% -14%;
+  z-index: -1;
+  background: radial-gradient(ellipse at center,
+    rgba(242,241,237,.94) 0%,
+    rgba(242,241,237,.86) 38%,
+    rgba(242,241,237,.55) 62%,
+    transparent 78%);
+  pointer-events: none;
+}
+
+.hero__names {
+  font-size: clamp(3.4rem, 15vw, 7.5rem);
+  color: var(--ink);
+}
+.hero__amp {
+  display: block;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.3rem, 4vw, 2rem);
+  color: var(--rose);
+  margin: .12em 0;
+  font-weight: 400;
+}
+.hero__gu {
+  font-size: clamp(1rem, 3.4vw, 1.4rem);
+  color: var(--ink-soft);
+  margin: .9rem 0 0;
+  letter-spacing: .04em;
+}
+.hero__meta {
+  margin: 1.9rem 0 0;
+  font-size: clamp(.78rem, 2.2vw, .9rem);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.hero__meta span { display: block; }
+.hero__meta span + span { margin-top: .5em; }
+
+/* --- hero furniture: garlands, palm, brass ------------------------------- */
+.deco {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+.deco img { width: 100%; height: auto; }
+
+/* Garlands hang from the top edge. They are sized by HEIGHT, not width:
+   the source PNGs are tall with transparent margins, so constraining the
+   width leaves a stub of empty padding on screen. */
+.garland { width: auto; }
+.garland img { height: 100%; width: auto; }
+
+.deco--garland-a { top: -1%; left: 3%;   height: clamp(260px, 56vh, 580px); }
+.deco--garland-b { top: -1%; left: 21%;  height: clamp(185px, 40vh, 415px); opacity: .92; }
+.deco--garland-c { top: -1%; right: 4%;  height: clamp(235px, 50vh, 520px); }
+.deco--garland-d { top: -1%; right: 22%; height: clamp(165px, 35vh, 360px); opacity: .88; }
+
+/* palm from the lower corners */
+.deco--palm-l { bottom: -4%; left: -7%;  width: clamp(200px, 44vw, 450px); }
+.deco--palm-r { bottom: -6%; right: -8%; width: clamp(190px, 42vw, 430px); }
+
+/* brass props sit on the baseline */
+.deco--kalash   { bottom: 0; left: clamp(4px, 4vw, 64px);  width: clamp(104px, 24vw, 225px); }
+.deco--elephant { bottom: 0; right: clamp(4px, 5vw, 82px); width: clamp(112px, 25vw, 235px); }
+.deco--lotus    { bottom: 0; right: clamp(120px, 30vw, 330px); width: clamp(80px, 17vw, 160px); }
+
+/* --- birds ------------------------------------------------------------- */
+.bird {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  /* size and aspect are per-bird: the two frame pairs were cropped to
+     different shared boxes (647x599 and 480x543) */
+}
+/* Three wing positions sliced from one sprite sheet, cropped to a shared box
+   so only the wings move. The cycle is a ping-pong — folded, spread, raised,
+   spread — which reads as a wingbeat. Each frame is a stacked image whose
+   opacity is stepped on for its quarter of the cycle. */
+.bird img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: auto;
+  opacity: 0;
+}
+.bird .wf1 { animation: wfFolded  var(--beat) steps(1, end) infinite; }
+.bird .wf2 { animation: wfSpread  var(--beat) steps(1, end) infinite; }
+.bird .wf3 { animation: wfRaised  var(--beat) steps(1, end) infinite; }
+
+@keyframes wfFolded {          /* quarter 1 */
+  0%, 24.99%   { opacity: 1; }
+  25%, 100%    { opacity: 0; }
+}
+@keyframes wfSpread {          /* quarters 2 and 4 — passed through twice */
+  0%, 24.99%   { opacity: 0; }
+  25%, 49.99%  { opacity: 1; }
+  50%, 74.99%  { opacity: 0; }
+  75%, 100%    { opacity: 1; }
+}
+@keyframes wfRaised {          /* quarter 3 */
+  0%, 49.99%   { opacity: 0; }
+  50%, 74.99%  { opacity: 1; }
+  75%, 100%    { opacity: 0; }
+}
+/* the sheet birds face right; flip the right-hand one so they face inward */
+.bird--b img { transform: scaleX(-1); }
+
+/* The birds hold their position and only beat their wings — they hover beside
+   the names rather than crossing the screen. */
+/* Anchored to the text column, not the viewport edge: the calc tracks the
+   centre so they flank the names on a wide screen, and the clamp floor keeps
+   them on-screen on a narrow one. */
+.bird--a {
+  top: 25%;
+  left: clamp(1.5rem, calc(50% - 19rem), 50%);
+  width: clamp(92px, 21vw, 205px);
+  aspect-ratio: 232 / 158;
+  --beat: .95s;
+  rotate: -6deg;
+}
+.bird--b {
+  top: 44%;
+  right: clamp(1.5rem, calc(50% - 18rem), 50%);
+  width: clamp(78px, 18vw, 178px);
+  aspect-ratio: 205 / 196;
+  --beat: 1.15s;
+  rotate: 5deg;
+}
+
+@media (max-width: 560px) {
+  /* kept clear of the viewport edges so wing tips and tails are not clipped */
+  .bird--a { top: 24%; left: 5%;  width: 94px; }
+  .bird--b { top: 45%; right: 4%; width: 80px; }
+}
+
+@media (max-width: 560px) {
+  /* Thin the arrangement out rather than shrinking it into mush, and pull the
+     remaining strands right to the edges so they clear the headline. */
+  .deco--garland-b, .deco--garland-d, .deco--lotus { display: none; }
+  .deco--garland-a { left: 0;  height: 30vh; }
+  .deco--garland-c { right: 0; height: 26vh; }
+  .hero__inner { padding-top: 4vh; }
+}
+
+/* scroll cue -------------------------------------------------------------- */
+.scroll-cue {
+  position: absolute;
+  bottom: clamp(1rem, 3vh, 2rem);
+  left: 50%;
+  translate: -50% 0;
+  z-index: 3;
+  font-size: .6rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: grid;
+  justify-items: center;
+  gap: .55rem;
+}
+.scroll-cue::after {
+  content: "";
+  width: 1px;
+  height: 2.4rem;
+  background: linear-gradient(var(--brass), transparent);
+  animation: cue 2.4s ease-in-out infinite;
+}
+@keyframes cue {
+  0%, 100% { transform: scaleY(.35); transform-origin: top; opacity: .4; }
+  50%      { transform: scaleY(1);   transform-origin: top; opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   Invitation panel
+   -------------------------------------------------------------------------- */
+
+.invite { position: relative; }
+.invite__card {
+  position: relative;
+  max-width: 33rem;
+  margin-inline: auto;
+  padding: clamp(2.5rem, 8vw, 4.5rem) clamp(1.5rem, 6vw, 3.25rem);
+  background: rgba(255,255,255,.42);
+  border: 1px solid var(--hairline);
+  outline: 1px solid rgba(168,137,79,.25);
+  outline-offset: 6px;
+  text-align: center;
+}
+.invite__ganesha { width: clamp(58px, 14vw, 84px); margin: 0 auto 1.6rem; }
+.invite__blessing {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  margin: 0 0 .4rem;
+}
+.invite__lead {
+  color: var(--ink-soft);
+  font-size: .93rem;
+  max-width: 24rem;
+  margin: 0 auto 2.2rem;
+}
+.invite__name {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2.1rem, 8vw, 3rem);
+  line-height: 1.05;
+  margin: 0;
+}
+.invite__gu { font-size: clamp(.9rem, 3vw, 1.05rem); color: var(--ink-soft); margin: .25rem 0 0; }
+.invite__parents {
+  font-size: .8rem;
+  color: var(--ink-faint);
+  margin: .7rem auto 0;
+  max-width: 22rem;
+  line-height: 1.55;
+}
+.invite__weds {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--rose);
+  font-size: 1.15rem;
+  margin: 1.5rem 0;
+}
+.invite__when {
+  margin-top: 2.4rem;
+  font-size: .82rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.invite .deco--corner-tl,
+.invite .deco--corner-br { width: clamp(90px, 22vw, 190px); opacity: .8; }
+.invite .deco--corner-tl { top: 2%;  left: 0; }
+.invite .deco--corner-br { bottom: 2%; right: 0; rotate: 180deg; }
+
+/* --------------------------------------------------------------------------
+   Events — a card per event, each with its own accent
+   -------------------------------------------------------------------------- */
+
+.events { background: linear-gradient(180deg, transparent, rgba(237,233,224,.55) 40%, transparent); }
+
+/* Portrait parchment cards, one per event, laid out as a set. */
+/* Capped at two columns: with four events a 2x2 reads as a set, where three
+   columns would strand the fourth card alone on its own row. */
+.events__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: clamp(1.5rem, 4vw, 2.4rem);
+  margin: clamp(2.5rem, 7vw, 4rem) auto 0;
+  max-width: 46rem;
+  align-items: start;
+}
+
+.ecard {
+  --accent: var(--brass);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(23rem, 62vw, 29rem);
+  padding: clamp(1.6rem, 4.5vw, 2.4rem) clamp(1.1rem, 3.5vw, 1.8rem)
+           clamp(1rem, 3vw, 1.4rem);
+  text-align: center;
+  overflow: hidden;
+  isolation: isolate;
+  background: url("assets/generated/parchment.png") center / cover no-repeat;
+  box-shadow: 0 1px 2px rgba(51,50,46,.06), 0 12px 28px -18px rgba(51,50,46,.35);
+}
+/* faint palace elevation behind the copy, as in the reference cards */
+.ecard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("assets/generated/palace_lineart.png") bottom center / 155% auto no-repeat;
+  opacity: .13;
+  mix-blend-mode: multiply;
+  z-index: -1;
+}
+/* hairline inner keyline */
+.ecard::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  pointer-events: none;
+}
+
+.ecard[data-accent="sage"]       { --accent: var(--sage); }
+.ecard[data-accent="charcoal"]   { --accent: var(--charcoal); }
+.ecard[data-accent="terracotta"] { --accent: var(--terracotta); }
+.ecard[data-accent="magenta"]    { --accent: var(--magenta); }
+
+/* lanterns hang into the top-right of alternating cards */
+.ecard__lantern {
+  position: absolute;
+  top: -2%;
+  right: 6%;
+  height: 34%;
+  width: auto;
+  opacity: .9;
+  z-index: 0;
+  transform-origin: top center;
+  animation: lanternSway 7s ease-in-out infinite;
+}
+@keyframes lanternSway {
+  0%, 100% { transform: rotate(-1.4deg); }
+  50%      { transform: rotate(1.4deg); }
+}
+
+/* Title block, arranged as on the reference cards: the Gujarati name set
+   large and flush left, the English name in script tucked below it and
+   pushed right, in its own colour. */
+.ecard__title {
+  position: relative;
+  z-index: 1;
+  text-align: left;
+  margin-bottom: .4rem;
+}
+.ecard__gu {
+  font-family: var(--gu-display);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 12.5vw, 3.9rem);
+  color: var(--accent);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -.005em;
+  margin-left: -.03em;            /* optically flush to the card edge */
+}
+.ecard__en {
+  font-family: var(--script);
+  font-size: clamp(1.9rem, 8.5vw, 2.9rem);
+  font-weight: 400;
+  color: var(--terracotta);
+  margin: -.28em 0 0;             /* tucked up under the Gujarati */
+  padding-left: 1.9em;            /* and offset to the right */
+  line-height: 1.05;
+}
+/* The two lines always differ in colour, as on the reference cards. Where the
+   accent is already warm, the English shifts hue or lightens instead. */
+.ecard[data-accent="terracotta"] .ecard__en { color: var(--magenta); }
+.ecard[data-accent="magenta"]    .ecard__en {
+  color: color-mix(in srgb, var(--magenta) 58%, #EDA9BF);
+}
+
+.ecard__tagline {
+  font-size: .6rem;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: .9rem 0 0;
+  text-align: left;
+}
+
+/* big numeral | month over time, flush left as on the reference */
+.ecard__when {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: .7rem;
+  margin: 1.2rem 0 0;
+}
+.ecard__day {
+  font-family: var(--serif);
+  font-size: clamp(2.7rem, 10vw, 3.6rem);
+  line-height: .95;
+  font-weight: 500;
+  color: var(--accent);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+.ecard__md {
+  text-align: left;
+  border-left: 1.5px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  padding-left: .7rem;
+  font-size: clamp(.82rem, 2.6vw, .95rem);
+  line-height: 1.35;
+  color: var(--ink);
+}
+.ecard__md b { display: block; font-weight: 400; }
+
+.ecard__times {
+  list-style: none;
+  margin: .9rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: .3rem;
+  font-size: clamp(.74rem, 2.2vw, .82rem);
+  color: var(--ink-soft);
+  text-align: left;
+}
+.ecard__times li { display: flex; justify-content: flex-start; gap: .5rem; }
+.ecard__times b { font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.ecard__venue {
+  margin: .9rem 0 0;
+  font-size: clamp(.76rem, 2.3vw, .85rem);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.ecard__dress {
+  margin: .35rem 0 0;
+  font-size: .74rem;
+  letter-spacing: .04em;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+.ecard__maps {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin-top: .8rem;
+  font-size: .62rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: .15rem;
+}
+.ecard__maps:hover { opacity: .7; }
+
+/* the illustrated object anchors the bottom of the card */
+.ecard__motif {
+  margin: auto auto 0;
+  padding-top: 1.2rem;
+  width: clamp(120px, 46%, 190px);
+  height: auto;
+}
+.ecard[data-wide="true"] .ecard__motif { width: clamp(150px, 74%, 250px); }
+
+/* give the set a hand-laid feel rather than a rigid grid */
+@media (min-width: 40rem) {
+  .ecard:nth-of-type(even) { margin-top: clamp(1.2rem, 4vw, 2.6rem); }
+}
+
+/* --------------------------------------------------------------------------
+   Families
+   -------------------------------------------------------------------------- */
+
+.families { background: rgba(237,233,224,.4); }
+
+.hosts { margin-top: clamp(2rem, 6vw, 3rem); }
+.hosts__heading { margin: 0 0 .3rem; font-size: clamp(1.35rem, 5vw, 1.9rem); color: var(--ink); }
+.hosts__sub {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-faint);
+  font-size: .95rem;
+  margin: 0 0 2rem;
+}
+
+.pairs { list-style: none; margin: 0; padding: 0; display: grid; gap: .85rem; }
+.pairs li {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: .9rem;
+  font-size: clamp(.82rem, 2.3vw, .94rem);
+  color: var(--ink-soft);
+}
+.pairs .l { text-align: right; }
+.pairs .r { text-align: left; }
+.pairs .dot { color: var(--rose); font-size: .7em; }
+@media (max-width: 620px) {
+  .pairs li { grid-template-columns: 1fr; gap: .1rem; text-align: center; }
+  .pairs .l, .pairs .r { text-align: center; }
+  .pairs .dot { display: none; }
+  .pairs li { padding-bottom: .7rem; border-bottom: 1px dotted var(--hairline); }
+}
+
+.awaiting { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+.awaiting li { font-size: clamp(.85rem, 2.4vw, .98rem); color: var(--ink-soft); }
+.awaiting--solo { margin-top: 1.2rem; color: var(--ink); }
+.awaiting--kids {
+  margin-top: 1rem;
+  color: var(--ink-soft);
+  font-size: clamp(.82rem, 2.3vw, .94rem);
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Gallery
+   -------------------------------------------------------------------------- */
+
+.gallery__stage {
+  position: relative;
+  max-width: 26rem;
+  margin: clamp(2rem, 6vw, 3rem) auto 0;
+  aspect-ratio: 4 / 5;
+}
+.gallery__frame {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  color: var(--brass);
+  border: 1.5px solid var(--brass);
+  box-shadow: inset 0 0 0 8px var(--paper), inset 0 0 0 9px rgba(192,132,120,.6);
+}
+.gallery__corner {
+  position: absolute;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--brass);
+}
+.gallery__corner--tl { top: 8px;    left: 8px; }
+.gallery__corner--tr { top: 8px;    right: 8px;  rotate: 90deg; }
+.gallery__corner--br { bottom: 8px; right: 8px;  rotate: 180deg; }
+.gallery__corner--bl { bottom: 8px; left: 8px;   rotate: 270deg; }
+.gallery__slides { position: absolute; inset: 14px; overflow: hidden; background: var(--paper-warm); }
+.gallery__slides img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+.gallery__slides img.is-active { opacity: 1; }
+
+.gallery__nav {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 3;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  background: rgba(255,255,255,.85);
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: background .2s, opacity .2s;
+}
+.gallery__nav:hover { background: #fff; }
+.gallery__nav--prev { left: -1.2rem; }
+.gallery__nav--next { right: -1.2rem; }
+
+.gallery__caption {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-faint);
+  margin: 1.4rem 0 .7rem;
+}
+.gallery__dots { display: flex; gap: .5rem; justify-content: center; }
+.gallery__dots button {
+  width: 7px; height: 7px; padding: 0;
+  border-radius: 50%;
+  border: 0;
+  background: var(--hairline);
+  cursor: pointer;
+  transition: background .25s, scale .25s;
+}
+.gallery__dots button.is-active { background: var(--brass); scale: 1.25; }
+
+/* --------------------------------------------------------------------------
+   Night half — RSVP + countdown
+   -------------------------------------------------------------------------- */
+
+.night {
+  position: relative;
+  background: var(--night);
+  color: var(--night-ink);
+  isolation: isolate;
+  overflow: hidden;
+}
+.night::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("assets/generated/night_sky_warm.png") center / cover no-repeat;
+  opacity: .75;
+  z-index: -2;
+}
+.night::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 70% at 50% 0%, transparent, var(--night-deep) 78%);
+  z-index: -1;
+}
+/* soften the seam where the paper meets the night */
+.night__seam {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 14rem;
+  /* eased rather than linear, so the paper dissolves into the night instead
+     of leaving a grey band across the seam */
+  background: linear-gradient(
+    var(--paper) 0%,
+    rgba(242,241,237,.72) 22%,
+    rgba(242,241,237,.34) 46%,
+    rgba(242,241,237,.10) 72%,
+    transparent 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.night .eyebrow { color: var(--gold); }
+.night .rule { color: var(--gold); }
+
+.rsvp { text-align: center; padding-top: clamp(6rem, 16vw, 10rem); }
+.rsvp__heading {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(2.3rem, 9vw, 4rem);
+  margin: 0 0 1.2rem;
+  color: #fff;
+}
+.rsvp__body {
+  max-width: 30rem;
+  margin: 0 auto 2.6rem;
+  color: rgba(237,230,214,.82);
+  font-size: clamp(.94rem, 2.5vw, 1.02rem);
+}
+
+.btn-gold {
+  display: inline-block;
+  padding: 1.05rem 3rem;
+  background: linear-gradient(180deg, var(--gold), #C09A4E);
+  color: #241A05;
+  font-size: .74rem;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  transition: translate .25s ease, box-shadow .25s ease;
+  box-shadow: 0 8px 30px -12px rgba(216,178,106,.7);
+}
+.btn-gold:hover { translate: 0 -2px; box-shadow: 0 14px 38px -12px rgba(216,178,106,.85); }
+
+.rsvp__note {
+  margin: 1.2rem 0 0;
+  font-size: .76rem;
+  color: rgba(237,230,214,.55);
+}
+
+.save {
+  margin-top: clamp(3rem, 8vw, 4.5rem);
+  display: grid;
+  gap: .8rem;
+  justify-items: center;
+}
+.save__label {
+  font-size: .66rem; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--gold);
+  display: flex; align-items: center; gap: 1rem;
+}
+.save__label::before, .save__label::after {
+  content: ""; width: 2.2rem; height: 1px; background: currentColor; opacity: .5;
+}
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: .6rem;
+  min-width: 15rem;
+  justify-content: center;
+  padding: .8rem 1.6rem;
+  border: 1px solid rgba(216,178,106,.45);
+  color: var(--night-ink);
+  background: transparent;
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+.btn-ghost:hover { background: rgba(216,178,106,.12); border-color: var(--gold); }
+.btn-ghost svg { width: 1rem; height: 1rem; color: var(--gold); }
+
+/* countdown ------------------------------------------------------------- */
+.countdown { text-align: center; padding-bottom: clamp(4rem, 10vw, 7rem); }
+.countdown__title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.8rem, 7vw, 3rem);
+  margin: 0;
+  color: #fff;
+}
+.countdown__title em {
+  display: block;
+  font-style: italic;
+  color: var(--gold);
+  font-size: 1.25em;
+}
+
+
+.countdown__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(.3rem, 1.6vw, .9rem);
+  max-width: 40rem;
+  margin: clamp(1.5rem, 5vw, 2.6rem) auto 0;
+}
+.locket { position: relative; }
+.locket img { width: 100%; }
+.locket__num {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: .1rem;
+  padding-bottom: 18%;   /* the pearls hang below the oval */
+}
+.locket__num b {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(1.7rem, 7.6vw, 3rem);
+  line-height: 1;
+  color: #4A1A28;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+.locket__num span {
+  font-size: clamp(.55rem, 2.1vw, .8rem);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(74,26,40,.7);
+  margin-top: .15em;
+}
+
+.signoff { margin-top: clamp(2.5rem, 7vw, 4rem); }
+.signoff__names {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.7rem, 7vw, 2.7rem);
+  color: #fff;
+  margin: 0;
+}
+.signoff__names em { font-style: italic; color: var(--gold); font-size: .62em; }
+.signoff__date {
+  font-size: .72rem; letter-spacing: .28em; text-transform: uppercase;
+  color: var(--gold); margin: .9rem 0 0;
+}
+.signoff__line {
+  font-family: var(--serif); font-style: italic;
+  color: rgba(237,230,214,.7); margin: .7rem 0 0;
+}
+
+/* compliments ----------------------------------------------------------- */
+.compliments {
+  padding: clamp(3rem, 8vw, 4.5rem) var(--gutter);
+  text-align: center;
+  background: var(--night-deep);
+  color: rgba(237,230,214,.75);
+  border-top: 1px solid rgba(216,178,106,.18);
+}
+.compliments__heading {
+  font-size: .66rem; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--gold); margin: 0 0 2rem;
+}
+.compliments__list {
+  display: grid; gap: 1.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  max-width: 40rem; margin-inline: auto;
+}
+.compliments__name {
+  font-family: var(--serif); font-size: 1.3rem; color: #fff; margin: 0;
+}
+.compliments__city {
+  font-size: .74rem; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(237,230,214,.5); margin: .35rem 0 0;
+}
+
+.footer {
+  padding: 2rem var(--gutter) 2.6rem;
+  text-align: center;
+  background: var(--night-deep);
+  color: rgba(237,230,214,.4);
+  font-size: .7rem;
+  letter-spacing: .14em;
+}
+
+/* --------------------------------------------------------------------------
+   Floating controls
+   -------------------------------------------------------------------------- */
+
+.controls {
+  position: fixed;
+  right: clamp(.6rem, 2vw, 1.2rem);
+  bottom: clamp(.9rem, 3vh, 1.6rem);
+  z-index: 40;
+  display: grid;
+  gap: .6rem;
+}
+.ctrl {
+  width: 2.7rem; height: 2.7rem;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(6px);
+  color: var(--brass);
+  cursor: pointer;
+  display: grid; place-items: center;
+  transition: background .2s, color .2s, border-color .2s, scale .15s;
+}
+.ctrl:hover { scale: 1.06; }
+.ctrl:active { scale: .96; }
+.ctrl svg { width: 1.05rem; height: 1.05rem; }
+.ctrl[aria-pressed="true"] { background: var(--brass); color: #fff; border-color: var(--brass); }
+/* invert over the night sections */
+body.is-night .ctrl {
+  background: rgba(59,18,32,.75);
+  border-color: rgba(216,178,106,.4);
+  color: var(--gold);
+}
+body.is-night .ctrl[aria-pressed="true"] { background: var(--gold); color: var(--night); }
+
+/* --------------------------------------------------------------------------
+   Scroll reveal
+   -------------------------------------------------------------------------- */
+
+.reveal {
+  opacity: 0;
+  translate: 0 24px;
+  transition: opacity .7s cubic-bezier(.22,.61,.36,1),
+              translate .7s cubic-bezier(.22,.61,.36,1);
+  transition-delay: var(--d, 0ms);
+  will-change: opacity, translate;
+}
+.reveal.is-in { opacity: 1; translate: 0 0; }
+
+/* Garlands drop in from above rather than rising. */
+.deco--garland-a, .deco--garland-b,
+.deco--garland-c, .deco--garland-d {
+  transform-origin: top center;
+}
+.reveal--drop { opacity: 0; translate: 0 -40px; }
+.reveal--drop.is-in { opacity: 1; translate: 0 0; }
+
+/* --------------------------------------------------------------------------
+   Motion off
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal, .reveal--drop {
+    opacity: 1 !important;
+    translate: none !important;
+    transition: none !important;
+  }
+  .scroll-cue::after { animation: none; }
+  .gallery__slides img { transition: none; }
+  * { scroll-behavior: auto !important; }
+}

@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeet &amp; Bhavini · 1–2 December 2026</title>
+<meta name="description" content="Jeet Jabuvani weds Bhavini Nakrani — 1st and 2nd December 2026. Our events, our families, and your invitation.">
+<meta name="theme-color" content="#F2F1ED">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Jeet &amp; Bhavini · 1–2 December 2026">
+<meta property="og:description" content="With the blessings of the divine, we request the honour of your presence.">
+<meta property="og:image" content="assets/photos/couple-beach-01.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Noto+Serif+Gujarati:wght@400;500;600&family=Rasa:wght@500;600;700&family=Great+Vibes&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ==== inline SVG library ============================================== -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+
+    <!-- tapered rule with a lotus medallion -->
+    <g id="orn-rule">
+      <g stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity=".7" fill="none">
+        <path d="M8 12h122"/><path d="M190 12h122"/>
+        <path d="M2 12l3-2.2 3 2.2-3 2.2z" fill="currentColor" stroke="none"/>
+        <path d="M318 12l-3-2.2-3 2.2 3 2.2z" fill="currentColor" stroke="none"/>
+      </g>
+      <g transform="translate(160 12)">
+        <path d="M0-7.5c2.6 2.1 3.9 4.6 3.9 7.5C3.9 2.9 2.6 5.4 0 7.5c-2.6-2.1-3.9-4.6-3.9-7.5 0-2.9 1.3-5.4 3.9-7.5z" fill="var(--rose)" opacity=".85"/>
+        <path d="M-4.4-4.1C-1.7-3.3.2-1.7 1.2.6 2.2 2.9 2.1 5.3 1 7.4c-2.7-.8-4.6-2.4-5.6-4.7C-5.6.4-5.5-2-4.4-4.1z" fill="var(--rose)" opacity=".5"/>
+        <path d="M4.4-4.1C5.5-2 5.6.4 4.6 2.7 3.6 5 1.7 6.6-1 7.4c-1.1-2.1-1.2-4.5-.2-6.8C-.2-1.7 1.7-3.3 4.4-4.1z" fill="var(--rose)" opacity=".5"/>
+        <circle r="1.15" fill="var(--brass)"/>
+      </g>
+    </g>
+
+    <!-- Photo-frame corner filigree, drawn in a 40-box. The frame's borders
+         and beading are CSS on .gallery__frame; only the corners are drawn
+         here, so the filigree never stretches with the stage's aspect. -->
+    <g id="orn-frame-corner" fill="none">
+      <path d="M0 26c0-14 12-26 26-26" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M6 30c0-13 11-24 24-24" stroke="currentColor" stroke-width=".7" opacity=".55"/>
+      <path d="M13 13c5-6 12-8 19-6-6 1-11 4-14 8-3 4-4 9-3 14-3-6-3-12-2-16z" fill="currentColor" opacity=".5"/>
+      <circle cx="26" cy="26" r="1.6" fill="currentColor"/>
+    </g>
+
+    <!-- essentials + control icons, 24-box, stroked -->
+    <g id="ic-cal" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3.5" y="5" width="17" height="16" rx="2"/>
+      <path d="M8 3v4M16 3v4M3.5 10h17"/>
+    </g>
+    <g id="ic-music" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>
+    </g>
+    <g id="ic-mute" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>
+      <path d="M3 3l18 18"/>
+    </g>
+    <g id="ic-top" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V6M6 12l6-6 6 6"/>
+    </g>
+  </defs>
+</svg>
+
+<noscript>
+  <div style="padding:2rem;text-align:center;font-family:Georgia,serif">
+    <p>Please enable JavaScript to view the invitation.</p>
+  </div>
+</noscript>
+
+<!-- ==== intro screen ===================================================
+     Covers the page on load. The elephant reaches up, strikes the bell,
+     the bell swings, then the whole thing lifts away. Tap to skip. -->
+<div class="intro" id="intro" role="dialog" aria-label="Opening the invitation">
+  <div class="intro__scene">
+    <img class="intro__backdrop" src="assets/generated/intro_backdrop.png" alt="">
+    <!-- Bell and elephant share one aspect-locked box, so the bell stays
+         over the trunk tip at every viewport size. See styles.css. -->
+    <div class="intro__pair">
+      <img class="intro__bell"     id="introBell" src="assets/generated/intro_bell.png" alt="">
+      <img class="intro__elephant" id="introEle"  src="assets/generated/intro_elephant.png"
+           alt="A ceremonial elephant ringing a temple bell">
+    </div>
+  </div>
+
+  <div class="intro__copy">
+    <p class="eyebrow" id="introEyebrow">The wedding of</p>
+    <p class="display intro__names" id="introNames"></p>
+    <p class="gu intro__gu" id="introGu"></p>
+  </div>
+
+  <button class="intro__skip" id="introSkip" type="button">Skip</button>
+</div>
+
+<main id="top">
+
+  <!-- ==== hero ========================================================= -->
+  <header class="hero" id="hero">
+    <div class="deco garland deco--garland-a reveal reveal--drop"><img src="assets/generated/mogra_long.png"  alt="" data-par="0.16"></div>
+    <div class="deco garland deco--garland-b reveal reveal--drop" style="--d:120ms"><img src="assets/generated/mogra_short.png" alt="" data-par="0.26"></div>
+    <div class="deco garland deco--garland-c reveal reveal--drop" style="--d:60ms"><img src="assets/generated/mogra_long.png"  alt="" data-par="0.20"></div>
+    <div class="deco garland deco--garland-d reveal reveal--drop" style="--d:180ms"><img src="assets/generated/mogra_short.png" alt="" data-par="0.30"></div>
+
+    <div class="deco deco--palm-l reveal" style="--d:220ms"><img src="assets/generated/banana_palm_left.png"  alt="" data-par="-0.08"></div>
+    <div class="deco deco--palm-r reveal" style="--d:280ms"><img src="assets/generated/banana_palm_right.png" alt="" data-par="-0.06"></div>
+
+    <div class="deco deco--kalash   reveal" style="--d:340ms"><img src="assets/generated/brass_kalash.png"   alt=""></div>
+    <div class="deco deco--lotus    reveal" style="--d:380ms"><img src="assets/generated/lotus_bowl.png"     alt=""></div>
+    <div class="deco deco--elephant reveal" style="--d:420ms"><img src="assets/generated/brass_elephant.png" alt=""></div>
+
+    <!-- Two birds hovering beside the names. Each is three frames sliced from
+         one sprite sheet, played folded -> spread -> raised -> spread, which
+         gives a real wingbeat rather than a twitch. -->
+    <div class="bird bird--a" aria-hidden="true">
+      <img class="wf wf1" src="assets/generated/bird_a_2.png" alt="">
+      <img class="wf wf2" src="assets/generated/bird_a_3.png" alt="">
+      <img class="wf wf3" src="assets/generated/bird_a_4.png" alt="">
+    </div>
+    <div class="bird bird--b" aria-hidden="true">
+      <img class="wf wf1" src="assets/generated/bird_b_2.png" alt="">
+      <img class="wf wf2" src="assets/generated/bird_b_3.png" alt="">
+      <img class="wf wf3" src="assets/generated/bird_b_4.png" alt="">
+    </div>
+
+    <div class="hero__inner">
+      <p class="eyebrow reveal">Together with their families</p>
+      <h1 class="display hero__names reveal" style="--d:80ms" id="heroNames"></h1>
+      <p class="gu hero__gu reveal" style="--d:160ms" id="heroGu"></p>
+      <span class="rule reveal" style="--d:220ms" aria-hidden="true">
+        <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+      </span>
+      <p class="hero__meta reveal" style="--d:280ms" id="heroMeta"></p>
+    </div>
+
+    <span class="scroll-cue" aria-hidden="true">Scroll</span>
+  </header>
+
+  <!-- ==== invitation =================================================== -->
+  <section class="section invite" aria-labelledby="inviteName">
+    <div class="deco deco--corner-tl reveal"><img src="assets/generated/corner_botanical.png" alt=""></div>
+    <div class="deco deco--corner-br reveal" style="--d:120ms"><img src="assets/generated/corner_botanical.png" alt=""></div>
+    <div class="invite__card reveal">
+      <img class="invite__ganesha" src="assets/generated/ganesha_motif.png" alt="Shri Ganesha">
+      <p class="invite__blessing" id="invBlessing"></p>
+      <p class="invite__lead"     id="invLead"></p>
+      <div id="invParties"></div>
+      <p class="invite__when"     id="invWhen"></p>
+    </div>
+  </section>
+
+  <!-- ==== events ======================================================= -->
+  <section class="section section--center events" id="events" aria-labelledby="eventsTitle">
+    <div class="wrap">
+      <p class="eyebrow reveal">Celebration Journey</p>
+      <h2 class="section-title reveal" style="--d:80ms" id="eventsTitle">Our Events</h2>
+      <p class="gu reveal" style="--d:140ms;color:var(--ink-soft);margin:.4rem 0 0">અમારા પ્રસંગો</p>
+      <span class="rule reveal" style="--d:200ms" aria-hidden="true">
+        <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+      </span>
+      <div class="events__list" id="eventsList"></div>
+    </div>
+  </section>
+
+  <!-- ==== families ===================================================== -->
+  <section class="section section--center families" id="families" aria-labelledby="familiesTitle">
+    <div class="wrap">
+      <p class="eyebrow reveal">Our Families</p>
+      <h2 class="section-title reveal" style="--d:80ms" id="familiesTitle">With Love</h2>
+      <span class="rule reveal" style="--d:160ms" aria-hidden="true">
+        <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+      </span>
+      <div id="hostsPaired" class="hosts"></div>
+      <div id="hostsAwaiting" class="hosts"></div>
+    </div>
+  </section>
+
+  <!-- ==== gallery ====================================================== -->
+  <section class="section section--center gallery" id="gallery" aria-labelledby="galleryTitle">
+    <div class="wrap">
+      <h2 class="section-title reveal" id="galleryTitle">Gallery</h2>
+      <span class="rule reveal" style="--d:120ms" aria-hidden="true">
+        <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+      </span>
+      <div class="gallery__stage reveal" style="--d:180ms">
+        <div class="gallery__slides" id="gallerySlides"></div>
+        <!-- Frame is CSS borders plus four fixed-size corner ornaments, so the
+             filigree never stretches with the stage's aspect ratio. -->
+        <span class="gallery__frame" aria-hidden="true">
+          <svg class="gallery__corner gallery__corner--tl" viewBox="0 0 40 40"><use href="#orn-frame-corner"/></svg>
+          <svg class="gallery__corner gallery__corner--tr" viewBox="0 0 40 40"><use href="#orn-frame-corner"/></svg>
+          <svg class="gallery__corner gallery__corner--bl" viewBox="0 0 40 40"><use href="#orn-frame-corner"/></svg>
+          <svg class="gallery__corner gallery__corner--br" viewBox="0 0 40 40"><use href="#orn-frame-corner"/></svg>
+        </span>
+        <button class="gallery__nav gallery__nav--prev" id="galPrev" type="button" aria-label="Previous photo">&#8249;</button>
+        <button class="gallery__nav gallery__nav--next" id="galNext" type="button" aria-label="Next photo">&#8250;</button>
+      </div>
+      <p class="gallery__caption reveal" id="galleryCaption"></p>
+      <div class="gallery__dots" id="galleryDots" role="tablist" aria-label="Choose photo"></div>
+    </div>
+  </section>
+
+  <!-- ==== night half =================================================== -->
+  <div class="night" id="night">
+    <span class="night__seam" aria-hidden="true"></span>
+
+    <section class="section rsvp" id="rsvp" aria-labelledby="rsvpHeading">
+      <div class="wrap--narrow">
+        <p class="eyebrow reveal" id="rsvpEyebrow"></p>
+        <h2 class="rsvp__heading reveal" style="--d:80ms" id="rsvpHeading"></h2>
+        <p class="rsvp__body reveal" style="--d:140ms" id="rsvpBody"></p>
+        <p class="reveal" style="--d:200ms;margin:0">
+          <a class="btn-gold" id="rsvpCta" href="#" target="_blank" rel="noopener"></a>
+        </p>
+        <p class="rsvp__note reveal" style="--d:260ms" id="rsvpNote"></p>
+
+        <div class="save reveal" style="--d:320ms">
+          <span class="save__label" id="saveLabel"></span>
+          <a class="btn-ghost" id="calGoogle" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cal"/></svg> Google Calendar
+          </a>
+          <a class="btn-ghost" id="calIcs" href="#" download="jeet-bhavini-wedding.ics">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cal"/></svg> Apple Calendar
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section countdown" id="countdown" aria-labelledby="cdTitle">
+      <div class="wrap">
+        <h2 class="countdown__title reveal" id="cdTitle">Counting Down to <em>Forever</em></h2>
+        <span class="rule reveal" style="--d:100ms" aria-hidden="true">
+          <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+        </span>
+        <div class="countdown__grid reveal" style="--d:220ms" id="cdGrid" role="timer" aria-live="off"></div>
+
+        <div class="signoff reveal" style="--d:300ms">
+          <span class="rule" aria-hidden="true"><svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg></span>
+          <p class="signoff__names" id="signoffNames"></p>
+          <p class="signoff__date"  id="signoffDate"></p>
+          <p class="signoff__line"  id="signoffLine"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="compliments" id="compliments" aria-labelledby="compHeading">
+      <p class="compliments__heading" id="compHeading"></p>
+      <div class="compliments__list" id="compList"></div>
+    </section>
+
+    <footer class="footer" id="footer"></footer>
+  </div>
+</main>
+
+<!-- ==== floating controls ============================================== -->
+<div class="controls">
+  <button class="ctrl" id="musicBtn" type="button" aria-pressed="false" aria-label="Play music" title="Music">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mute" id="musicIcon"/></svg>
+  </button>
+  <button class="ctrl" id="topBtn" type="button" aria-label="Back to top" title="Back to top">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-top"/></svg>
+  </button>
+</div>
+
+<script src="content.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
