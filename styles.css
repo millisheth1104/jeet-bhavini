@@ -61,9 +61,11 @@ body {
   font-size: 16px;
   line-height: 1.65;
   overflow-x: hidden;
-  /* paper grain, kept faint */
+  /* Paper grain. The tile is made seamless by scripts/make_seamless.py — the
+     raw generated texture has mismatched edges and a vignette, which showed up
+     as a grid of lines across every page. Size matches the tile 1:1. */
   background-image: url("assets/generated/paper_grain.png");
-  background-size: 520px;
+  background-size: 640px;
   background-blend-mode: multiply;
 }
 

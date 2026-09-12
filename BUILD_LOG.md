@@ -466,3 +466,61 @@ chose to publish as-is. Publicly visible and search-indexable:
 
 If that is ever reconsidered, note that making the repo private later does not
 un-index what was already crawled; the contact number would need changing too.
+
+---
+
+## 2026-09-12 — Removed the tile lines across the site
+
+User reported faint horizontal and vertical lines throughout. They were seams
+from `paper_grain.png`, the only repeating background on the page
+(`body`, `background-size: 520px`).
+
+### Why it seamed
+
+Measured on the original texture:
+
+| | value |
+|---|---|
+| Top-vs-bottom edge mismatch | **15.9 levels** |
+| Left-vs-right edge mismatch | 3.1 levels |
+| Vignette (corners vs centre) | **18.5 levels** |
+
+Two independent faults. The edge mismatch drew the lines; the vignette made the
+whole 520px grid readable as a field of patches even away from the seams. The
+second is the more visible of the two and is easy to miss.
+
+### Two attempts
+
+**High-pass + mirror-tile.** Killed both faults numerically — edge mismatch
+0.00, vignette 0.6 — but mirroring puts a *crease* down the middle of every
+tile, where the shading reverses direction. Side-by-side against the original
+this was clearly still lined, just differently. Rejected.
+
+**Synthesised grain, wraparound-blurred.** `scripts/make_seamless.py` now
+generates the tile instead of repairing one:
+
+- noise is tiled 3×3 *before* blurring and the centre cropped back out, so the
+  blur kernel wraps at the edges rather than running off them — seamless by
+  construction, with no mirror symmetry
+- a heavily blurred copy is subtracted, leaving only fine grain and no
+  low-frequency structure to form a grid
+- output is centred near white (mean 249.5) so the `multiply` blend stays a
+  whisper
+
+Verified by comparing the tile join against the tile interior — if a join is
+seamless, a neighbouring-pixel difference across it should look exactly like one
+anywhere else:
+
+```
+neighbour diff   interior  H 1.58  V 1.60
+                 at join   H 1.78  V 1.54
+ratio                      H 1.07  V 0.98      (1.0 = indistinguishable)
+```
+
+Vignette 18.5 → **0.12**. `background-size` now 640px, matching the tile 1:1.
+
+Confirmed visually against the original on an isolation page, then on the live
+site at the invitation, events and families sections — no lines anywhere.
+
+Tuned to `--amp 2.6 --grain 1.7` (grain sd 2.6 levels); those are baked in as
+the script defaults so a rerun reproduces this exact tile (fixed seed).
