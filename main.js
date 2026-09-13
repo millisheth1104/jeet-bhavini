@@ -155,8 +155,14 @@
         card.appendChild(orn);
       }
 
-      card.appendChild(el("h3", "inv__gu", ev.gu));
-      if (ev.en) card.appendChild(el("p", "inv__en", ev.en));
+      /* Title and English form ONE group sized to the wider of the two, so the
+         English anchors to the title's right edge rather than the card's. The
+         titles vary a lot in length (લગ્ન is 2 glyphs, શામ શાનદાર is 10), and
+         pinning to the card edge left a hole in the short ones. */
+      var title = el("div", "inv__title");
+      title.appendChild(el("h3", "inv__gu", ev.gu));
+      if (ev.en) title.appendChild(el("p", "inv__en", ev.en));
+      card.appendChild(title);
 
       var times = (ev.times || []).filter(function (t) { return t.value; });
 
@@ -224,6 +230,55 @@
     }
 
     W.events.forEach(function (ev, i) { list.appendChild(eventCard(ev, i)); });
+
+    /* Titles run from 2 glyphs (લગ્ન) to 10 (શામ શાનદાર). Left to itself that
+       is a 2x spread in width, so the short cards read as half the weight of
+       the long ones. Measure each title and scale it to occupy the same share
+       of its card, which is what makes the set look like one deck. */
+    function fitTitles() {
+      Array.prototype.forEach.call(document.querySelectorAll(".inv__title"), function (t) {
+        var card = t.closest(".inv");
+        var gu = t.querySelector(".inv__gu");
+        if (!card || !gu) return;
+        t.style.setProperty("--tscale", "1");
+        var natural = gu.getBoundingClientRect().width;
+        if (!natural) return;
+
+        // aim for a consistent share of the card's width
+        var scale = Math.max(0.6, Math.min(1.95, card.clientWidth * 0.64 / natural));
+        t.style.setProperty("--tscale", scale.toFixed(3));
+
+        /* ...then give the width back if the card cannot take the height. The
+           card is a fixed 2:3 with overflow hidden, so a title scaled purely
+           by width can push the date and illustration out of the bottom. */
+        var guard = 0;
+        while (card.scrollHeight > card.clientHeight && scale > 0.75 && guard++ < 30) {
+          scale *= 0.96;
+          t.style.setProperty("--tscale", scale.toFixed(3));
+        }
+      });
+    }
+
+    /* Fitting has to happen after BOTH the webfont and the illustrations have
+       landed. Measuring against the fallback font gives the wrong width, and
+       measuring before a lazy image has loaded gives the wrong height - the
+       card looks like it fits, then the picture arrives and pushes the content
+       out of the bottom. So re-fit on every one of those events. */
+    var fitPending;
+    function scheduleFit() {
+      clearTimeout(fitPending);
+      fitPending = setTimeout(fitTitles, 60);
+    }
+
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleFit);
+    window.addEventListener("load", scheduleFit);
+    window.addEventListener("resize", scheduleFit);
+
+    Array.prototype.forEach.call(list.querySelectorAll("img"), function (img) {
+      if (img.complete) return;
+      img.addEventListener("load", scheduleFit);
+      img.addEventListener("error", scheduleFit);
+    });
     if (W.invitationCard) list.appendChild(mainCard(W.invitationCard, W.events.length));
 
     /* ---- detail dialog -------------------------------------------------- */

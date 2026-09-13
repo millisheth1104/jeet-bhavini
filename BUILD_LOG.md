@@ -717,3 +717,52 @@ Gujarati faces shown on a real card. Brush-drawn with the largest flowing
 curves of the set — the "cursive with large curves" that was asked for.
 It is also narrower than Shrikhand, so શામ શાનદાર now sets on one line.
 `line-height: 1.42` for matra headroom.
+
+---
+
+## 2026-09-13 — Title/English pairing balanced across very different lengths
+
+The three cards looked wrong for a reason the reference never had to solve: its
+titles are all the same length (मेहंदी, हल्दी, संगीत, विवाह — three glyphs
+each). Ours run from **2 glyphs (લગ્ન) to 10 (શામ શાનદાર)**.
+
+Two separate faults fell out of that:
+
+**1. The English was pinned to the card's right edge**, so on a short title it
+flew away from its own title and tore a hole through the middle of the card.
+Fixed by wrapping both lines in `.inv__title`, a `width: fit-content` group, so
+the English right-aligns to the **title's** right edge instead. Measured at
+`0px` offset on all four cards.
+
+**2. A 2-glyph title read as half the weight of a 10-glyph one.** Hand-set
+per-event scales were tried first and could not balance it — the metric that
+matters is the share of card width each title occupies, which hand values
+cannot track. Replaced with `fitTitles()`, which measures each title and scales
+it to ~64% of its card.
+
+### Two bugs found while fitting
+
+**Fitting ran before the illustrations loaded.** The `.inv__ill` images are
+`loading="lazy"` and contribute no height until they arrive, so the card
+measured as fitting, the title was scaled up, and then the picture landed and
+pushed the content out of the bottom. The fit now re-runs on `fonts.ready`,
+`window.load`, resize, **and each image's own `load`/`error`**.
+
+**Scaling the title was the wrong lever on the લગ્ન card.** It carries three
+timings, so it is genuinely content-heavy; the fit loop shrank its title to 20%
+of the card and it *still* overflowed by 36px. The illustration is now
+constrained by `max-height: 34%` with `object-fit: contain` rather than a fixed
+width, so it yields space instead of forcing the title to disappear.
+
+### Verified
+
+```
+        share  scale   english offset   overflow
+sage     64%   1.893        0px            0
+indigo   64%   0.849        0px            0
+gold     64%   0.925        0px            0
+rose     32%   1.147        0px            0
+```
+
+`rose` sits at 32% because લગ્ન is two glyphs on the most content-heavy card —
+it is as large as that card can carry, and the English stays anchored to it.

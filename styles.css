@@ -684,30 +684,40 @@ body.intro-open { overflow: hidden; }
 .inv:hover .inv__orn { transform: rotate(2deg); }
 
 /* ---- titles ------------------------------------------------------------ */
+/* Title group.
+
+   The two lines are sized as ONE block that shrinks to the wider of them, so
+   the English anchors to the TITLE's right edge, not the card's. Titles differ
+   a lot in length here — લગ્ન is 2 glyphs, શામ શાનદાર is 10 — and pinning the
+   English to the card edge tore a hole through the short ones.
+
+   `--tscale` (per event, from content.js) evens out their optical size, so a
+   2-glyph title does not read as half the weight of a 10-glyph one. */
+.inv__title {
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  margin-left: -.06em;             /* optical bleed past the left edge */
+}
 .inv__gu {
-  /* Title placement, matched to the reference: the Gujarati sits flush LEFT at
-     the very top of the card, riding slightly past the left edge. The English
-     below it aligns RIGHT. Everything under the title stays centred. */
-  align-self: stretch;
   text-align: left;
   font-family: var(--gu-card);
   font-weight: 400;
-  font-size: clamp(2.7rem, 16cqw, 4.2rem);
-  line-height: 1.42;              /* Mogra needs headroom for matras */
+  font-size: calc(clamp(2.5rem, 15cqw, 3.9rem) * var(--tscale, 1));
+  line-height: 1.4;                /* Mogra needs headroom for matras */
   color: var(--ink-c);
-  margin: 0 0 0 -.06em;           /* optical bleed past the left edge */
+  margin: 0;
   letter-spacing: -.02em;
+  white-space: nowrap;             /* the group sizes to the title, not a wrap */
 }
 .inv__en {
-  align-self: stretch;
-  text-align: right;               /* drops to the right of the title above */
+  text-align: right;               /* right edge of the group, i.e. of the title */
   font-family: var(--card-en);
   font-weight: 400;
-  font-size: clamp(1.7rem, 11cqw, 2.6rem);
+  font-size: calc(clamp(1.6rem, 9.5cqw, 2.4rem) * var(--tscale, 1));
   line-height: .95;
   color: var(--ink-en);
-  margin: -.12em 0 0;
-  padding-right: 8%;
+  margin: -.22em 0 0;              /* tucked up under the title */
 }
 
 /* ---- date -------------------------------------------------------------- */
@@ -761,14 +771,20 @@ body.intro-open { overflow: hidden; }
 
 /* ---- illustration across the foot -------------------------------------- */
 .inv__ill {
+  /* Constrained by HEIGHT as well as width, so it yields space instead of
+     forcing the card to overflow. The લગ્ન card carries three timings and had
+     been squeezing its own title down to nothing to make room. */
   margin: auto auto 0;
-  padding-top: clamp(.6rem, 3cqw, 1.1rem);
-  width: clamp(150px, 78%, 235px);
+  padding-top: clamp(.5rem, 2.5cqw, 1rem);
+  width: auto;
   height: auto;
+  max-width: clamp(150px, 78%, 235px);
+  max-height: 34%;
+  object-fit: contain;
   filter: saturate(.88) contrast(.97);
   transition: transform .6s cubic-bezier(.22,.61,.36,1);
 }
-.inv[data-wide="true"] .inv__ill { width: clamp(175px, 100%, 285px); }
+.inv[data-wide="true"] .inv__ill { max-width: clamp(175px, 100%, 285px); }
 .inv:hover .inv__ill { transform: translateY(-3px); }
 
 .inv__more {
