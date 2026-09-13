@@ -966,3 +966,51 @@ cost the same first paint as two.
 `gallery__stage` is `aspect-ratio: 4/5` with `object-fit: cover`. The one
 landscape frame (the beach run) crops to it cleanly — checked all seven, nobody
 is cut.
+
+## Bilingual — English and ગુજરાતી, one language at a time
+
+The site had Gujarati and English *mixed on the same page*: English headings over
+a Gujarati sub-line, English host names above a Gujarati host list. It now reads
+in one language at a time, with a toggle pinned top right.
+
+**Shape.** Every string a guest reads is an `{ en, gu }` pair in `content.js`.
+A plain string means the text is the same in both languages — a time, a number,
+a brand. `t(v)` in `main.js` resolves either, so a value can be upgraded from a
+string to a pair without touching the render code.
+
+**The four card headings are the deliberate exception.** They show `gu` and `en`
+together on every card, because that is how the printed kankotri reads. Those two
+fields are NOT a translation pair and must never be turned into one.
+
+The couple's names follow the same logic: large in the reading language, small in
+the other. So does the line under "Our Events".
+
+**Switching reloads.** Re-rendering in place would mean tearing down the
+carousel, the countdown interval and every IntersectionObserver, and a half-
+applied switch is worse than a reload. `setLang` stashes the scroll position in
+`sessionStorage` under `wedding-langswitch`; the presence of that key is also
+what tells the intro not to replay. The key clears itself on read, so an ordinary
+reload still gets the full intro.
+
+**Typography.** `html[data-lang="gu"]` re-points `--serif` and `--sans` at the
+Gujarati stack (Rasa, then Noto Serif Gujarati) — Cormorant carries no Gujarati
+glyphs at all. Body leading goes to 1.65: Gujarati hangs matras above and below
+the line.
+
+Then the part that is easy to miss — **Gujarati must not be letter-spaced.**
+Fourteen small-caps labels on this page use tracking of .2–.3em, which in
+Gujarati pulls a matra clear of the consonant it belongs to and reads as a
+spelling error. Those rules are reset under `html[data-lang="gu"]`, and the
+labels that leaned on tracking for their weight get it back as size.
+`text-transform: uppercase` comes off with it: it does nothing to the script and
+mangles any Latin word standing beside it.
+
+**Names.** The eight host couples were Latin-only and the eleven awaiting names
+Gujarati-only, so each set needed its twin written. **These transliterations are
+mine and want a family member's eye before printing** — a misspelled relative's
+name is the one error on a wedding invitation nobody forgives.
+
+Verified in both languages: a DOM sweep for leaf nodes carrying both scripts
+returns one hit, "WhatsApp" inside a Gujarati sentence, which is correct; no
+element that should be Gujarati is still English; and switching mid-page returns
+to the same scroll position (y=7076 → 7076) with the intro skipped.

@@ -11,6 +11,110 @@
   var $  = function (id) { return document.getElementById(id); };
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* -- language ------------------------------------------------------------
+     The site reads in one language at a time. The visitor's choice is kept in
+     localStorage; switching reloads, because re-rendering in place would mean
+     tearing down the carousel, the countdown interval and every observer. A
+     reload on a static site is cheaper and cannot half-apply.               */
+
+  var LANGS = ["en", "gu"];
+  var LANG = (function () {
+    try {
+      var saved = localStorage.getItem("wedding-lang");
+      if (LANGS.indexOf(saved) !== -1) return saved;
+    } catch (e) {}
+    return W.defaultLang === "gu" ? "gu" : "en";
+  }());
+  var OTHER = LANG === "en" ? "gu" : "en";
+
+  /* Copy in content.js is either a plain string - the same in both languages,
+     like a time or a brand name - or an { en, gu } pair. Resolve either. */
+  function t(v) {
+    if (v == null) return "";
+    if (typeof v === "string") return v;
+    if (typeof v === "object" && ("en" in v || "gu" in v)) {
+      return v[LANG] || v.en || v.gu || "";
+    }
+    return v;
+  }
+  function u(key) { return t((W.ui || {})[key]); }
+
+  /* `.gu` sets the Gujarati face. Latin text must not wear it. */
+  function guIf(cls) {
+    return LANG === "gu" ? ("gu " + (cls || "")).trim() : (cls || null);
+  }
+
+  document.documentElement.setAttribute("lang", LANG);
+  document.documentElement.setAttribute("data-lang", LANG);
+
+  /* Switching carries the scroll position across the reload, and the presence
+     of that key is also what tells the intro to stay out of the way. */
+  function setLang(next) {
+    if (next === LANG) return;
+    try {
+      localStorage.setItem("wedding-lang", next);
+      sessionStorage.setItem("wedding-langswitch", String(window.scrollY || 0));
+    } catch (e) {}
+    location.reload();
+  }
+  var switchedAt = null;
+  try {
+    switchedAt = sessionStorage.getItem("wedding-langswitch");
+    sessionStorage.removeItem("wedding-langswitch");
+  } catch (e) {}
+
+  (function langToggle() {
+    var btn = $("langBtn");
+    if (!btn) return;
+    // the button names the language you would switch TO
+    btn.textContent = (W.ui.langName || {})[OTHER] || OTHER.toUpperCase();
+    btn.className = "lang" + (OTHER === "gu" ? " lang--gu" : "");
+    btn.setAttribute("aria-label", u("langSwitchTo"));
+    btn.title = u("langSwitchTo");
+    btn.addEventListener("click", function () { setLang(OTHER); });
+  }());
+
+  /* Static labels that live in index.html rather than in a render function:
+     section headings, the scroll cue, and every aria-label. */
+  (function chrome() {
+    function label(id, key) { var e = $(id); if (e) e.textContent = u(key); }
+    function aria(id, key, alsoTitle) {
+      var e = $(id); if (!e) return;
+      e.setAttribute("aria-label", u(key));
+      if (alsoTitle) e.title = u(key);
+    }
+    label("heroEyebrow",     "heroEyebrow");
+    label("scrollCue",       "scrollCue");
+    label("eventsEyebrow",   "eventsEyebrow");
+    label("eventsTitle",     "eventsTitle");
+    label("familiesEyebrow", "familiesEyebrow");
+    label("familiesTitle",   "familiesTitle");
+
+    /* The line under "Our Events" carries the heading in the OTHER language -
+       a pairing, the way a kankotri sets both, not a mixed-language page. */
+    var alt = $("eventsAlt");
+    if (alt) {
+      alt.textContent = (W.ui.eventsTitle || {})[OTHER] || "";
+      if (OTHER === "gu") alt.classList.add("gu");
+    }
+
+    aria("evdlgClose", "aClose");
+    aria("musicBtn",   "aMusic", true);
+    aria("topBtn",     "aTop",   true);
+    var d = $("evdlg");
+    if (d) d.setAttribute("aria-label", u("aEventDetails"));
+  }());
+
+  /* A language switch reloads. Put the reader back where they were. */
+  (function restoreScroll() {
+    if (switchedAt === null) return;
+    var y = parseInt(switchedAt, 10) || 0;
+    if (!y) return;
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    function go() { window.scrollTo(0, y); }
+    window.addEventListener("load", function () { go(); setTimeout(go, 120); });
+  }());
+
   /* -- small helpers ------------------------------------------------------ */
 
   function el(tag, cls, text) {
@@ -56,11 +160,21 @@
     var box = $("intro");
     if (!box) return;
 
+    put("introEyebrow", u("introEyebrow"));
+    $("introSkip").textContent = u("introSkip");
+
     var names = $("introNames");
-    names.appendChild(document.createTextNode(first.en + " "));
+    names.appendChild(document.createTextNode(t(first) + " "));
     names.appendChild(el("em", null, "&"));
-    names.appendChild(document.createTextNode(" " + second.en));
-    put("introGu", first.gu + "  ·  " + second.gu);
+    names.appendChild(document.createTextNode(" " + t(second)));
+    /* The couple's names are set twice on purpose, the way a kankotri does -
+       large in the reading language, small in the other. */
+    var alt = $("introGu");
+    alt.className = LANG === "gu" ? "intro__gu" : "gu intro__gu";
+    put("introGu", first[OTHER] + "  ·  " + second[OTHER]);
+
+    // A language switch comes back mid-page; do not replay the intro.
+    if (switchedAt !== null) { box.remove(); return; }
 
     document.body.classList.add("intro-open");
 
@@ -91,38 +205,41 @@
 
   (function hero() {
     var h = $("heroNames");
-    h.appendChild(document.createTextNode(first.en));
+    h.appendChild(document.createTextNode(t(first)));
     h.appendChild(el("span", "hero__amp", "&"));
-    h.appendChild(document.createTextNode(second.en));
+    h.appendChild(document.createTextNode(t(second)));
 
-    put("heroGu", first.gu + "  ·  " + second.gu);
+    var halt = $("heroGu");
+    halt.className = LANG === "gu" ? "hero__gu reveal" : "gu hero__gu reveal";
+    halt.style.setProperty("--d", "160ms");
+    put("heroGu", first[OTHER] + "  ·  " + second[OTHER]);
 
     var meta = $("heroMeta");
     [W.headline.datesLabel, W.headline.venue, W.headline.city]
-      .filter(function (t) { return t; })
-      .forEach(function (t) { meta.appendChild(el("span", null, t)); });
+      .map(t)
+      .filter(function (x) { return x; })
+      .forEach(function (x) { meta.appendChild(el("span", null, x)); });
   }());
 
   /* -- invitation --------------------------------------------------------- */
 
   (function invitation() {
     var inv = W.invitation;
-    put("invBlessing", inv.blessing);
-    put("invLead", inv.lead);
+    put("invBlessing", t(inv.blessing));
+    put("invLead", t(inv.lead));
 
     var host = $("invParties");
     function party(person, parents) {
-      var name = el("p", "invite__name", person.en);
-      var gu   = el("p", "gu invite__gu", person.gu);
-      host.appendChild(name);
-      host.appendChild(gu);
-      if (parents) host.appendChild(el("p", "invite__parents", parents));
+      host.appendChild(el("p", "invite__name", t(person)));
+      host.appendChild(el("p", (LANG === "gu" ? "" : "gu ") + "invite__gu",
+                             person[OTHER]));
+      if (parents) host.appendChild(el("p", "invite__parents", t(parents)));
     }
     party(groom, inv.groomLine);
-    host.appendChild(el("p", "invite__weds", "weds"));
+    host.appendChild(el("p", "invite__weds", t(inv.weds)));
     party(bride, inv.brideLine);
 
-    var when = [W.headline.datesLabel, W.headline.venue || W.headline.city]
+    var when = [t(W.headline.datesLabel), t(W.headline.venue) || t(W.headline.city)]
       .filter(Boolean).join(" · ");
     put("invWhen", when);
   }());
@@ -146,7 +263,8 @@
       card.setAttribute("data-key", ev.key);
       if (ev.wideIllustration) card.setAttribute("data-wide", "true");
       card.style.setProperty("--d", i * 90 + "ms");
-      card.setAttribute("aria-label", ev.en + " — " + ev.date + ". Open details.");
+      card.setAttribute("aria-label",
+        ev.en + " — " + t(ev.date) + ". " + u("viewDetails") + ".");
 
       if (ev.ornament) {
         var orn = el("img", "inv__orn");
@@ -175,7 +293,7 @@
         var when = el("div", "inv__when");
         when.appendChild(el("span", "inv__day", ev.dateShort.day));
         var md = el("span", "inv__md");
-        md.appendChild(el("b", null, ev.dateShort.month));
+        md.appendChild(el("b", null, t(ev.dateShort.month)));
         md.appendChild(el("span", null, times.length ? times[0].value : "2026"));
         when.appendChild(md);
         card.appendChild(when);
@@ -184,16 +302,17 @@
       // one unlabelled time already reads beside the date
       if (times.length > 1) {
         var ul = el("ul", "inv__times");
-        times.forEach(function (t) {
+        times.forEach(function (tm) {
           var li = el("li");
-          if (t.label) li.appendChild(document.createTextNode(t.label + "  "));
-          li.appendChild(el("b", null, t.value));
+          var lbl = t(tm.label);
+          if (lbl) li.appendChild(document.createTextNode(lbl + "  "));
+          li.appendChild(el("b", null, tm.value));
           ul.appendChild(li);
         });
         card.appendChild(ul);
       }
 
-      if (ev.venue) card.appendChild(el("p", "inv__venue", ev.venue));
+      if (ev.venue) card.appendChild(el("p", guIf("inv__venue"), t(ev.venue)));
 
       /* Most cards carry one engraving centred at the foot. The લગ્ન card
          carries two, one in each bottom corner, and says so in its data. */
@@ -210,7 +329,7 @@
         card.appendChild(ill);
       }
 
-      card.appendChild(el("span", "inv__more", "View details"));
+      card.appendChild(el("span", "inv__more", u("viewDetails")));
       card.addEventListener("click", function () { openDialog(ev); });
       return card;
     }
@@ -227,18 +346,18 @@
         m.src = cfg.motif; m.alt = ""; m.loading = "lazy";
         card.appendChild(m);
       }
-      card.appendChild(el("p", "inv__eyebrow", cfg.eyebrow));
+      card.appendChild(el("p", "inv__eyebrow", t(cfg.eyebrow)));
 
-      card.appendChild(el("p", "inv__name", groom.en));
+      card.appendChild(el("p", "inv__name", t(groom)));
       if (W.invitation.groomLine)
-        card.appendChild(el("p", "inv__parents", W.invitation.groomLine));
-      card.appendChild(el("p", "inv__weds", cfg.weds));
-      card.appendChild(el("p", "inv__name", bride.en));
+        card.appendChild(el("p", "inv__parents", t(W.invitation.groomLine)));
+      card.appendChild(el("p", "inv__weds", t(cfg.weds)));
+      card.appendChild(el("p", "inv__name", t(bride)));
       if (W.invitation.brideLine)
-        card.appendChild(el("p", "inv__parents", W.invitation.brideLine));
+        card.appendChild(el("p", "inv__parents", t(W.invitation.brideLine)));
 
-      card.appendChild(el("p", "inv__dates", W.headline.datesLabel));
-      var place = W.headline.venue || W.headline.city;
+      card.appendChild(el("p", "inv__dates", t(W.headline.datesLabel)));
+      var place = t(W.headline.venue) || t(W.headline.city);
       if (place) card.appendChild(el("p", "inv__city", place));
       return card;
     }
@@ -331,27 +450,27 @@
       body.textContent = "";
       body.appendChild(el("h3", "evdlg__gu", ev.gu));
       if (ev.en) body.appendChild(el("p", "evdlg__en", ev.en));
-      body.appendChild(el("p", "evdlg__date", ev.date));
+      body.appendChild(el("p", "evdlg__date", t(ev.date)));
 
-      var times = (ev.times || []).filter(function (t) { return t.value; });
+      var times = (ev.times || []).filter(function (x) { return x.value; });
       if (times.length) {
         var ul = el("ul", "evdlg__times");
-        times.forEach(function (t) {
+        times.forEach(function (tm) {
           var li = el("li");
-          li.appendChild(el("span", null, t.label || "Begins"));
-          li.appendChild(el("b", null, t.value));
+          li.appendChild(el("span", guIf(null), t(tm.label) || u("timeBegins")));
+          li.appendChild(el("b", null, tm.value));
           ul.appendChild(li);
         });
         body.appendChild(ul);
       }
 
-      if (ev.venue) body.appendChild(el("p", "evdlg__date", ev.venue));
-      if (ev.dress) body.appendChild(el("p", "evdlg__note", ev.dress));
-      if (ev.note)  body.appendChild(el("p", "evdlg__note", ev.note));
+      if (ev.venue) body.appendChild(el("p", guIf("evdlg__date"), t(ev.venue)));
+      if (ev.dress) body.appendChild(el("p", guIf("evdlg__note"), t(ev.dress)));
+      if (ev.note)  body.appendChild(el("p", guIf("evdlg__note"), t(ev.note)));
 
       // venue is still to be confirmed; say so rather than showing a gap
       if (!ev.venue) {
-        body.appendChild(el("p", "evdlg__blank", "Venue details to follow."));
+        body.appendChild(el("p", "evdlg__blank", u("venueToFollow")));
       }
 
       if (ev.illustration) {
@@ -387,14 +506,13 @@
 
     var boxA = $("hostsPaired");
     if (p && p.pairs && p.pairs.length) {
-      boxA.appendChild(el("h3", "gu hosts__heading reveal", p.heading));
-      if (p.headingEn) boxA.appendChild(el("p", "hosts__sub reveal", p.headingEn));
+      boxA.appendChild(el("h3", guIf("hosts__heading reveal"), t(p.heading)));
       var ul = el("ul", "pairs reveal");
       p.pairs.forEach(function (pair) {
         var li = el("li");
-        li.appendChild(el("span", "l", pair[0]));
+        li.appendChild(el("span", guIf("l"), t(pair[0])));
         li.appendChild(el("span", "dot", "◆"));
-        li.appendChild(el("span", "r", pair[1]));
+        li.appendChild(el("span", guIf("r"), t(pair[1])));
         ul.appendChild(li);
       });
       boxA.appendChild(ul);
@@ -403,13 +521,12 @@
     var boxB = $("hostsAwaiting");
     if (a && a.names && a.names.length) {
       boxB.appendChild(ornRule());
-      boxB.appendChild(el("h3", "gu hosts__heading reveal", a.heading));
-      if (a.headingEn) boxB.appendChild(el("p", "hosts__sub reveal", a.headingEn));
+      boxB.appendChild(el("h3", guIf("hosts__heading reveal"), t(a.heading)));
       var ul2 = el("ul", "awaiting reveal");
-      a.names.forEach(function (n) { ul2.appendChild(el("li", "gu", n)); });
+      a.names.forEach(function (nm) { ul2.appendChild(el("li", guIf(null), t(nm))); });
       boxB.appendChild(ul2);
-      if (a.solo)     boxB.appendChild(el("p", "gu awaiting--solo reveal", a.solo));
-      if (a.children) boxB.appendChild(el("p", "gu awaiting--kids reveal", a.children));
+      if (a.solo)     boxB.appendChild(el("p", guIf("awaiting--solo reveal"), t(a.solo)));
+      if (a.children) boxB.appendChild(el("p", guIf("awaiting--kids reveal"), t(a.children)));
     } else { boxB.hidden = true; }
   }());
 
@@ -426,7 +543,7 @@
     photos.forEach(function (p, i) {
       var img = el("img");
       img.src = p.src;
-      img.alt = p.alt || "";
+      img.alt = t(p.alt);
       if (i) img.loading = "lazy";
       if (!i) img.classList.add("is-active");
       slides.appendChild(img);
@@ -434,7 +551,7 @@
       var b = el("button");
       b.type = "button";
       b.setAttribute("role", "tab");
-      b.setAttribute("aria-label", "Photo " + (i + 1));
+      b.setAttribute("aria-label", u("aPhotoN") + " " + (i + 1));
       if (!i) b.classList.add("is-active");
       b.addEventListener("click", function () { show(i); });
       dots.appendChild(b);
@@ -477,8 +594,11 @@
     });
 
     put("galleryCaption", W.gallery.caption);
-    var t = $("galleryTitle");
-    if (W.gallery.heading) t.textContent = W.gallery.heading;
+    put("galleryTitle", t(W.gallery.heading));
+    put("galleryCaption", t(W.gallery.caption));
+    $("galPrev").setAttribute("aria-label", u("aPrevPhoto"));
+    $("galNext").setAttribute("aria-label", u("aNextPhoto"));
+    dots.setAttribute("aria-label", u("aChoosePhoto"));
   }());
 
   /* -- rsvp + calendar ---------------------------------------------------- */
@@ -487,17 +607,19 @@
 
   (function rsvp() {
     var r = W.rsvp;
-    put("rsvpEyebrow", r.eyebrow);
-    put("rsvpHeading", r.heading);
-    put("rsvpBody", r.body);
-    put("rsvpNote", r.note);
-    put("saveLabel", r.saveLabel);
+    put("rsvpEyebrow", t(r.eyebrow));
+    put("rsvpHeading", t(r.heading));
+    put("rsvpBody", t(r.body));
+    put("rsvpNote", t(r.note));
+    put("saveLabel", t(r.saveLabel));
+    $("calGoogle").lastChild.textContent = " " + u("calGoogle");
+    $("calIcs").lastChild.textContent    = " " + u("calApple");
 
     var cta = $("rsvpCta");
-    cta.textContent = r.cta;
+    cta.textContent = t(r.cta);
     if (r.whatsapp) {
-      var msg = "Hi! I'd love to attend " + first.en + " & " + second.en +
-                "'s wedding. Please count me in.";
+      var msg = t(r.whatsappMessage)
+        .replace("{names}", t(first) + " & " + t(second));
       cta.href = "https://wa.me/" + r.whatsapp + "?text=" + encodeURIComponent(msg);
     } else {
       cta.removeAttribute("href");
@@ -505,8 +627,8 @@
     }
 
     // ---- calendar links ----
-    var title = first.en + " & " + second.en + " — Wedding";
-    var where = [W.headline.venue, W.headline.city].filter(Boolean).join(", ");
+    var title = first.en + " & " + second.en + " — Wedding";   // calendars stay English
+    var where = [t(W.headline.venue), t(W.headline.city)].filter(Boolean).join(", ");
     var end   = new Date(startDate.getTime() + 4 * 3600 * 1000);
 
     // Google wants UTC basic-format stamps.
@@ -529,7 +651,9 @@
 
   (function countdown() {
     var grid = $("cdGrid");
-    var units = [["days", "Days"], ["hours", "Hours"], ["minutes", "Minutes"], ["seconds", "Seconds"]];
+    $("cdTitle").innerHTML = u("countdownTitle");
+    var units = [["days", u("cdDays")], ["hours", u("cdHours")],
+                 ["minutes", u("cdMinutes")], ["seconds", u("cdSeconds")]];
     var nums = {};
 
     units.forEach(function (u) {
@@ -542,7 +666,7 @@
       var box = el("span", "locket__num");
       var b = el("b", null, "—");
       box.appendChild(b);
-      box.appendChild(el("span", null, u[1]));
+      box.appendChild(el("span", guIf(null), u[1]));
       wrap.appendChild(box);
 
       grid.appendChild(wrap);
@@ -554,7 +678,7 @@
       if (ms <= 0) {
         nums.days.textContent = nums.hours.textContent =
         nums.minutes.textContent = nums.seconds.textContent = "0";
-        $("cdTitle").innerHTML = "Today is <em>Forever</em>";
+        $("cdTitle").innerHTML = u("countdownArrived");
         return false;
       }
       var s = Math.floor(ms / 1000);
@@ -571,11 +695,11 @@
 
     // sign-off
     $("signoffNames").innerHTML = "";
-    $("signoffNames").appendChild(document.createTextNode(first.en + " "));
+    $("signoffNames").appendChild(document.createTextNode(t(first) + " "));
     $("signoffNames").appendChild(el("em", null, "&"));
-    $("signoffNames").appendChild(document.createTextNode(" " + second.en));
-    put("signoffDate", W.headline.datesLabel);
-    put("signoffLine", W.footer.line);
+    $("signoffNames").appendChild(document.createTextNode(" " + t(second)));
+    put("signoffDate", t(W.headline.datesLabel));
+    put("signoffLine", t(W.footer.line));
   }());
 
   /* -- compliments + footer ----------------------------------------------- */
@@ -583,17 +707,18 @@
   (function compliments() {
     var c = W.compliments, section = $("compliments");
     if (!c || !c.from || !c.from.length) { section.hidden = true; return; }
-    put("compHeading", c.heading);
+    put("compHeading", t(c.heading));
     var host = $("compList");
     c.from.forEach(function (f) {
       var d = el("div");
       d.appendChild(el("p", "compliments__name", f.name));
-      if (f.city) d.appendChild(el("p", "compliments__city", f.city));
+      if (f.city) d.appendChild(el("p", guIf("compliments__city"), t(f.city)));
       host.appendChild(d);
     });
   }());
 
-  $("footer").textContent = [W.couple.hashtag, W.footer.credit].filter(Boolean).join("  ·  ");
+  $("footer").textContent =
+    [W.couple.hashtag, t(W.footer.credit)].filter(Boolean).join("  ·  ");
 
   /* -- scroll reveal ------------------------------------------------------ */
 

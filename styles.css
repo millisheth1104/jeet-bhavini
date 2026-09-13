@@ -55,11 +55,29 @@
   --gu-card: "Rasa", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
   --card-en: "Great Vibes", "Playfair Display", "Apple Chancery", cursive;
 
+  /* ---- language ----
+     In Gujarati the body copy has to be set in a face that carries the script.
+     Cormorant does not, so --serif and --sans are re-pointed at the Gujarati
+     stack for the whole document. Rasa keeps the same warm serif colour as
+     Cormorant, so the page does not change character when it changes language.
+     Both stacks keep their Latin fallbacks: dates, times and brand names stay
+     in Latin even on a Gujarati page. */
+
   /* ---- rhythm ---- */
   --gutter: clamp(1.25rem, 5vw, 3.5rem);
   --section-y: clamp(4.5rem, 12vw, 9rem);
   --measure: 34rem;
 }
+
+html[data-lang="gu"] {
+  --serif: "Rasa", "Noto Serif Gujarati", "Shruti", "Nirmala UI", Georgia, serif;
+  --sans:  "Noto Serif Gujarati", "Shruti", "Nirmala UI", "Jost", system-ui, sans-serif;
+}
+/* Gujarati carries matras above and below the line and needs the headroom. */
+html[data-lang="gu"] body { line-height: 1.65; }
+html[data-lang="gu"] .section-title,
+html[data-lang="gu"] .rsvp__heading,
+html[data-lang="gu"] .countdown__title { line-height: 1.4; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -253,8 +271,9 @@ body.intro-open { overflow: hidden; }
 
 .intro__skip {
   position: absolute;
+  /* clears the language toggle, which is pinned to the same corner */
   top: clamp(.8rem, 2vh, 1.4rem);
-  right: clamp(.9rem, 3vw, 1.6rem);
+  left: clamp(.9rem, 3vw, 1.6rem);
   z-index: 3;
   border: 1px solid var(--hairline);
   background: rgba(255,255,255,.7);
@@ -1471,3 +1490,79 @@ body.is-night .ctrl[aria-pressed="true"] { background: var(--gold); color: var(-
   .gallery__slides img { transition: none; }
   * { scroll-behavior: auto !important; }
 }
+
+/* ---- language toggle ---------------------------------------------------
+   Fixed top right, above the intro overlay so the language can be changed
+   before the invitation has even opened. */
+.topbar {
+  position: fixed;
+  top: clamp(.6rem, 2vh, 1.1rem);
+  right: clamp(.6rem, 2vw, 1.2rem);
+  z-index: 120;                      /* .intro is 100, .controls 40 */
+}
+.lang {
+  appearance: none;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: .5rem .85rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: rgba(255,255,255,.86);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 1px 2px rgba(61,52,40,.08), 0 8px 20px -14px rgba(61,52,40,.5);
+  transition: background .25s ease, color .25s ease, border-color .25s ease;
+}
+/* the Gujarati label is a script, not a set of capitals */
+.lang--gu {
+  font-family: var(--gujarati);
+  font-size: .92rem;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: .34rem .85rem .44rem;
+}
+.lang:hover, .lang:focus-visible {
+  background: #fff;
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--ink) 28%, transparent);
+}
+.lang:focus-visible { outline: 1px solid var(--brass); outline-offset: 3px; }
+
+@media (max-width: 480px) {
+  .lang { font-size: .72rem; padding: .42rem .7rem; }
+  .lang--gu { font-size: .85rem; }
+}
+
+/* ---- Gujarati typography ------------------------------------------------
+   Gujarati must not be letter-spaced. The tracking these small-caps labels use
+   for Latin pulls a matra away from the consonant it belongs to, which reads
+   as a spelling error rather than a style. `text-transform: uppercase` does
+   nothing to the script and mangles any Latin word standing beside it, so both
+   come off together. `.lang` is deliberately not in this list: its Gujarati
+   state has its own rule, and its English state must stay in caps. */
+html[data-lang="gu"] .eyebrow,
+html[data-lang="gu"] .intro__skip,
+html[data-lang="gu"] .hero__meta,
+html[data-lang="gu"] .scroll-cue,
+html[data-lang="gu"] .invite__when,
+html[data-lang="gu"] .inv__more,
+html[data-lang="gu"] .inv__eyebrow,
+html[data-lang="gu"] .btn-gold,
+html[data-lang="gu"] .save__label,
+html[data-lang="gu"] .locket__num span,
+html[data-lang="gu"] .signoff__date,
+html[data-lang="gu"] .compliments__heading,
+html[data-lang="gu"] .compliments__city,
+html[data-lang="gu"] .hosts__heading {
+  letter-spacing: .015em;
+  text-transform: none;
+}
+/* Those labels lean on tracking for their weight; give it back as size. */
+html[data-lang="gu"] .eyebrow,
+html[data-lang="gu"] .scroll-cue,
+html[data-lang="gu"] .save__label,
+html[data-lang="gu"] .compliments__heading { font-size: .88rem; }
+html[data-lang="gu"] .locket__num span { font-size: .78rem; }

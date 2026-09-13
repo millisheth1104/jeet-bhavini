@@ -1,6 +1,16 @@
 /* ---------------------------------------------------------------------------
    Every word and date on the site lives here. Edit this file, reload, done.
 
+   BILINGUAL
+   Any text a guest reads is written as { en: "...", gu: "..." }. The site shows
+   one language at a time; the toggle at the top right switches it and remembers
+   the choice. A plain string instead of a pair means the text is the same in
+   both languages - a time like "4:00 PM", a brand name, a number.
+
+   The four ceremony cards are the one deliberate exception: their headings show
+   BOTH languages at once, because that is how the printed kankotri reads. Those
+   live as `gu` and `en` on each event and are never switched.
+
    Anything left as an empty string "" hides itself and its label. Whole
    sections with nothing to show remove themselves, so it is safe to leave
    details blank until you have them.
@@ -8,9 +18,13 @@
 
 window.WEDDING = {
 
+  /* Which language the site opens in for a first-time visitor: "en" or "gu".
+     After that the visitor's own choice is remembered. */
+  defaultLang: "en",
+
   couple: {
-    groom:   { en: "Jeet",    gu: "જીત",     family: "Jabuvani" },
-    bride:   { en: "Bhavini", gu: "ભાવિની",  family: "Nakrani"  },
+    groom:   { en: "Jeet",    gu: "જીત",     family: { en: "Jabuvani", gu: "જબુઆણી" } },
+    bride:   { en: "Bhavini", gu: "ભાવિની",  family: { en: "Nakrani",  gu: "નકરાણી" } },
     // Whose name reads first in the hero. "groom" or "bride".
     firstInHero: "groom",
     hashtag: "#JeetWedsBhavini",
@@ -18,89 +32,113 @@ window.WEDDING = {
 
   // Shown under the names in the hero.
   headline: {
-    datesLabel: "1 – 2 December 2026",
+    datesLabel: { en: "1 – 2 December 2026", gu: "1 – 2 ડિસેમ્બર 2026" },
     // Leave blank until the venue is confirmed; the line disappears.
     venue: "",
-    city: "Gandhidham",
+    city: { en: "Gandhidham", gu: "ગાંધીધામ" },
   },
 
   // The formal invitation panel.
   invitation: {
-    blessing:  "With the blessings of the divine",
-    lead:      "request the honour of your presence at the wedding of",
-    groomLine: "S/o Mr. Arvind Naran Jabuvani & Mrs. Ranjana Arvind Jabuvani",
-    brideLine: "D/o Mr. Praveen Nakrani & Mrs. Manjula Nakrani",
-    closing:   "12ᵗʰ … forever begins here",
+    blessing: {
+      en: "With the blessings of the divine",
+      gu: "પ્રભુના આશીર્વાદ સાથે",
+    },
+    lead: {
+      en: "request the honour of your presence at the wedding of",
+      gu: "ના શુભ લગ્ન પ્રસંગે આપની ઉપસ્થિતિની હાર્દિક અપેક્ષા રાખીએ છીએ",
+    },
+    groomLine: {
+      en: "S/o Mr. Arvind Naran Jabuvani & Mrs. Ranjana Arvind Jabuvani",
+      gu: "સુપુત્ર: શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી તથા અ.સૌ. રંજનાબેન અરવિંદભાઈ જબુઆણી",
+    },
+    brideLine: {
+      en: "D/o Mr. Praveen Nakrani & Mrs. Manjula Nakrani",
+      gu: "સુપુત્રી: શ્રી પ્રવીણભાઈ નકરાણી તથા અ.સૌ. મંજુલાબેન પ્રવીણભાઈ નકરાણી",
+    },
+    weds: { en: "weds", gu: "સાથે" },
+    closing: {
+      en: "forever begins here",
+      gu: "અહીંથી શરૂ થાય છે સદાકાળ",
+    },
   },
 
   /* The clock counts down to this instant. Hastamelap, IST.
      Format: YYYY-MM-DDTHH:MM:SS+05:30 */
   countdownTo: "2026-12-02T17:41:00+05:30",
 
-  /* The five invitation cards.
+  /* The four ceremony cards.
 
-     Each is its own card: `ink` drives every coloured element on it, `paper`
-     picks one of three aged sheets so no two neighbours look identical, and
-     `illustration` is the engraving that anchors its foot. Editing an entry
-     here changes only that card. */
+     `gu` and `en` are the card's heading. They are shown TOGETHER on every
+     card in both languages - do not make these a { en, gu } pair. Everything
+     else on the card follows the site's language. */
   events: [
     {
       key: "mameru",
       gu: "મામેરું",
       en: "Mameru",
       enShift: "0.6em",
-      tagline: "Where Blessings Begin",
+      tagline: { en: "Where Blessings Begin", gu: "આશીર્વાદનો આરંભ" },
       ink: "sage",
       paper: "a",
       illustration: "assets/generated/ill_mameru.png",
       ornament: false,
-      date: "Tuesday, 1 December 2026",
-      dateShort: { day: "01", month: "December" },
+      date: { en: "Tuesday, 1 December 2026", gu: "મંગળવાર, 1 ડિસેમ્બર 2026" },
+      dateShort: { day: "01", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: "9:00 AM" }],
-      venue: "Gandhidham,\nGujarat",
+      venue: { en: "Gandhidham,\nGujarat", gu: "ગાંધીધામ,\nગુજરાત" },
       dress: "",
-      note: "The maternal blessing, offered before the wedding days begin.",
+      note: {
+        en: "The maternal blessing, offered before the wedding days begin.",
+        gu: "લગ્નના દિવસો શરૂ થાય તે પહેલાં મામા તરફથી અપાતા આશીર્વાદ.",
+      },
     },
     {
       key: "sangeet",
       gu: "શામ શાનદાર",
       en: "Sangeet",
       enShift: "-1.7em",
-      tagline: "An Evening of Song",
+      tagline: { en: "An Evening of Song", gu: "સંગીતની સંધ્યા" },
       ink: "indigo",
       paper: "b",
       illustration: "assets/generated/ill_sangeet.png",
       wideIllustration: true,
       ornament: true,
-      date: "Tuesday, 1 December 2026",
-      dateShort: { day: "01", month: "December" },
+      date: { en: "Tuesday, 1 December 2026", gu: "મંગળવાર, 1 ડિસેમ્બર 2026" },
+      dateShort: { day: "01", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: "7:00 PM" }],
-      venue: "Gandhidham,\nGujarat",
+      venue: { en: "Gandhidham,\nGujarat", gu: "ગાંધીધામ,\nગુજરાત" },
       dress: "",
-      note: "An evening of dhol, song and dancing.",
+      note: {
+        en: "An evening of dhol, song and dancing.",
+        gu: "ઢોલ, ગીત અને નૃત્યની એક સંધ્યા.",
+      },
     },
     {
       key: "mandap",
       gu: "મંડપ રોપણ",
       en: "Mandap Ropan",
-      tagline: "Raising the Sacred Canopy",
+      tagline: { en: "Raising the Sacred Canopy", gu: "મંડપની સ્થાપના" },
       ink: "gold",
       paper: "c",
       illustration: "assets/generated/ill_mandap.png",
       ornament: false,
-      date: "Wednesday, 2 December 2026",
-      dateShort: { day: "02", month: "December" },
+      date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
+      dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: "8:00 AM" }],
-      venue: "Gandhidham,\nGujarat",
+      venue: { en: "Gandhidham,\nGujarat", gu: "ગાંધીધામ,\nગુજરાત" },
       dress: "",
-      note: "The raising of the mandap, where the vows will be taken.",
+      note: {
+        en: "The raising of the mandap, where the vows will be taken.",
+        gu: "મંડપની સ્થાપના, જ્યાં લગ્નવિધિ સંપન્ન થશે.",
+      },
     },
     {
       key: "lagna",
       gu: "લગ્ન",
       en: "Wedding",
       enShift: "0.9em",
-      tagline: "The Joining of Hands",
+      tagline: { en: "The Joining of Hands", gu: "હસ્તમેળાપ" },
       ink: "rose",
       paper: "a",
       /* The only card with two engravings, one in each bottom corner. */
@@ -109,16 +147,19 @@ window.WEDDING = {
         "assets/generated/ill_lagna_elephant.png",  // elephant, bottom right
       ],
       ornament: true,
-      date: "Wednesday, 2 December 2026",
-      dateShort: { day: "02", month: "December" },
+      date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
+      dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [
-        { label: "Bharat Prastan", value: "4:00 PM" },
-        { label: "Bharat Aagman",  value: "5:00 PM" },
-        { label: "હસ્તમેળાપ · Hastamelap", value: "5:41 PM" },
+        { label: { en: "Bharat Prastan", gu: "બરાત પ્રસ્થાન" }, value: "4:00 PM" },
+        { label: { en: "Bharat Aagman",  gu: "બરાત આગમન" },     value: "5:00 PM" },
+        { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: "5:41 PM" },
       ],
-      venue: "Gandhidham,\nGujarat",
+      venue: { en: "Gandhidham,\nGujarat", gu: "ગાંધીધામ,\nગુજરાત" },
       dress: "",
-      note: "Hastamelap, the joining of hands, falls at 5:41 in the evening.",
+      note: {
+        en: "Hastamelap, the joining of hands, falls at 5:41 in the evening.",
+        gu: "હસ્તમેળાપનું શુભ મુહૂર્ત સાંજે 5:41 વાગ્યે.",
+      },
     },
   ],
 
@@ -128,86 +169,154 @@ window.WEDDING = {
     ink: "terracotta",
     paper: "b",
     motif: "assets/generated/ill_om.png",
-    eyebrow: "Together with their families",
-    weds: "weds",
-    lead: "request the honour of your presence",
+    eyebrow: { en: "Together with their families", gu: "પરિવારજનો સહિત" },
+    weds: { en: "weds", gu: "સાથે" },
+    lead: {
+      en: "request the honour of your presence",
+      gu: "આપની ઉપસ્થિતિની હાર્દિક અપેક્ષા",
+    },
   },
 
   /* લી. સ્નેહાધીન — the hosting couples, as they appear on the kankotri. */
   hostsPaired: {
-    heading:   "લી. સ્નેહાધીન",
-    headingEn: "With love, yours affectionately",
+    heading: { en: "With love, yours affectionately", gu: "લી. સ્નેહાધીન" },
     pairs: [
-      ["Mr. Naran Kanji Jabuvani",   "Mrs. Premila Naran Jabuvani"],
-      ["Mr. Dhiraj Naran Jabuvani",  "Mrs. Bhavna Dhiraj Jabuvani"],
-      ["Mr. Arvind Naran Jabuvani",  "Mrs. Ranjana Arvind Jabuvani"],
-      ["Mr. Bhumit Dhiraj Jabuvani", "Mrs. Prachi Bhumit Jabuvani"],
-      ["Mr. Dhruv Dhiraj Jabuvani",  "Mrs. Nishita Dhruv Jabuvani"],
-      ["Mr. Amrut Kanti Pokar",      "Mrs. Sangita Amrut Pokar"],
-      ["Mr. Deep Vipul Velani",      "Mrs. Kajal Deep Velani"],
-      ["Pratham Amrut Pokar",        "Ms. Nidhi Amrut Pokar"],
+      [{ en: "Mr. Naran Kanji Jabuvani",   gu: "શ્રી નારણભાઈ કાનજીભાઈ જબુઆણી" },
+       { en: "Mrs. Premila Naran Jabuvani", gu: "અ.સૌ. પ્રેમિલાબેન નારણભાઈ જબુઆણી" }],
+      [{ en: "Mr. Dhiraj Naran Jabuvani",  gu: "શ્રી ધીરજભાઈ નારણભાઈ જબુઆણી" },
+       { en: "Mrs. Bhavna Dhiraj Jabuvani", gu: "અ.સૌ. ભાવનાબેન ધીરજભાઈ જબુઆણી" }],
+      [{ en: "Mr. Arvind Naran Jabuvani",  gu: "શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી" },
+       { en: "Mrs. Ranjana Arvind Jabuvani", gu: "અ.સૌ. રંજનાબેન અરવિંદભાઈ જબુઆણી" }],
+      [{ en: "Mr. Bhumit Dhiraj Jabuvani", gu: "શ્રી ભૂમિતભાઈ ધીરજભાઈ જબુઆણી" },
+       { en: "Mrs. Prachi Bhumit Jabuvani", gu: "અ.સૌ. પ્રાચીબેન ભૂમિતભાઈ જબુઆણી" }],
+      [{ en: "Mr. Dhruv Dhiraj Jabuvani",  gu: "શ્રી ધ્રુવભાઈ ધીરજભાઈ જબુઆણી" },
+       { en: "Mrs. Nishita Dhruv Jabuvani", gu: "અ.સૌ. નિશિતાબેન ધ્રુવભાઈ જબુઆણી" }],
+      [{ en: "Mr. Amrut Kanti Pokar",      gu: "શ્રી અમૃતભાઈ કાંતિભાઈ પોકાર" },
+       { en: "Mrs. Sangita Amrut Pokar",   gu: "અ.સૌ. સંગીતાબેન અમૃતભાઈ પોકાર" }],
+      [{ en: "Mr. Deep Vipul Velani",      gu: "શ્રી દીપભાઈ વિપુલભાઈ વેલાણી" },
+       { en: "Mrs. Kajal Deep Velani",     gu: "અ.સૌ. કાજલબેન દીપભાઈ વેલાણી" }],
+      [{ en: "Pratham Amrut Pokar",        gu: "ચિ. પ્રથમ અમૃતભાઈ પોકાર" },
+       { en: "Ms. Nidhi Amrut Pokar",      gu: "કુ. નિધિ અમૃતભાઈ પોકાર" }],
     ],
   },
 
   /* આપના આગમનના અભિલાષી — those awaiting your arrival. */
   hostsAwaiting: {
-    heading:   "આપના આગમનના અભિલાષી",
-    headingEn: "With warm anticipation of your arrival",
+    heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
     names: [
-      "અ.સૌ. વિમળાબેન દયારામભાઈ કાનજીભાઈ જબુઆણી",
-      "અ.સૌ. કાન્તાબેન રવજીભાઈ કાનજીભાઈ જબુઆણી",
-      "અ.સૌ. મંજુલાબેન હરેશભાઈ કાનજીભાઈ જબુઆણી",
-      "અ.સૌ. અરુણાબેન કીર્તિભાઈ કાનજીભાઈ જબુઆણી",
-      "અ.સૌ. તરુણાબેન પંકજભાઈ દયારામભાઈ જબુઆણી",
-      "અ.સૌ. નિશાબેન સંજયભાઈ રવજીભાઈ જબુઆણી",
-      "અ.સૌ. અનસુયાબેન મેહુલભાઈ દયારામભાઈ જબુઆણી",
-      "અ.સૌ. ભુમિકાબેન રાજેશભાઈ રવજીભાઈ જબુઆણી",
-      "અ.સૌ. પુજાબેન સુધિરભાઈ હરેશભાઈ જબુઆણી",
-      "અ.સૌ. મયુરીબેન જિગરભાઈ કીર્તિભાઈ જબુઆણી",
-      "અ.સૌ. મોહિનીબેન કેવલભાઈ કીર્તિભાઈ જબુઆણી",
+      { en: "Mrs. Vimala Dayaram Kanji Jabuvani",  gu: "અ.સૌ. વિમળાબેન દયારામભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Kanta Ravji Kanji Jabuvani",     gu: "અ.સૌ. કાન્તાબેન રવજીભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Manjula Haresh Kanji Jabuvani",  gu: "અ.સૌ. મંજુલાબેન હરેશભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Aruna Kirti Kanji Jabuvani",     gu: "અ.સૌ. અરુણાબેન કીર્તિભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Taruna Pankaj Dayaram Jabuvani", gu: "અ.સૌ. તરુણાબેન પંકજભાઈ દયારામભાઈ જબુઆણી" },
+      { en: "Mrs. Nisha Sanjay Ravji Jabuvani",    gu: "અ.સૌ. નિશાબેન સંજયભાઈ રવજીભાઈ જબુઆણી" },
+      { en: "Mrs. Anasuya Mehul Dayaram Jabuvani", gu: "અ.સૌ. અનસુયાબેન મેહુલભાઈ દયારામભાઈ જબુઆણી" },
+      { en: "Mrs. Bhumika Rajesh Ravji Jabuvani",  gu: "અ.સૌ. ભુમિકાબેન રાજેશભાઈ રવજીભાઈ જબુઆણી" },
+      { en: "Mrs. Puja Sudhir Haresh Jabuvani",    gu: "અ.સૌ. પુજાબેન સુધિરભાઈ હરેશભાઈ જબુઆણી" },
+      { en: "Mrs. Mayuri Jigar Kirti Jabuvani",    gu: "અ.સૌ. મયુરીબેન જિગરભાઈ કીર્તિભાઈ જબુઆણી" },
+      { en: "Mrs. Mohini Keval Kirti Jabuvani",    gu: "અ.સૌ. મોહિનીબેન કેવલભાઈ કીર્તિભાઈ જબુઆણી" },
     ],
-    solo: "જય પંકજભાઈ જબુઆણી",
-    children:
-      "તથા મિતિ, ખુશી, વંશીકા, કશ્યપ, યક્ષીત, દર્શ, ત્રિશા, ભવ્યાંશ, જિયાંશ, કિયાંશી",
+    solo: { en: "Jay Pankaj Jabuvani", gu: "જય પંકજભાઈ જબુઆણી" },
+    children: {
+      en: "and Miti, Khushi, Vanshika, Kashyap, Yakshit, Darsh, Trisha, Bhavyansh, Jiyansh, Kiyanshi",
+      gu: "તથા મિતિ, ખુશી, વંશીકા, કશ્યપ, યક્ષીત, દર્શ, ત્રિશા, ભવ્યાંશ, જિયાંશ, કિયાંશી",
+    },
   },
 
   gallery: {
-    heading: "Gallery",
-    caption: "Moments we love",
+    heading: { en: "Gallery", gu: "તસવીરો" },
+    caption: { en: "Moments we love", gu: "અમને પ્રિય ક્ષણો" },
     photos: [
-      { src: "assets/photos/couple-beach-01.jpg",  alt: "Jeet and Bhavini walking the shore below a limestone cliff" },
-      { src: "assets/photos/couple-beach-02.jpg",  alt: "Jeet and Bhavini running along the sand" },
-      { src: "assets/photos/couple-beach-03.jpg",  alt: "Jeet and Bhavini sitting under a tree on the beach" },
-      { src: "assets/photos/couple-beach-04.jpg",  alt: "Jeet and Bhavini on the sand by the water" },
-      { src: "assets/photos/couple-street-01.jpg", alt: "Jeet and Bhavini beside a white vintage car on a colonial street" },
-      { src: "assets/photos/couple-cafe-01.jpg",   alt: "Jeet and Bhavini at a cafe by an arched window" },
-      { src: "assets/photos/couple-street-02.jpg", alt: "Jeet and Bhavini crossing an old town street" },
+      { src: "assets/photos/couple-beach-01.jpg",  alt: { en: "Jeet and Bhavini walking the shore below a limestone cliff", gu: "દરિયાકિનારે ચાલતાં જીત અને ભાવિની" } },
+      { src: "assets/photos/couple-beach-02.jpg",  alt: { en: "Jeet and Bhavini running along the sand", gu: "રેતી પર દોડતાં જીત અને ભાવિની" } },
+      { src: "assets/photos/couple-beach-03.jpg",  alt: { en: "Jeet and Bhavini sitting under a tree on the beach", gu: "દરિયાકિનારે વૃક્ષ નીચે બેઠેલાં જીત અને ભાવિની" } },
+      { src: "assets/photos/couple-beach-04.jpg",  alt: { en: "Jeet and Bhavini on the sand by the water", gu: "પાણી પાસે રેતી પર જીત અને ભાવિની" } },
+      { src: "assets/photos/couple-street-01.jpg", alt: { en: "Jeet and Bhavini beside a white vintage car", gu: "સફેદ વિન્ટેજ કાર પાસે જીત અને ભાવિની" } },
+      { src: "assets/photos/couple-cafe-01.jpg",   alt: { en: "Jeet and Bhavini at a cafe by an arched window", gu: "કમાનવાળી બારી પાસે કૅફેમાં જીત અને ભાવિની" } },
+      { src: "assets/photos/couple-street-02.jpg", alt: { en: "Jeet and Bhavini crossing an old town street", gu: "જૂના શહેરની શેરી ઓળંગતાં જીત અને ભાવિની" } },
     ],
   },
 
   rsvp: {
-    eyebrow:  "Join the Celebration",
-    heading:  "Will you join us?",
-    body: "We have saved a seat for you — at our table, in our hearts, and " +
+    eyebrow: { en: "Join the Celebration", gu: "ઉત્સવમાં જોડાઓ" },
+    heading: { en: "Will you join us?", gu: "આપ પધારશો ને?" },
+    body: {
+      en: "We have saved a seat for you — at our table, in our hearts, and " +
           "under a December sky. Come celebrate as we begin this new chapter.",
-    cta:      "Yes, I'll be there",
+      gu: "આપના માટે એક સ્થાન રાખ્યું છે — અમારા ભોજન સમારંભમાં, અમારા હૃદયમાં, " +
+          "અને ડિસેમ્બરના આકાશ નીચે. અમારા નવા અધ્યાયના આરંભે આપ અવશ્ય પધારજો.",
+    },
+    cta:  { en: "Yes, I'll be there", gu: "હા, હું અવશ્ય આવીશ" },
     // Confirmations arrive over WhatsApp. Digits only, with country code.
     whatsapp: "917738047555",
-    note:     "You'll be redirected to WhatsApp to confirm your attendance.",
-    saveLabel: "Save the Date",
+    note: {
+      en: "You'll be redirected to WhatsApp to confirm your attendance.",
+      gu: "આપની ઉપસ્થિતિ નોંધાવવા માટે આપને WhatsApp પર લઈ જવાશે.",
+    },
+    saveLabel: { en: "Save the Date", gu: "તારીખ નોંધી લો" },
+    /* The message that lands in WhatsApp. {names} is replaced by the couple. */
+    whatsappMessage: {
+      en: "Hi! I'd love to attend {names}'s wedding. Count me in!",
+      gu: "નમસ્તે! {names} ના લગ્નમાં હું અવશ્ય હાજર રહીશ. મને ગણી લેજો!",
+    },
   },
 
   /* * With Best Compliments From * */
   compliments: {
-    heading: "With Best Compliments From",
+    heading: { en: "With Best Compliments From", gu: "શુભેચ્છા સહ" },
     from: [
-      { name: "Asiatic Surface",        city: "Mumbai" },
-      { name: "Pegasus Panel Pvt. Ltd.", city: "Gandhidham" },
+      { name: "Asiatic Surface",         city: { en: "Mumbai",     gu: "મુંબઈ" } },
+      { name: "Pegasus Panel Pvt. Ltd.", city: { en: "Gandhidham", gu: "ગાંધીધામ" } },
     ],
   },
 
   footer: {
-    line: "Forever begins today",
-    credit: "Crafted with love",
+    line:   { en: "Forever begins today", gu: "સદાકાળનો આરંભ આજથી" },
+    credit: { en: "Crafted with love", gu: "પ્રેમથી બનાવેલું" },
+  },
+
+  /* ---------------------------------------------------------------------
+     Interface text: buttons, section headings, labels. Everything a guest
+     reads that is not part of the invitation's own wording.
+     --------------------------------------------------------------------- */
+  ui: {
+    langName:          { en: "English", gu: "ગુજરાતી" },
+    langSwitchTo:      { en: "ગુજરાતીમાં વાંચો", gu: "Read in English" },
+
+    introEyebrow:      { en: "The wedding of", gu: "શુભ લગ્ન" },
+    introSkip:         { en: "Skip", gu: "છોડો" },
+    scrollCue:         { en: "Scroll", gu: "નીચે જુઓ" },
+
+    heroEyebrow:       { en: "Together with their families", gu: "પરિવારજનો સહિત" },
+
+    eventsEyebrow:     { en: "Celebration Journey", gu: "ઉત્સવની સફર" },
+    eventsTitle:       { en: "Our Events", gu: "અમારા પ્રસંગો" },
+
+    familiesEyebrow:   { en: "Our Families", gu: "અમારો પરિવાર" },
+    familiesTitle:     { en: "With Love", gu: "સ્નેહ સહિત" },
+
+    countdownTitle:    { en: "Counting Down to <em>Forever</em>", gu: "<em>સદાકાળ</em> સુધીની ગણતરી" },
+    countdownArrived:  { en: "Today is <em>Forever</em>", gu: "આજે જ <em>સદાકાળ</em>" },
+    cdDays:            { en: "Days", gu: "દિવસ" },
+    cdHours:           { en: "Hours", gu: "કલાક" },
+    cdMinutes:         { en: "Minutes", gu: "મિનિટ" },
+    cdSeconds:         { en: "Seconds", gu: "સેકન્ડ" },
+
+    viewDetails:       { en: "View details", gu: "વિગતો જુઓ" },
+    timeBegins:        { en: "Begins", gu: "શરૂઆત" },
+    venueToFollow:     { en: "Venue details to follow.", gu: "સ્થળની વિગતો ટૂંક સમયમાં." },
+
+    calGoogle:         { en: "Google Calendar", gu: "Google Calendar" },
+    calApple:          { en: "Apple Calendar", gu: "Apple Calendar" },
+
+    // Screen-reader and tooltip labels.
+    aPrevPhoto:        { en: "Previous photo", gu: "પાછલી તસવીર" },
+    aNextPhoto:        { en: "Next photo", gu: "આગલી તસવીર" },
+    aChoosePhoto:      { en: "Choose photo", gu: "તસવીર પસંદ કરો" },
+    aPhotoN:           { en: "Photo", gu: "તસવીર" },
+    aClose:            { en: "Close", gu: "બંધ કરો" },
+    aMusic:            { en: "Music", gu: "સંગીત" },
+    aTop:              { en: "Back to top", gu: "ઉપર જાઓ" },
+    aEventDetails:     { en: "Event details", gu: "પ્રસંગની વિગતો" },
   },
 };

@@ -93,7 +93,14 @@
     <p class="gu intro__gu" id="introGu"></p>
   </div>
 
-  <button class="intro__skip" id="introSkip" type="button">Skip</button>
+  <button class="intro__skip" id="introSkip" type="button"></button>
+</div>
+
+<!-- ==== language ====================================================== -->
+<!-- Fixed to the top right, above everything, on every screen. The label
+     names the language you would switch TO, never the current one. -->
+<div class="topbar">
+  <button class="lang" id="langBtn" type="button"></button>
 </div>
 
 <main id="top">
@@ -127,7 +134,7 @@
     </div>
 
     <div class="hero__inner">
-      <p class="eyebrow reveal">Together with their families</p>
+      <p class="eyebrow reveal" id="heroEyebrow"></p>
       <h1 class="display hero__names reveal" style="--d:80ms" id="heroNames"></h1>
       <p class="gu hero__gu reveal" style="--d:160ms" id="heroGu"></p>
       <span class="rule reveal" style="--d:220ms" aria-hidden="true">
@@ -136,7 +143,7 @@
       <p class="hero__meta reveal" style="--d:280ms" id="heroMeta"></p>
     </div>
 
-    <span class="scroll-cue" aria-hidden="true">Scroll</span>
+    <span class="scroll-cue" id="scrollCue" aria-hidden="true"></span>
   </header>
 
   <!-- ==== invitation =================================================== -->
@@ -155,9 +162,9 @@
   <!-- ==== events ======================================================= -->
   <section class="section section--center events" id="events" aria-labelledby="eventsTitle">
     <div class="wrap">
-      <p class="eyebrow reveal">Celebration Journey</p>
-      <h2 class="section-title reveal" style="--d:80ms" id="eventsTitle">Our Events</h2>
-      <p class="gu reveal" style="--d:140ms;color:var(--ink-soft);margin:.4rem 0 0">અમારા પ્રસંગો</p>
+      <p class="eyebrow reveal" id="eventsEyebrow"></p>
+      <h2 class="section-title reveal" style="--d:80ms" id="eventsTitle"></h2>
+      <p class="reveal" id="eventsAlt" style="--d:140ms;color:var(--ink-soft);margin:.4rem 0 0"></p>
       <span class="rule reveal" style="--d:200ms" aria-hidden="true">
         <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
       </span>
@@ -170,8 +177,8 @@
   <!-- ==== families ===================================================== -->
   <section class="section section--center families" id="families" aria-labelledby="familiesTitle">
     <div class="wrap">
-      <p class="eyebrow reveal">Our Families</p>
-      <h2 class="section-title reveal" style="--d:80ms" id="familiesTitle">With Love</h2>
+      <p class="eyebrow reveal" id="familiesEyebrow"></p>
+      <h2 class="section-title reveal" style="--d:80ms" id="familiesTitle"></h2>
       <span class="rule reveal" style="--d:160ms" aria-hidden="true">
         <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
       </span>
@@ -183,7 +190,7 @@
   <!-- ==== gallery ====================================================== -->
   <section class="section section--center gallery" id="gallery" aria-labelledby="galleryTitle">
     <div class="wrap">
-      <h2 class="section-title reveal" id="galleryTitle">Gallery</h2>
+      <h2 class="section-title reveal" id="galleryTitle"></h2>
       <span class="rule reveal" style="--d:120ms" aria-hidden="true">
         <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
       </span>
@@ -222,10 +229,10 @@
         <div class="save reveal" style="--d:320ms">
           <span class="save__label" id="saveLabel"></span>
           <a class="btn-ghost" id="calGoogle" href="#" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cal"/></svg> Google Calendar
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cal"/></svg> 
           </a>
           <a class="btn-ghost" id="calIcs" href="#" download="jeet-bhavini-wedding.ics">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cal"/></svg> Apple Calendar
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cal"/></svg> 
           </a>
         </div>
       </div>
@@ -233,7 +240,7 @@
 
     <section class="section countdown" id="countdown" aria-labelledby="cdTitle">
       <div class="wrap">
-        <h2 class="countdown__title reveal" id="cdTitle">Counting Down to <em>Forever</em></h2>
+        <h2 class="countdown__title reveal" id="cdTitle"></h2>
         <span class="rule reveal" style="--d:100ms" aria-hidden="true">
           <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
         </span>
@@ -258,8 +265,7 @@
 </main>
 
 <!-- ==== event detail dialog ============================================ -->
-<div class="evdlg" id="evdlg" role="dialog" aria-modal="true" aria-hidden="true"
-     aria-label="Event details">
+<div class="evdlg" id="evdlg" role="dialog" aria-modal="true" aria-hidden="true">
   <div class="evdlg__sheet" id="evdlgSheet">
     <button class="evdlg__close" id="evdlgClose" type="button" aria-label="Close">&times;</button>
     <div id="evdlgBody"></div>
