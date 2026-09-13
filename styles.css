@@ -42,12 +42,19 @@
      Great Vibes carries the English name beneath it. */
   --gu-display: "Rasa", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
   --script: "Great Vibes", "Apple Chancery", "Segoe Script", cursive;
-  /* The English on the reference cards is a high-contrast serif with swashes,
-     not a connected script. Playfair Display italic, from the list given. */
-  --card-en: "Playfair Display", "Bodoni Moda", "Cormorant Garamond", Georgia, serif;
-  /* Tiro Gujarati is the calligraphic face the invitation cards are set in.
-     Tiro Devanagari Hindi has no Gujarati glyphs and would render boxes. */
-  --gu-card: "Tiro Gujarati", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
+  /* Card lettering.
+
+     Gujarati: of the ONLY six decorative Gujarati faces on Google Fonts
+     (Shrikhand, Mogra, Kumar One, Kumar One Outline, Farsan, Baloo Bhai 2),
+     Shrikhand is the calligraphic one - thick-to-thin contrast and sweeping
+     curves. Swap to "Mogra" for a more handwritten, brush-drawn feel.
+     None of Kalam / Tiro Devanagari Hindi / Yatra One / Modak / Khand carry
+     Gujarati glyphs at all, and Tiro Gujarati is not on Google Fonts.
+
+     English: the reference's long sweeping swashes are a connected script,
+     not a serif, so Great Vibes matches it far better than Playfair. */
+  --gu-card: "Shrikhand", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
+  --card-en: "Great Vibes", "Playfair Display", "Apple Chancery", cursive;
 
   /* ---- rhythm ---- */
   --gutter: clamp(1.25rem, 5vw, 3.5rem);
@@ -642,8 +649,11 @@ body.intro-open { overflow: hidden; }
   position: absolute;
   inset: 0;
   background: var(--wash) center / cover no-repeat;
-  opacity: .22;
+  opacity: .13;
   mix-blend-mode: multiply;
+  /* held back hardest behind the title and date, so the copy stays crisp */
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.3) 45%, #000 100%);
+          mask-image: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.3) 45%, #000 100%);
   z-index: -1;
   pointer-events: none;
 }
@@ -687,8 +697,7 @@ body.intro-open { overflow: hidden; }
 }
 .inv__en {
   font-family: var(--card-en);
-  font-style: italic;
-  font-weight: 500;
+  font-weight: 400;
   font-size: clamp(1.7rem, 11cqw, 2.6rem);
   line-height: .95;
   color: var(--ink-en);
@@ -702,13 +711,13 @@ body.intro-open { overflow: hidden; }
   align-items: center;
   justify-content: center;
   gap: .55rem;
-  margin: clamp(.9rem, 4cqw, 1.5rem) 0 0;
+  margin: clamp(1.1rem, 5.5cqw, 1.8rem) 0 0;
 }
 .inv__day {
   font-family: var(--serif);
   font-weight: 600;
-  font-size: clamp(2.1rem, 11cqw, 3rem);
-  line-height: .9;
+  font-size: clamp(2.7rem, 16cqw, 3.8rem);
+  line-height: .88;
   color: var(--ink-c);
   font-variant-numeric: lining-nums tabular-nums;
   font-feature-settings: "lnum" 1, "tnum" 1;
@@ -716,11 +725,11 @@ body.intro-open { overflow: hidden; }
 .inv__md {
   text-align: left;
   border-left: 1.5px solid color-mix(in srgb, var(--ink-c) 60%, transparent);
-  padding-left: .55rem;
+  padding-left: .6rem;
   font-family: var(--serif);
-  font-size: clamp(.82rem, 4.4cqw, 1.05rem);
-  line-height: 1.3;
-  color: #3A332A;
+  font-size: clamp(.98rem, 6cqw, 1.3rem);
+  line-height: 1.32;
+  color: #2E2820;
 }
 .inv__md b { display: block; font-weight: 500; }
 
@@ -729,26 +738,27 @@ body.intro-open { overflow: hidden; }
   margin: .6rem 0 0;
   padding: 0;
   display: grid;
-  gap: .12rem;
+  gap: .18rem;
   font-family: var(--serif);
-  font-size: clamp(.72rem, 3.6cqw, .86rem);
+  font-size: clamp(.82rem, 4.6cqw, .98rem);
   color: #4A4238;
 }
 .inv__times b { font-weight: 600; font-variant-numeric: tabular-nums; }
 
 .inv__venue {
   font-family: var(--serif);
-  margin: clamp(.7rem, 3cqw, 1rem) 0 0;
-  font-size: clamp(.76rem, 3.8cqw, .92rem);
-  line-height: 1.45;
-  color: #4A4238;
+  margin: clamp(.8rem, 4cqw, 1.2rem) 0 0;
+  font-size: clamp(.9rem, 5.2cqw, 1.1rem);
+  line-height: 1.5;
+  color: #3A332A;
   white-space: pre-line;           /* venue is written as multiple lines */
 }
 
 /* ---- illustration across the foot -------------------------------------- */
 .inv__ill {
   margin: auto auto 0;
-  width: clamp(150px, 80%, 240px);
+  padding-top: clamp(.6rem, 3cqw, 1.1rem);
+  width: clamp(150px, 78%, 235px);
   height: auto;
   filter: saturate(.88) contrast(.97);
   transition: transform .6s cubic-bezier(.22,.61,.36,1);
@@ -791,7 +801,6 @@ body.intro-open { overflow: hidden; }
 }
 .inv--main .inv__name {
   font-family: var(--card-en);
-  font-style: italic;
   font-size: clamp(2.1rem, 12cqw, 3rem);
   line-height: 1;
   color: var(--ink-c);
@@ -808,7 +817,6 @@ body.intro-open { overflow: hidden; }
 }
 .inv--main .inv__weds {
   font-family: var(--card-en);
-  font-style: italic;
   font-size: clamp(1.3rem, 7cqw, 1.8rem);
   color: var(--ink-en);
   margin: clamp(.7rem, 3.5cqw, 1.1rem) 0;

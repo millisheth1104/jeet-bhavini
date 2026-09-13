@@ -596,3 +596,55 @@ only the borderless centres are kept), `card_wash_a/b/c`, `ill_mameru`,
 `ill_lagna` matted to nothing on the first pass — faded ink on white gives
 BiRefNet nothing to separate. Re-rendered on a mid-grey ground, which is the
 same fix the mogra garlands needed.
+
+---
+
+## 2026-09-13 — Card lettering, corrected properly
+
+The cards' titles were not calligraphic because of a mistake worth recording.
+
+### The bug: a font that does not exist
+
+`--gu-card` was set to **Tiro Gujarati**, which is **not on Google Fonts**. The
+`@font-face` request silently returned nothing and every title fell through to
+**Noto Serif Gujarati** — a plain book serif. So the cards were rendering in the
+most ordinary face available while the CSS claimed otherwise. A missing webfont
+fails silently; it must be verified, not assumed.
+
+### What is actually available
+
+Checked against Google's own metadata rather than guessing. **Only 13 families
+carry Gujarati**, and just six are display faces:
+
+```
+Display     Shrikhand · Mogra · Kumar One · Kumar One Outline
+            Farsan · Baloo Bhai 2
+Sans        Anek Gujarati · Hind Vadodara · Mukta Vaani · Noto Sans Gujarati
+Serif       Noto Serif Gujarati · Rasa
+```
+
+Every font on the user's list — **Kalam, Tiro Devanagari Hindi, Yatra One,
+Modak, Khand** — is **Devanagari-only** and carries no Gujarati glyphs at all.
+They cannot set મામેરું. This was shown to the user as a rendered specimen of
+all six display faces rather than argued in prose.
+
+### Chosen
+
+- **Gujarati → Shrikhand.** The calligraphic one of the six: heavy
+  thick-to-thin contrast, sweeping curves, elongated terminals. Single weight;
+  needs `line-height: 1.36` for matra headroom. `Mogra` is the swap for a more
+  handwritten, brush-drawn feel — one line in `--gu-card`.
+- **English → Great Vibes.** User's call, and the right one: the reference's
+  long swashes on M, S and g are a *connected script*, not a serif with
+  alternates, so no amount of Playfair or Bodoni would have reached it.
+
+### Also fixed
+
+**The wash was burying the copy.** At 22% multiply over an already-textured
+paper the content was barely readable. Dropped to 13% and masked back to ~30%
+over the top half, where the title and date sit, so the wash still reads as
+full-bleed architecture without fighting the type.
+
+**The cards read as empty.** The date block and venue were set far too small
+relative to the card. Numeral `11cqw → 16cqw`, month/time `4.4cqw → 6cqw`,
+venue `3.8cqw → 5.2cqw`, with the vertical rhythm tightened to match.
