@@ -739,11 +739,11 @@
     Array.prototype.forEach.call(nodes, function (n) { io.observe(n); });
   }());
 
-  /* -- hero parallax + night-aware controls ------------------------------- */
+  /* -- hero parallax + controls that follow the ground ------------------------------- */
 
   (function scrollFx() {
     var layers = Array.prototype.slice.call(document.querySelectorAll("[data-par]"));
-    var night = $("night");
+    var closing = $("closing");
     var topBtn = $("topBtn");
     var queued = false;
 
@@ -761,9 +761,9 @@
         }
       }
 
-      // flip the floating controls once the night half is behind them
-      var r = night.getBoundingClientRect();
-      document.body.classList.toggle("is-night", r.top < window.innerHeight * 0.75);
+      // flip the floating controls once the closing half is behind them
+      var r = closing.getBoundingClientRect();
+      document.body.classList.toggle("is-closing", r.top < window.innerHeight * 0.75);
 
       topBtn.style.opacity = y > window.innerHeight * 0.8 ? "1" : "0";
       topBtn.style.pointerEvents = y > window.innerHeight * 0.8 ? "auto" : "none";

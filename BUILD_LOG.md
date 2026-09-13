@@ -1014,3 +1014,48 @@ Verified in both languages: a DOM sweep for leaf nodes carrying both scripts
 returns one hit, "WhatsApp" inside a Gujarati sentence, which is correct; no
 element that should be Gujarati is still English; and switching mid-page returns
 to the same scroll position (y=7076 → 7076) with the intro skipped.
+
+## The maroon half is now a lighter register of the same paper
+
+The RSVP and countdown sat on a deep oxblood with a lantern-lit night sky behind
+them. Once the cards went to dusty rose, lavender and antique gold, that panel
+was the only saturated dark thing left on the site — it read as a different
+website bolted to the bottom.
+
+It is now **a deeper register of the same paper**: the last leaf of the
+kankotri rather than a separate surface.
+
+| | was | now |
+|---|---|---|
+| ground | `#3B1220` oxblood | `#E8E1D2` ivory |
+| deep band | `#260A15` | `#DFD5C1` |
+| copy | cream on black | `#3A332A` ink |
+| headings | `#fff` | `#8E3A5D`, the cards' berry plum |
+| backdrop | `night_sky_warm.png` @ .75 | `card_wash_b.png` @ .085, multiply |
+
+The backdrop is the invitation cards' **own** architecture wash, so the closing
+reads as the back of the same card. `night_sky_warm.png` is retired to
+`assets/unused/`.
+
+**The seam.** The old one ramped over 14rem, which a hard black-to-cream join
+needed. Between two papers a shade apart that ramp is a grey smear across the
+page — the user called it exactly that. Cut to 4.5rem over three stops.
+
+**Contrast is where a light ground actually bites.** Every one of these colours
+was legible as light-on-black and stopped being legible as dark-on-cream:
+
+| | on cream | needed |
+|---|---|---|
+| `--dusk-faint` `#8C8479` | 2.53 | 4.5 |
+| brass `#9A7A40` as text | 3.08 | 4.5 |
+| cream on brass button | 3.43 | 4.5 |
+
+Fixed by darkening `--dusk-faint` to `#645B51`, splitting the brass in two —
+`--gold` keeps its brightness for rules, icons and fills, `--gold-ink` `#74592B`
+is the one that gets read — and putting the button back to dark ink on bright
+brass, which was the only way to clear 4.5:1 without the button turning to mud.
+**All 16 pairs now pass**, measured in-browser against the live computed colours.
+
+**Renamed.** `.night` → `.closing`, `#night` → `#closing`, `body.is-night` →
+`body.is-closing`, `--night*` → `--dusk*`, across all three files. A variable
+called `--night` holding `#E8E1D2` is a trap for whoever edits this next.

@@ -21,14 +21,21 @@
   --terracotta:   #B4674A;
   --magenta:      #A63A62;
 
-  /* ---- night half (rsvp + countdown) ----
-     Deep oxblood rather than navy, so the dark end of the site stays in the
-     same warm family as the terracotta and magenta event accents. Change
-     these four and the whole section follows. */
-  --night:        #3B1220;
-  --night-deep:   #260A15;
-  --night-ink:    #F2E6DA;
-  --gold:         #D8B26A;
+  /* ---- closing half (rsvp + countdown) ----
+     A DEEPER REGISTER OF THE SAME PAPER, not a dark panel. The oxblood that
+     sat here read as a different site once the cards went to dusty rose and
+     antique gold - it was the only saturated dark thing left on the page.
+     This is the last leaf of the kankotri, so it carries the same ivory a
+     shade lower, with brass doing the work the bright gold used to. Change
+     these and the whole closing section follows. */
+  --dusk:        #E8E1D2;
+  --dusk-deep:   #DFD5C1;
+  --dusk-ink:    #3A332A;
+  --dusk-soft:   #6A6157;
+  --dusk-faint:  #645B51;
+  --dusk-accent: #8E3A5D;   /* the cards' berry plum, for headings */
+  --gold:        #9A7A40;   /* brass for rules, icons and fills */
+  --gold-ink:    #74592B;   /* the same brass, dark enough to be read as text */
 
   /* ---- type ---- */
   --serif:  "Cormorant Garamond", "Iowan Old Style", Palatino, Georgia, serif;
@@ -1203,47 +1210,48 @@ body.intro-open { overflow: hidden; }
    Night half — RSVP + countdown
    -------------------------------------------------------------------------- */
 
-.night {
+.closing {
   position: relative;
-  background: var(--night);
-  color: var(--night-ink);
+  background: var(--dusk);
+  color: var(--dusk-ink);
   isolation: isolate;
   overflow: hidden;
 }
-.night::before {
+.closing::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: url("assets/generated/night_sky_warm.png") center / cover no-repeat;
-  opacity: .75;
+  /* The invitation cards' own architecture wash, reused so the closing reads
+     as the back of the same card rather than a new surface. */
+  background: url("assets/generated/card_wash_b.png") center / cover no-repeat;
+  opacity: .085;
+  mix-blend-mode: multiply;
   z-index: -2;
 }
-.night::after {
+.closing::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(120% 70% at 50% 0%, transparent, var(--night-deep) 78%);
+  background: radial-gradient(120% 80% at 50% 10%, transparent 40%, var(--dusk-deep) 100%);
   z-index: -1;
 }
 /* soften the seam where the paper meets the night */
-.night__seam {
+.closing__seam {
   position: absolute;
   inset: 0 0 auto 0;
-  height: 14rem;
-  /* eased rather than linear, so the paper dissolves into the night instead
-     of leaving a grey band across the seam */
+  height: 4.5rem;
+  /* Two papers a shade apart need a hand's width of transition, not a full
+     screen of it. The long ramp belonged to the dark panel. */
   background: linear-gradient(
     var(--paper) 0%,
-    rgba(242,241,237,.72) 22%,
-    rgba(242,241,237,.34) 46%,
-    rgba(242,241,237,.10) 72%,
+    rgba(242,241,237,.55) 45%,
     transparent 100%);
   z-index: 1;
   pointer-events: none;
 }
 
-.night .eyebrow { color: var(--gold); }
-.night .rule { color: var(--gold); }
+.closing .eyebrow { color: var(--gold-ink); }
+.closing .rule { color: var(--gold); }
 
 .rsvp { text-align: center; padding-top: clamp(6rem, 16vw, 10rem); }
 .rsvp__heading {
@@ -1252,20 +1260,20 @@ body.intro-open { overflow: hidden; }
   font-style: italic;
   font-size: clamp(2.3rem, 9vw, 4rem);
   margin: 0 0 1.2rem;
-  color: #fff;
+  color: var(--dusk-accent);
 }
 .rsvp__body {
   max-width: 30rem;
   margin: 0 auto 2.6rem;
-  color: rgba(237,230,214,.82);
+  color: var(--dusk-soft);
   font-size: clamp(.94rem, 2.5vw, 1.02rem);
 }
 
 .btn-gold {
   display: inline-block;
   padding: 1.05rem 3rem;
-  background: linear-gradient(180deg, var(--gold), #C09A4E);
-  color: #241A05;
+  background: linear-gradient(180deg, #D3AC63, #BE9950);
+  color: #2E2208;
   font-size: .74rem;
   letter-spacing: .26em;
   text-transform: uppercase;
@@ -1274,14 +1282,14 @@ body.intro-open { overflow: hidden; }
   border: 0;
   cursor: pointer;
   transition: translate .25s ease, box-shadow .25s ease;
-  box-shadow: 0 8px 30px -12px rgba(216,178,106,.7);
+  box-shadow: 0 10px 24px -14px rgba(120,94,40,.6);
 }
-.btn-gold:hover { translate: 0 -2px; box-shadow: 0 14px 38px -12px rgba(216,178,106,.85); }
+.btn-gold:hover { translate: 0 -2px; box-shadow: 0 16px 30px -14px rgba(120,94,40,.7); }
 
 .rsvp__note {
   margin: 1.2rem 0 0;
   font-size: .76rem;
-  color: rgba(237,230,214,.55);
+  color: var(--dusk-faint);
 }
 
 .save {
@@ -1292,7 +1300,7 @@ body.intro-open { overflow: hidden; }
 }
 .save__label {
   font-size: .66rem; letter-spacing: .3em; text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-ink);
   display: flex; align-items: center; gap: 1rem;
 }
 .save__label::before, .save__label::after {
@@ -1303,8 +1311,8 @@ body.intro-open { overflow: hidden; }
   min-width: 15rem;
   justify-content: center;
   padding: .8rem 1.6rem;
-  border: 1px solid rgba(216,178,106,.45);
-  color: var(--night-ink);
+  border: 1px solid rgba(58,51,42,.22);
+  color: var(--dusk-ink);
   background: transparent;
   font-size: .78rem;
   letter-spacing: .1em;
@@ -1312,7 +1320,7 @@ body.intro-open { overflow: hidden; }
   cursor: pointer;
   transition: background .2s, border-color .2s;
 }
-.btn-ghost:hover { background: rgba(216,178,106,.12); border-color: var(--gold); }
+.btn-ghost:hover { background: rgba(154,122,64,.10); border-color: var(--gold); }
 .btn-ghost svg { width: 1rem; height: 1rem; color: var(--gold); }
 
 /* countdown ------------------------------------------------------------- */
@@ -1322,12 +1330,12 @@ body.intro-open { overflow: hidden; }
   font-weight: 300;
   font-size: clamp(1.8rem, 7vw, 3rem);
   margin: 0;
-  color: #fff;
+  color: var(--dusk-ink);
 }
 .countdown__title em {
   display: block;
   font-style: italic;
-  color: var(--gold);
+  color: var(--dusk-accent);
   font-size: 1.25em;
 }
 
@@ -1354,7 +1362,7 @@ body.intro-open { overflow: hidden; }
   font-weight: 500;
   font-size: clamp(1.7rem, 7.6vw, 3rem);
   line-height: 1;
-  color: #4A1A28;
+  color: #7A2E48;
   font-variant-numeric: lining-nums tabular-nums;
   font-feature-settings: "lnum" 1, "tnum" 1;
 }
@@ -1362,7 +1370,7 @@ body.intro-open { overflow: hidden; }
   font-size: clamp(.55rem, 2.1vw, .8rem);
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: rgba(74,26,40,.7);
+  color: rgba(106,97,87,.85);
   margin-top: .15em;
 }
 
@@ -1371,30 +1379,30 @@ body.intro-open { overflow: hidden; }
   font-family: var(--serif);
   font-weight: 300;
   font-size: clamp(1.7rem, 7vw, 2.7rem);
-  color: #fff;
+  color: var(--dusk-ink);
   margin: 0;
 }
 .signoff__names em { font-style: italic; color: var(--gold); font-size: .62em; }
 .signoff__date {
   font-size: .72rem; letter-spacing: .28em; text-transform: uppercase;
-  color: var(--gold); margin: .9rem 0 0;
+  color: var(--gold-ink); margin: .9rem 0 0;
 }
 .signoff__line {
   font-family: var(--serif); font-style: italic;
-  color: rgba(237,230,214,.7); margin: .7rem 0 0;
+  color: var(--dusk-soft); margin: .7rem 0 0;
 }
 
 /* compliments ----------------------------------------------------------- */
 .compliments {
   padding: clamp(3rem, 8vw, 4.5rem) var(--gutter);
   text-align: center;
-  background: var(--night-deep);
-  color: rgba(237,230,214,.75);
-  border-top: 1px solid rgba(216,178,106,.18);
+  background: var(--dusk-deep);
+  color: var(--dusk-soft);
+  border-top: 1px solid rgba(58,51,42,.12);
 }
 .compliments__heading {
   font-size: .66rem; letter-spacing: .3em; text-transform: uppercase;
-  color: var(--gold); margin: 0 0 2rem;
+  color: var(--gold-ink); margin: 0 0 2rem;
 }
 .compliments__list {
   display: grid; gap: 1.8rem;
@@ -1402,18 +1410,18 @@ body.intro-open { overflow: hidden; }
   max-width: 40rem; margin-inline: auto;
 }
 .compliments__name {
-  font-family: var(--serif); font-size: 1.3rem; color: #fff; margin: 0;
+  font-family: var(--serif); font-size: 1.3rem; color: var(--dusk-ink); margin: 0;
 }
 .compliments__city {
   font-size: .74rem; letter-spacing: .2em; text-transform: uppercase;
-  color: rgba(237,230,214,.5); margin: .35rem 0 0;
+  color: var(--dusk-faint); margin: .35rem 0 0;
 }
 
 .footer {
   padding: 2rem var(--gutter) 2.6rem;
   text-align: center;
-  background: var(--night-deep);
-  color: rgba(237,230,214,.4);
+  background: var(--dusk-deep);
+  color: var(--dusk-faint);
   font-size: .7rem;
   letter-spacing: .14em;
 }
@@ -1446,12 +1454,12 @@ body.intro-open { overflow: hidden; }
 .ctrl svg { width: 1.05rem; height: 1.05rem; }
 .ctrl[aria-pressed="true"] { background: var(--brass); color: #fff; border-color: var(--brass); }
 /* invert over the night sections */
-body.is-night .ctrl {
-  background: rgba(59,18,32,.75);
-  border-color: rgba(216,178,106,.4);
+body.is-closing .ctrl {
+  background: rgba(255,253,247,.9);
+  border-color: rgba(58,51,42,.18);
   color: var(--gold);
 }
-body.is-night .ctrl[aria-pressed="true"] { background: var(--gold); color: var(--night); }
+body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FBF7EE; }
 
 /* --------------------------------------------------------------------------
    Scroll reveal
