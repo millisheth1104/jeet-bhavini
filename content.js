@@ -46,9 +46,9 @@ window.WEDDING = {
   events: [
     {
       key: "mameru",
-      illSide: "right",
       gu: "મામેરું",
       en: "Mameru",
+      enShift: "0.6em",
       tagline: "Where Blessings Begin",
       ink: "sage",
       paper: "a",
@@ -63,9 +63,9 @@ window.WEDDING = {
     },
     {
       key: "sangeet",
-      illSide: "left",
       gu: "શામ શાનદાર",
       en: "Sangeet",
+      enShift: "-1.7em",
       tagline: "An Evening of Song",
       ink: "indigo",
       paper: "b",
@@ -81,7 +81,6 @@ window.WEDDING = {
     },
     {
       key: "mandap",
-      illSide: "right",
       gu: "મંડપ રોપણ",
       en: "Mandap Ropan",
       tagline: "Raising the Sacred Canopy",
@@ -98,13 +97,17 @@ window.WEDDING = {
     },
     {
       key: "lagna",
-      illSide: "right",
       gu: "લગ્ન",
       en: "Wedding",
+      enShift: "0.9em",
       tagline: "The Joining of Hands",
       ink: "rose",
       paper: "a",
-      illustration: "assets/generated/ill_lagna_elephant.png",
+      /* The only card with two engravings, one in each bottom corner. */
+      cornerIllustrations: [
+        "assets/generated/ill_lagna_blooms.png",    // lavender blooms, bottom left
+        "assets/generated/ill_lagna_elephant.png",  // elephant, bottom right
+      ],
       ornament: true,
       date: "Wednesday, 2 December 2026",
       dateShort: { day: "02", month: "December" },

@@ -48,6 +48,25 @@ BASE = (
     "no text, no lettering, no words, no watermark, no signature"
 )
 
+# The five card illustrations share ONE palette and ONE hand. The first set
+# drifted into five separate palettes - sage, indigo, mustard, pastel pink,
+# grey-magenta - and stopped reading as a set on the page.
+PALETTE = (
+    "strictly limited palette of dusty rose, soft lavender, antique gold and "
+    "warm sepia, low saturation, muted and faded, absolutely no green, no "
+    "teal, no blue, no bright colour"
+)
+
+WC = (
+    "loose traditional watercolour illustration for a vintage Indian wedding "
+    "invitation, visible pigment washes with soft bleeding edges, fine sepia "
+    "ink linework drawn over the wash, painted on aged ivory paper, delicate "
+    "and gently faded, " + PALETTE + ", single subject centred on a flat "
+    "medium warm grey background, no 3D, no photorealism, no gloss, no "
+    "cartoon, no hard vector edges, no drop shadow, no text, no lettering, "
+    "no words, no watermark, no signature"
+)
+
 # Isolated props that get cut out and layered by CSS.
 CUT = "single object, centred, isolated on pure plain flat white background. "
 
@@ -228,27 +247,32 @@ ASSETS = {
         size="square_hd", cutout=False),
 
     "ill_mameru": dict(
-        prompt='A brass kalash pot brimming with mango leaves and a coconut, draped with a marigold garland, a sheaf of wheat leaning beside it, drawn in muted sage green and faded brass ink. '
-               " " + CUT + VINT,
+        prompt="A brass kalash pot brimming with soft pink and cream blossoms and a "
+               "coconut, draped with a garland of small dusty rose flowers, a "
+               "sheaf of pale wheat leaning beside it, a few sepia-toned leaves. "
+               + WC,
         size="square_hd", cutout=True, matte="birefnet"),
 
     "ill_sangeet": dict(
-        prompt='A dhol drum and a pair of tabla with a slender shehnai horn resting against them and a few small musical notes drifting above, drawn in muted indigo and faded terracotta ink. '
-               " " + CUT + VINT,
+        prompt="A dhol drum and a pair of tabla with a slender shehnai horn resting "
+               "against them, arranged as one low group. "
+               + WC,
         size="landscape_16_9", cutout=True, matte="birefnet"),
 
     "ill_mandap": dict(
-        prompt='A four post wedding mandap canopy with a draped fabric roof and swags of marigold and mango leaves, slender carved posts, front elevation, symmetrical, drawn in muted antique gold and olive ink. '
-               " " + CUT + VINT,
+        prompt="A four post wedding mandap canopy with a draped fabric roof and "
+               "swags of blossoms, slender carved posts, front elevation, "
+               "symmetrical. "
+               + WC,
         size="square_hd", cutout=True, matte="birefnet"),
 
     # Rendered on mid-grey: faded ink on white gives BiRefNet nothing to
     # separate, and the first attempt matted away to nothing.
     "ill_lagna": dict(
-        prompt="A seated Lord Ganesha on a lotus throne, flanked by a delicate spray of "
-               "roses and trailing foliage, reverent, simple and clearly drawn with "
-               "definite outlines, muted dusty rose and faded gold ink, single centred "
-               "object on a flat medium warm grey background. " + VINT,
+        prompt="A seated Lord Ganesha on a lotus throne, flanked by a delicate spray "
+               "of roses and trailing foliage, reverent, simple and clearly drawn "
+               "with definite outlines. "
+               + WC,
         size="square_hd", cutout=True, matte="birefnet"),
 
     "ill_om": dict(
@@ -299,13 +323,23 @@ ASSETS = {
     # The લગ્ન card's corner piece, matched to the reference's વિવાહ card: a
     # caparisoned elephant with lavender blooms, anchored bottom-right and
     # bleeding off the card edge.
+    # The લગ્ન card's bottom-LEFT corner. Replaces the Ganesha: the reference
+    # card puts a loose spray of lavender blooms here, not a deity.
+    "ill_lagna_blooms": dict(
+        prompt="A loose spray of soft lavender and pale pink crocus and iris blooms "
+               "on slender stems with a few fine grasses, rising and fanning out "
+               "from one low corner, delicate and airy, nothing in the rest of the "
+               "frame. "
+               + WC,
+        size="square_hd", cutout=True, matte="birefnet"),
+
     "ill_lagna_elephant": dict(
-        prompt="A richly caparisoned Indian ceremonial elephant facing left, wearing an "
-               "ornate embroidered jhool in magenta, gold and violet with tassels and a "
-               "domed headpiece, standing among tall lavender and purple iris blooms and "
-               "soft feathery grasses that rise around its legs, drawn in muted dusty rose, "
-               "violet and faded gold ink, single group centred on a flat medium warm grey "
-               "background. " + VINT,
+        prompt="A richly caparisoned Indian ceremonial elephant facing left, its hide "
+               "a pale warm gold and cream, wearing an ornate embroidered jhool "
+               "patterned in dusty rose, violet and antique gold with tassels and "
+               "a domed gold headpiece, gold anklets, trunk curled up, standing "
+               "alone. "
+               + WC,
         size="square_hd", cutout=True, matte="birefnet"),
 
     # ---- intro screen -----------------------------------------------------

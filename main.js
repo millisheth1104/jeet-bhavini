@@ -145,7 +145,6 @@
       card.setAttribute("data-paper", ev.paper);
       card.setAttribute("data-key", ev.key);
       if (ev.wideIllustration) card.setAttribute("data-wide", "true");
-      card.setAttribute("data-ill-side", ev.illSide || "right");
       card.style.setProperty("--d", i * 90 + "ms");
       card.setAttribute("aria-label", ev.en + " — " + ev.date + ". Open details.");
 
@@ -163,6 +162,11 @@
       var title = el("div", "inv__title");
       title.appendChild(el("h3", "inv__gu", ev.gu));
       if (ev.en) title.appendChild(el("p", "inv__en", ev.en));
+      /* The English sits against the title's right edge, which lands in a
+         different place on every card - too near the hanging ornament on the
+         long titles, too far left on the short ones. `enShift` in content.js
+         nudges it per card. */
+      if (ev.enShift) title.style.setProperty("--en-shift", ev.enShift);
       card.appendChild(title);
 
       var times = (ev.times || []).filter(function (t) { return t.value; });
@@ -191,7 +195,16 @@
 
       if (ev.venue) card.appendChild(el("p", "inv__venue", ev.venue));
 
-      if (ev.illustration) {
+      /* Most cards carry one engraving centred at the foot. The લગ્ન card
+         carries two, one in each bottom corner, and says so in its data. */
+      if (ev.cornerIllustrations && ev.cornerIllustrations.length) {
+        card.setAttribute("data-ill-corners", "true");
+        ev.cornerIllustrations.slice(0, 2).forEach(function (src, n) {
+          var ci = el("img", "inv__cornerill inv__cornerill--" + (n ? "r" : "l"));
+          ci.src = src; ci.alt = ""; ci.loading = "lazy";
+          card.appendChild(ci);
+        });
+      } else if (ev.illustration) {
         var ill = el("img", "inv__ill");
         ill.src = ev.illustration; ill.alt = ""; ill.loading = "lazy";
         card.appendChild(ill);
@@ -245,15 +258,39 @@
         var natural = gu.getBoundingClientRect().width;
         if (!natural) return;
 
-        // aim for a consistent share of the card's width
-        var scale = Math.max(0.6, Math.min(1.95, card.clientWidth * 0.64 / natural));
+        /* Normalise by SIZE, not by width share. Pinning every title to the
+           same share of the card made the short ones enormous - મામેરું came
+           out at 101px against શામ શાનદાર's 49px, because the same width
+           spread over 4 glyphs instead of 10. So: let every title run at the
+           same base size, and only shrink the ones too wide to fit. */
+        var scale = Math.min(1.45, card.clientWidth * 0.86 / natural);
+        scale = Math.max(0.62, scale);
         t.style.setProperty("--tscale", scale.toFixed(3));
 
-        /* ...then give the width back if the card cannot take the height. The
-           card is a fixed 2:3 with overflow hidden, so a title scaled purely
-           by width can push the date and illustration out of the bottom. */
+        /* ...then give the width back if the card cannot take the height.
+
+           Measure the COPY, not scrollHeight. The લગ્ન card's two corner
+           engravings bleed past the foot on purpose, so its scrollHeight is
+           permanently over clientHeight - reading that as overflow shrank its
+           title on every single pass until it hit the 0.75 floor. */
+        function copyOverflows() {
+          var foot = card.getBoundingClientRect().bottom;
+          /* Where there are corner engravings the copy has to stop ABOVE
+             them, not merely inside the card - otherwise a tall title pushes
+             the venue down between Ganesha and the elephant. */
+          var corners = card.querySelectorAll(".inv__cornerill");
+          for (var k = 0; k < corners.length; k++) {
+            foot = Math.min(foot, corners[k].getBoundingClientRect().top);
+          }
+          var flow = card.querySelectorAll(
+            ".inv__title, .inv__when, .inv__times, .inv__venue, .inv__ill");
+          for (var i = 0; i < flow.length; i++) {
+            if (flow[i].getBoundingClientRect().bottom > foot) return true;
+          }
+          return false;
+        }
         var guard = 0;
-        while (card.scrollHeight > card.clientHeight && scale > 0.75 && guard++ < 30) {
+        while (copyOverflows() && scale > 0.75 && guard++ < 30) {
           scale *= 0.96;
           t.style.setProperty("--tscale", scale.toFixed(3));
         }

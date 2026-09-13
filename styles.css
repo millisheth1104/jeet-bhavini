@@ -52,7 +52,7 @@
 
      English: the reference's long sweeping swashes are a connected script,
      not a serif, so Great Vibes matches it far better than Playfair. */
-  --gu-card: "Mogra", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
+  --gu-card: "Rasa", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
   --card-en: "Great Vibes", "Playfair Display", "Apple Chancery", cursive;
 
   /* ---- rhythm ---- */
@@ -600,11 +600,11 @@ body.intro-open { overflow: hidden; }
 /* Per-card ink. `--ink-c` is the title/numeral colour, `--ink-en` the English
    script — warm orange on every card in the reference, which is what ties the
    set together. */
-.inv[data-ink="sage"]       { --ink-c: #3F6B4A; --ink-en: #D9782F; }
-.inv[data-ink="indigo"]     { --ink-c: #3B3B8F; --ink-en: #D9782F; }
-.inv[data-ink="gold"]       { --ink-c: #86842C; --ink-en: #C9902F; }
-.inv[data-ink="rose"]       { --ink-c: #D4417B; --ink-en: #C9822F; }
-.inv[data-ink="terracotta"] { --ink-c: #9A5B43; --ink-en: #C9822F; }
+.inv[data-ink="sage"]       { --ink-c: #8E3A5D; --ink-en: #6B3A24; }
+.inv[data-ink="indigo"]     { --ink-c: #B0552E; --ink-en: #6B3A24; }
+.inv[data-ink="gold"]       { --ink-c: #A0752B; --ink-en: #6B3A24; }
+.inv[data-ink="rose"]       { --ink-c: #D4417B; --ink-en: #6B3A24; }
+.inv[data-ink="terracotta"] { --ink-c: #9A5B43; --ink-en: #6B3A24; }
 
 .events__list {
   display: grid;
@@ -648,11 +648,11 @@ body.intro-open { overflow: hidden; }
   position: absolute;
   inset: 0;
   background: var(--wash) center / cover no-repeat;
-  opacity: .13;
+  opacity: .115;
   mix-blend-mode: multiply;
   /* held back hardest behind the title and date, so the copy stays crisp */
-  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.3) 45%, #000 100%);
-          mask-image: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.3) 45%, #000 100%);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.33) 0%, rgba(0,0,0,.3) 42%, rgba(0,0,0,.92) 74%, rgba(0,0,0,.4) 100%);
+          mask-image: linear-gradient(180deg, rgba(0,0,0,.33) 0%, rgba(0,0,0,.3) 42%, rgba(0,0,0,.92) 74%, rgba(0,0,0,.4) 100%);
   z-index: -1;
   pointer-events: none;
 }
@@ -702,9 +702,9 @@ body.intro-open { overflow: hidden; }
 .inv__gu {
   text-align: left;
   font-family: var(--gu-card);
-  font-weight: 400;
-  font-size: calc(clamp(2.5rem, 15cqw, 3.9rem) * var(--tscale, 1));
-  line-height: 1.4;                /* Mogra needs headroom for matras */
+  font-weight: 600;                /* Rasa's contrast only shows from 600 up */
+  font-size: calc(clamp(2.6rem, 16cqw, 4.1rem) * var(--tscale, 1));
+  line-height: 1.06;               /* tight lockup, as the reference has */
   color: var(--ink-c);
   margin: 0;
   letter-spacing: -.02em;
@@ -714,10 +714,16 @@ body.intro-open { overflow: hidden; }
   text-align: right;               /* right edge of the group, i.e. of the title */
   font-family: var(--card-en);
   font-weight: 400;
-  font-size: calc(clamp(1.6rem, 9.5cqw, 2.4rem) * var(--tscale, 1));
+  /* A 2-glyph title like લગ્ન needs a big --tscale to hold its share of the
+     card. Passing that straight to the English blew "Wedding" up to nearly
+     the full card width; the reference keeps its English small and steady.
+     So the English takes only part of the title's scaling. */
+  font-size: calc(clamp(1.6rem, 9.5cqw, 2.4rem)
+                  * (1 + (var(--tscale, 1) - 1) * .38));
+  translate: var(--en-shift, 0) 0;
   line-height: .95;
   color: var(--ink-en);
-  margin: -.22em 0 0;              /* tucked up under the title */
+  margin: -.16em 0 0;              /* tucked up under the title */
 }
 
 /* ---- date -------------------------------------------------------------- */
@@ -769,32 +775,47 @@ body.intro-open { overflow: hidden; }
   white-space: pre-line;           /* venue is written as multiple lines */
 }
 
-/* keeps the copy clear of the corner engraving behind it */
-.inv__venue { margin-bottom: clamp(5.5rem, 34cqw, 8rem); }
+/* only the two-corner card needs its copy held clear of the engravings */
+.inv[data-ill-corners] .inv__venue {
+  margin-top: clamp(1.6rem, 9cqw, 2.6rem);
+  margin-bottom: clamp(3.4rem, 20cqw, 5.4rem);
+}
 
 /* ---- illustration across the foot -------------------------------------- */
-/* The engraving is anchored to a BOTTOM CORNER and allowed to run off the
-   card's edge, which is what the reference does — its dholaks bleed off the
-   left of the Sangeet card and its elephant off the right of the Vivah card.
-   Sitting it centred at the foot was what made the cards read as stacked
-   boxes rather than printed stationery.
-
-   Because it is taken out of flow, it can no longer squeeze the copy, so the
-   title never has to shrink to make room for it. */
+/* Most cards: ONE engraving, centred at the foot, in normal flow. Capped by
+   height as well as width so a content-heavy card can give it less room rather
+   than overflowing. */
 .inv__ill {
+  margin: auto auto 0;
+  padding-top: clamp(.5rem, 2.5cqw, 1rem);
+  width: auto;
+  height: auto;
+  max-width: clamp(150px, 78%, 235px);
+  max-height: 34%;
+  object-fit: contain;
+  filter: saturate(.88) contrast(.97);
+  transition: transform .6s cubic-bezier(.22,.61,.36,1);
+}
+.inv[data-wide="true"] .inv__ill { max-width: clamp(175px, 100%, 285px); }
+.inv:hover .inv__ill { transform: translateY(-3px); }
+
+/* The લગ્ન card only: TWO engravings, one per bottom corner, each running
+   slightly off its edge. Taken out of flow so they cannot squeeze the copy. */
+.inv__cornerill {
   position: absolute;
   bottom: -3%;
-  width: clamp(150px, 62%, 215px);
-  height: auto;
+  width: auto;
+  height: clamp(120px, 42cqw, 210px);
+  max-width: 48%;
+  object-fit: contain;
   z-index: 0;
   filter: saturate(.9) contrast(.97);
   transition: transform .6s cubic-bezier(.22,.61,.36,1);
   pointer-events: none;
 }
-.inv[data-ill-side="right"] .inv__ill { right: -6%; }
-.inv[data-ill-side="left"]  .inv__ill { left:  -6%; }
-.inv[data-wide="true"] .inv__ill { width: clamp(175px, 76%, 250px); }
-.inv:hover .inv__ill { transform: translateY(-4px); }
+.inv__cornerill--l { left:  -2%; }
+.inv__cornerill--r { right: -2%; }
+.inv:hover .inv__cornerill { transform: translateY(-4px); }
 .inv:hover .inv__ill { transform: translateY(-3px); }
 
 .inv__more {
@@ -939,10 +960,10 @@ body.intro-open { overflow: hidden; }
   transition: transform .4s cubic-bezier(.22,.61,.36,1);
 }
 .evdlg.is-open .evdlg__sheet { transform: none; }
-.evdlg__sheet[data-ink="sage"]      { --ink-c: #5E7052; }
-.evdlg__sheet[data-ink="indigo"]    { --ink-c: #3B4372; }
-.evdlg__sheet[data-ink="gold"]      { --ink-c: #8A7333; }
-.evdlg__sheet[data-ink="rose"]      { --ink-c: #A85A62; }
+.evdlg__sheet[data-ink="sage"]      { --ink-c: #8E3A5D; }
+.evdlg__sheet[data-ink="indigo"]    { --ink-c: #A05A38; }
+.evdlg__sheet[data-ink="gold"]      { --ink-c: #9A7333; }
+.evdlg__sheet[data-ink="rose"]      { --ink-c: #C25275; }
 .evdlg__sheet[data-ink="terracotta"]{ --ink-c: #9A5B43; }
 
 .evdlg__sheet::before {

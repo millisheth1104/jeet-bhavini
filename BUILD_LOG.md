@@ -812,3 +812,132 @@ botanical spray literally upside down — blooms pointing at the floor. Changed 
 
 Every card: zero overflow, copy clear of the engraving, 15px of deliberate
 bleed below the card edge.
+
+## લગ્ન card — measured against the reference (ss1 vs ss2)
+
+Compared the reference card (Hindi "विवाह / wedding", elephant bleeding off the
+bottom-right) against ours side by side and closed four measured gaps.
+
+| | reference | ours (before) | ours (now) |
+|---|---|---|---|
+| engraving width | ~45% of card | 38% (px cap bound) | 49% |
+| cut by card edge | yes, feet + flank | 2% / 5% | 3.5% foot, 7% flank |
+| empty band under the copy | ~6% of card height | 16% | 9% |
+| English word | dark warm ink | orange `#C9822F` | `#6B3A24` |
+
+**Why the engravings were small.** `.inv__cornerill` was `clamp(96px, 45%, 150px)`.
+The 150px ceiling binds on any card wider than 333px, so on a desktop the pieces
+shrank to 38% and pulled away from the edges — exactly the "floating, too small"
+look in ss2. Replaced with `clamp(140px, 55cqw, 260px)`, which tracks the card
+through the container query instead of topping out.
+
+**Why the empty band stayed.** The card is a fixed 2:3 box, so the venue's
+`margin-bottom` only does work when the copy would otherwise overflow — it never
+pushed anything down. The band is card height minus copy minus engraving. Closed
+it from both ends: bigger engravings, plus a scoped `margin-top` on the venue so
+the copy reaches 63% instead of 60%.
+
+**Wash.** The full-card architecture ran at full mask strength exactly where the
+engravings sit, so Ganesha and the elephant read against a busy palace. Opacity
+`.13 → .115`, and the mask now falls to 40% at the foot — the wash still covers
+the whole card, it just gets out of the way underneath.
+
+Verified in-browser after each change: three cards centred with 0 corner pieces,
+લગ્ન with 2, **0px text overflow on all five**.
+
+## Cards, round 2 — the two things that were actually wrong
+
+User: *"ek bhi card ka event likha hua acha nai lag raha hai naa toh uske
+illustrations ache hai"*. Two root causes, neither of them cosmetic.
+
+### 1. The Gujarati titles could never have matched the reference
+
+The fonts specified — **Kalam, Tiro Devanagari Hindi, Yatra One, Modak, Khand** —
+are **Devanagari-only**. They carry no Gujarati glyphs, so `લગ્ન` in any of them
+falls through to the next family in the stack. It had been falling through to
+**Mogra**, a rounded informal display face — nothing like the reference's
+calligraphy — and doing it *silently*, which is why the problem survived several
+rounds of "fix the font".
+
+Google Fonts carries **13 Gujarati families in total**, 6 of them display:
+
+    Mogra · Shrikhand · Farsan · Kumar One · Kumar One Outline · Baloo Bhai 2
+    Rasa · Noto Serif Gujarati · Anek Gujarati · Hind Vadodara · Mukta Vaani …
+
+Rendered all of them at card size and put the choice to the user. Chosen:
+**Rasa at weight 600** — the only Gujarati face with genuine calligraphic stroke
+contrast. Rasa was already in the `<link>`; only `--gu-card` needed swapping.
+
+### 2. The five illustrations were five different pictures, not a set
+
+Each prompt carried its own colour instruction — *"muted sage green and faded
+brass"*, *"muted indigo and faded terracotta"*, *"muted antique gold and olive"*,
+*"muted dusty rose and faded gold"*. Five palettes: green, teal, mustard, pastel
+pink, grey-magenta. `filter: saturate(.88)` in CSS was a band-aid over it; no
+filter turns green into rose.
+
+Replaced with a single `PALETTE` + `WC` constant that every card illustration
+concatenates, and stripped the per-subject colour calls. Two needed a second
+pass: the kalash's "mango leaves" forced green into the frame, and the elephant's
+jhool came back scarlet with the lavender dropped — both re-worded at the subject
+level, not the style level.
+
+Per-card ink followed: a sage-green and an indigo title no longer belonged on a
+card whose art is rose and gold, so the ladder is now berry → terracotta →
+bronze → rose → terracotta.
+
+### Three bugs this surfaced in fitTitles()
+
+1. **The deliberate bleed read as overflow.** The લગ્ન card's corner
+   engravings run past the card foot on purpose, so `card.scrollHeight` is
+   permanently over `clientHeight`. The shrink loop treated that as the title
+   overflowing and ground it down to the 0.75 floor on every pass. Now measures
+   the copy elements' rects instead.
+2. **Clearing the foot is not clearing the engravings.** With that fixed the
+   title grew until the venue sat *between* Ganesha and the elephant. The
+   overflow test now takes the engravings' top edge as the floor.
+3. **Normalising by width share made short titles enormous.** Every title was
+   pinned to 64% of the card, so મામેરું (4 glyphs) rendered at 101px against
+   શામ શાનદાર's 49px. Titles now run at one base size, and only shrink when too
+   wide to fit — all four land at 64px desktop / 70px mobile.
+
+Also damped `.inv__en`: at `--tscale` 2.29 it had blown "Wedding" up to almost
+the full card width. It now takes 38% of the title's scaling.
+
+Verified 375px and desktop: four titles at one size, **0px copy collision on all
+five cards**.
+
+## Cards, round 3 — English placement, and the લગ્ન corners
+
+**English word, per card.** It right-aligns to the *title's* right edge, and the
+title's width swings from 28% of the card (લગ્ન) to 88% (શામ શાનદાર) — so one
+rule could never place it well on all four. Added `enShift` to `content.js`,
+applied as `translate` on `.inv__en`:
+
+| card | shift | English text now sits | note |
+|---|---|---|---|
+| મામેરું | `0.6em` | 20–51% | tucked under a short title |
+| શામ શાનદાર | `-1.7em` | 44–71% | ornament starts at 76% — was running under it |
+| મંડપ રોપણ | — | 22–78% | already right |
+| લગ્ન | `0.9em` | 14–46% | tucked under a 2-glyph title |
+
+Measured with a `Range` over the text node, not the element rect: `.inv__en` is a
+right-aligned block, so its *box* spans the whole title width and reports the
+text as starting 12% off the left edge of the card when it plainly does not.
+
+**Ganesha replaced with lavender blooms.** The reference card puts a spray of
+crocus and iris in that corner, not a deity. New asset `ill_lagna_blooms`. The
+elephant was re-specified too — the reference's is pale gold and cream with a
+rose-and-violet caparison; ours had come back grey.
+
+**The engravings were being cut through, not bled off.** Two faults:
+
+- `left/right: -9%` pushed a ninth of each piece outside the card. Back to `-2%`,
+  which reads as a bleed (6px) rather than a crop.
+- They were sized by **width**, but the blooms are 0.62 aspect against the
+  elephant's 1.09 — equal widths made the blooms tower. Now sized by **height**
+  (`clamp(120px, 42cqw, 210px)`, `width: auto`, `max-width: 48%`), so both stand
+  26% of the card tall: blooms 24% wide, elephant 43%.
+
+Verified: no English escapes its card, none runs under an ornament, 0px copy
+collision on all five.
