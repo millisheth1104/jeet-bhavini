@@ -696,13 +696,15 @@ body.intro-open { overflow: hidden; }
   letter-spacing: -.02em;
 }
 .inv__en {
+  align-self: stretch;
+  text-align: right;               /* drops to the right of the title above */
   font-family: var(--card-en);
   font-weight: 400;
   font-size: clamp(1.7rem, 11cqw, 2.6rem);
   line-height: .95;
   color: var(--ink-en);
-  margin: -.1em 0 0;
-  padding-left: 1.5em;             /* offset right, tucked under the title */
+  margin: -.12em 0 0;
+  padding-right: 8%;
 }
 
 /* ---- date -------------------------------------------------------------- */

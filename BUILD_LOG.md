@@ -648,3 +648,30 @@ full-bleed architecture without fighting the type.
 **The cards read as empty.** The date block and venue were set far too small
 relative to the card. Numeral `11cqw → 16cqw`, month/time `4.4cqw → 6cqw`,
 venue `3.8cqw → 5.2cqw`, with the vertical rhythm tightened to match.
+
+---
+
+## 2026-09-13 — Title placement matched to the reference
+
+The card titles were centred; on the reference they are not.
+
+Reading the reference crops: the vernacular title sits **flush left** at the top
+of the card — on the સંગીત card it rides slightly past the left edge — and the
+English drops **below it, aligned right**, finishing at about the same place the
+title does. Everything below the title (date, venue, illustration) stays centred.
+
+Implemented by stretching just those two elements across the card and giving
+them opposite alignment, rather than wrapping them in another element:
+
+```css
+.inv__gu { align-self: stretch; text-align: left;  margin-left: -.06em; }
+.inv__en { align-self: stretch; text-align: right; padding-right: 8%; }
+```
+
+The negative margin is the optical bleed past the left edge. It raises the
+card's `scrollWidth`, which is harmless — `.inv` is `overflow: hidden`, so it
+reads as the intended bleed rather than a scrollbar.
+
+Verified at 430px and 1280px: titles fit within their cards on every card,
+including શામ શાનદાર which wraps to two lines, and the page has no horizontal
+overflow.
