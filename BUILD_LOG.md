@@ -1059,3 +1059,38 @@ brass, which was the only way to clear 4.5:1 without the button turning to mud.
 **Renamed.** `.night` → `.closing`, `#night` → `#closing`, `body.is-night` →
 `body.is-closing`, `--night*` → `--dusk*`, across all three files. A variable
 called `--night` holding `#E8E1D2` is a trap for whoever edits this next.
+
+## Families moved down, and a font bug it exposed
+
+`Our Families / With Love` now sits inside the closing half, directly above
+`With Best Compliments From`. Order is hero → invitation → events → gallery →
+rsvp → countdown → **families** → compliments → footer.
+
+It moved onto the closing's paper, which is a shade deeper than the one its
+greys were picked against, so `--ink-soft` fell to **4.27:1** on the host names.
+Those are relatives' names on a wedding invitation. Scoped under `.closing` they
+now take the closing's own body ink, and all seven pairs pass.
+
+### The bug the move surfaced
+
+`With love, yours affectionately` was rendering in **Jost Bold** — a geometric
+sans, next to a page of Cormorant.
+
+Not caused by the move. Before the site was bilingual, `.hosts__heading`,
+`.pairs li`, `.awaiting li`, `.awaiting--solo` and `.awaiting--kids` carried the
+`.gu` class *unconditionally*, because their text was always Gujarati. `.gu`
+sets `font-family: var(--gujarati)` — a **serif**. None of those rules ever
+named a face of their own; they were all riding on `.gu`.
+
+Making the site bilingual applied `.gu` only in Gujarati, so the English side
+fell through to the body font, which is Jost. Every family name on the English
+page had been set in a sans since that commit, and the heading in sans bold. It
+was simply below the fold of anything I had looked at.
+
+Fixed by naming the face: `var(--serif)` on all five, weight 500 on the heading.
+In Gujarati `--serif` is already re-pointed to Rasa, so one declaration holds in
+both languages and the `.gu` layering still works.
+
+**The lesson is the same one this log keeps recording**: a style that only works
+because of a class applied somewhere else breaks silently the moment that class
+becomes conditional. Grep for `.gu` before assuming a font is set.

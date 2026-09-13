@@ -1086,6 +1086,17 @@ body.intro-open { overflow: hidden; }
 .families { background: rgba(237,233,224,.4); }
 
 .hosts { margin-top: clamp(2rem, 6vw, 3rem); }
+/* Before the site was bilingual every one of these carried the .gu class
+   unconditionally - the text was always Gujarati - so they all inherited a
+   Gujarati SERIF. Now the class is applied only in Gujarati, and the English
+   side fell through to the body sans: a wedding invitation's family names set
+   in Jost, the heading in Jost Bold. Name the face explicitly instead. In
+   Gujarati --serif is already re-pointed to Rasa, so this holds either way. */
+.hosts__heading { font-family: var(--serif); font-weight: 500; }
+.pairs li,
+.awaiting li,
+.awaiting--solo,
+.awaiting--kids { font-family: var(--serif); }
 .hosts__heading { margin: 0 0 .3rem; font-size: clamp(1.35rem, 5vw, 1.9rem); color: var(--ink); }
 .hosts__sub {
   font-family: var(--serif);
@@ -1249,6 +1260,17 @@ body.intro-open { overflow: hidden; }
   z-index: 1;
   pointer-events: none;
 }
+
+/* The families list now sits on the closing's paper, which is a shade deeper
+   than the one these greys were picked against - --ink-soft fell to 4.27:1
+   there. These are relatives' names on a wedding invitation; they get the
+   closing's own body ink instead. */
+.closing .pairs li,
+.closing .awaiting li,
+.closing .awaiting--kids { color: var(--dusk-soft); }
+.closing .hosts__heading,
+.closing .awaiting--solo { color: var(--dusk-ink); }
+.closing .hosts__sub { color: var(--dusk-faint); }
 
 .closing .eyebrow { color: var(--gold-ink); }
 .closing .rule { color: var(--gold); }
