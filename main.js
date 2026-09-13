@@ -601,29 +601,8 @@
     dots.setAttribute("aria-label", u("aChoosePhoto"));
   }());
 
-  /* -- rsvp + calendar ---------------------------------------------------- */
-
+  /* The instant everything downstream counts from. */
   var startDate = new Date(W.countdownTo);
-
-  (function rsvp() {
-    var r = W.rsvp;
-    put("rsvpEyebrow", t(r.eyebrow));
-    put("rsvpHeading", t(r.heading));
-    put("rsvpBody", t(r.body));
-    put("rsvpNote", t(r.note));
-
-    var cta = $("rsvpCta");
-    cta.textContent = t(r.cta);
-    if (r.whatsapp) {
-      var msg = t(r.whatsappMessage)
-        .replace("{names}", t(first) + " & " + t(second));
-      cta.href = "https://wa.me/" + r.whatsapp + "?text=" + encodeURIComponent(msg);
-    } else {
-      cta.removeAttribute("href");
-      cta.setAttribute("aria-disabled", "true");
-    }
-
-  }());
 
   /* -- save the date: the wedding month, with its days marked --------------
      Month, length and first weekday are all derived from countdownTo, and the

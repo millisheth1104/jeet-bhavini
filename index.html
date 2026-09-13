@@ -203,20 +203,12 @@
   <div class="closing" id="closing">
     <span class="closing__seam" aria-hidden="true"></span>
 
-    <section class="section rsvp" id="rsvp" aria-labelledby="rsvpHeading">
+    <!-- Save the date: the wedding month with its days marked. Month, weekday
+         heads and marked days are all built in main.js from the dates in
+         content.js, so this cannot drift from the cards. -->
+    <section class="section savedate" id="savedate">
       <div class="wrap--narrow">
-        <p class="eyebrow reveal" id="rsvpEyebrow"></p>
-        <h2 class="rsvp__heading reveal" style="--d:80ms" id="rsvpHeading"></h2>
-        <p class="rsvp__body reveal" style="--d:140ms" id="rsvpBody"></p>
-        <p class="reveal" style="--d:200ms;margin:0">
-          <a class="btn-gold" id="rsvpCta" href="#" target="_blank" rel="noopener"></a>
-        </p>
-        <p class="rsvp__note reveal" style="--d:260ms" id="rsvpNote"></p>
-
-        <!-- Save the date: the wedding month with its days marked. Month,
-             weekday heads and marked days are all built in main.js from the
-             dates in content.js, so this cannot drift from the cards. -->
-        <figure class="cal reveal" style="--d:320ms">
+        <figure class="cal reveal">
           <figcaption class="cal__month" id="calMonth"></figcaption>
           <div class="cal__grid" id="calGrid"></div>
           <img class="cal__motif" src="assets/generated/cal_peacocks.png" alt="" loading="lazy">

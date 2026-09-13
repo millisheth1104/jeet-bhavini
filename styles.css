@@ -21,7 +21,7 @@
   --terracotta:   #B4674A;
   --magenta:      #A63A62;
 
-  /* ---- closing half (rsvp + countdown) ----
+  /* ---- closing half (save-the-date + countdown) ----
      A DEEPER REGISTER OF THE SAME PAPER, not a dark panel. The oxblood that
      sat here read as a different site once the cards went to dusty rose and
      antique gold - it was the only saturated dark thing left on the page.
@@ -83,7 +83,6 @@ html[data-lang="gu"] {
 /* Gujarati carries matras above and below the line and needs the headroom. */
 html[data-lang="gu"] body { line-height: 1.65; }
 html[data-lang="gu"] .section-title,
-html[data-lang="gu"] .rsvp__heading,
 html[data-lang="gu"] .countdown__title { line-height: 1.4; }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -1127,7 +1126,11 @@ body.intro-open { overflow: hidden; }
 
 .awaiting { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
 .awaiting li { font-size: clamp(.85rem, 2.4vw, .98rem); color: var(--ink-soft); }
-.awaiting--solo { margin-top: 1.2rem; color: var(--ink); }
+.awaiting--solo {
+  margin-top: 1.2rem;
+  font-size: clamp(.85rem, 2.4vw, .98rem);   /* same as the names above it */
+  color: var(--ink-soft);
+}
 .awaiting--kids {
   margin-top: 1rem;
   color: var(--ink-soft);
@@ -1218,7 +1221,7 @@ body.intro-open { overflow: hidden; }
 .gallery__dots button.is-active { background: var(--brass); scale: 1.25; }
 
 /* --------------------------------------------------------------------------
-   Night half — RSVP + countdown
+   Closing half — save the date + countdown
    -------------------------------------------------------------------------- */
 
 .closing {
@@ -1267,65 +1270,26 @@ body.intro-open { overflow: hidden; }
    closing's own body ink instead. */
 .closing .pairs li,
 .closing .awaiting li,
+.closing .awaiting--solo,
 .closing .awaiting--kids { color: var(--dusk-soft); }
-.closing .hosts__heading,
-.closing .awaiting--solo { color: var(--dusk-ink); }
+.closing .hosts__heading { color: var(--dusk-ink); }
 .closing .hosts__sub { color: var(--dusk-faint); }
 
 .closing .eyebrow { color: var(--gold-ink); }
 .closing .rule { color: var(--gold); }
 
-.rsvp { text-align: center; padding-top: clamp(6rem, 16vw, 10rem); }
-.rsvp__heading {
-  font-family: var(--serif);
-  font-weight: 300;
-  font-style: italic;
-  font-size: clamp(2.3rem, 9vw, 4rem);
-  margin: 0 0 1.2rem;
-  color: var(--dusk-accent);
-}
-.rsvp__body {
-  max-width: 30rem;
-  margin: 0 auto 2.6rem;
-  color: var(--dusk-soft);
-  font-size: clamp(.94rem, 2.5vw, 1.02rem);
-}
-
-.btn-gold {
-  display: inline-block;
-  padding: 1.05rem 3rem;
-  background: linear-gradient(180deg, #D3AC63, #BE9950);
-  color: #2E2208;
-  font-size: .74rem;
-  letter-spacing: .26em;
-  text-transform: uppercase;
-  font-weight: 500;
-  text-decoration: none;
-  border: 0;
-  cursor: pointer;
-  transition: translate .25s ease, box-shadow .25s ease;
-  box-shadow: 0 10px 24px -14px rgba(120,94,40,.6);
-}
-.btn-gold:hover { translate: 0 -2px; box-shadow: 0 16px 30px -14px rgba(120,94,40,.7); }
-
-.rsvp__note {
-  margin: 1.2rem 0 0;
-  font-size: .76rem;
-  color: var(--dusk-faint);
-}
+.savedate { text-align: center; padding-top: clamp(6rem, 16vw, 10rem); }
 
 /* save the date -----------------------------------------------------------
    A leaf torn from the wedding month, the way a printed save-the-date card
    sets it: the month in the script face, the days in a plain serif grid, and
    the two days the couple is asking for marked. */
 .cal {
-  margin: clamp(3rem, 8vw, 4.5rem) auto 0;
+  margin: 0 auto;
   max-width: 22rem;
-  padding: clamp(1.4rem, 5vw, 2rem) clamp(1.2rem, 4vw, 1.8rem) 0;
-  background: #F5F0E4;
-  border: 1px solid rgba(58,51,42,.14);
-  box-shadow: 0 1px 1px rgba(61,52,40,.06),
-              0 16px 34px -22px rgba(61,52,40,.5);
+  /* No card: no ground, no keyline, no shadow. The calendar is printed ON the
+     closing's paper, which is the only surface this half of the site has. */
+  padding: 0 clamp(1.2rem, 4vw, 1.8rem);
 }
 .cal__month {
   font-family: var(--script);
@@ -1622,7 +1586,6 @@ html[data-lang="gu"] .scroll-cue,
 html[data-lang="gu"] .invite__when,
 html[data-lang="gu"] .inv__more,
 html[data-lang="gu"] .inv__eyebrow,
-html[data-lang="gu"] .btn-gold,
 html[data-lang="gu"] .locket__num span,
 html[data-lang="gu"] .signoff__date,
 html[data-lang="gu"] .compliments__heading,

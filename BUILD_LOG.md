@@ -1127,3 +1127,32 @@ if it is ever wanted back.
 
 Contrast on the card: day 10.95, weekday head 5.34, marked day 6.7. Checked at
 375px — no horizontal overflow, cells 27px.
+
+## RSVP removed; calendar goes seamless
+
+Three changes, all asked for.
+
+**1. `Jay Pankaj Jabuvani` no longer reads as a heading.** `.awaiting--solo`
+never declared a `font-size`, so it inherited the section's larger body size and
+sat under the list looking like a subheading rather than the last name in it. It
+now carries the same size and ink as the names above it. (Removing its colour
+override collapsed two selectors and dragged `.hosts__heading` down to
+`--dusk-faint` with it — caught and put back to `--dusk-ink`.)
+
+**2. The whole RSVP section is gone** — heading, body, the gold button and the
+WhatsApp note. Removed with it: `W.rsvp` from content.js, the `rsvp()` renderer,
+and the `.rsvp*` / `.btn-gold` rules with their Gujarati overrides. The section
+that held it is now `#savedate`, carrying only the calendar. `startDate` was
+declared inside `rsvp()` and is used by both the calendar and the countdown, so
+it was lifted out rather than deleted.
+
+**This means guests can no longer RSVP from the site.** The WhatsApp number is
+out of `content.js` too. It was asked for explicitly, after the option said so;
+`git show` on this commit brings all of it back.
+
+**3. The calendar is seamless** — no ground, no keyline, no shadow, printed
+directly on the closing's paper. Chosen from three samples (seamless / hairline
+frame / the event cards' aged paper) rendered on the real background.
+
+Final order: hero → invitation → events → gallery → **save the date** →
+countdown → families → compliments → footer.

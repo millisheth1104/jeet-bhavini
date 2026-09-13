@@ -237,29 +237,6 @@ window.WEDDING = {
     ],
   },
 
-  rsvp: {
-    eyebrow: { en: "Join the Celebration", gu: "ઉત્સવમાં જોડાઓ" },
-    heading: { en: "Will you join us?", gu: "આપ પધારશો ને?" },
-    body: {
-      en: "We have saved a seat for you — at our table, in our hearts, and " +
-          "under a December sky. Come celebrate as we begin this new chapter.",
-      gu: "આપના માટે એક સ્થાન રાખ્યું છે — અમારા ભોજન સમારંભમાં, અમારા હૃદયમાં, " +
-          "અને ડિસેમ્બરના આકાશ નીચે. અમારા નવા અધ્યાયના આરંભે આપ અવશ્ય પધારજો.",
-    },
-    cta:  { en: "Yes, I'll be there", gu: "હા, હું અવશ્ય આવીશ" },
-    // Confirmations arrive over WhatsApp. Digits only, with country code.
-    whatsapp: "917738047555",
-    note: {
-      en: "You'll be redirected to WhatsApp to confirm your attendance.",
-      gu: "આપની ઉપસ્થિતિ નોંધાવવા માટે આપને WhatsApp પર લઈ જવાશે.",
-    },
-    /* The message that lands in WhatsApp. {names} is replaced by the couple. */
-    whatsappMessage: {
-      en: "Hi! I'd love to attend {names}'s wedding. Count me in!",
-      gu: "નમસ્તે! {names} ના લગ્નમાં હું અવશ્ય હાજર રહીશ. મને ગણી લેજો!",
-    },
-  },
-
   /* * With Best Compliments From * */
   compliments: {
     heading: { en: "With Best Compliments From", gu: "શુભેચ્છા સહ" },
