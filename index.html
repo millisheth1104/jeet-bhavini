@@ -181,21 +181,10 @@
       <span class="rule reveal" style="--d:120ms" aria-hidden="true">
         <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
       </span>
-      <div class="gallery__stage reveal" style="--d:180ms">
-        <div class="gallery__slides" id="gallerySlides"></div>
-        <!-- Frame is CSS borders plus four fixed-size corner ornaments, so the
-             filigree never stretches with the stage's aspect ratio. -->
-        <span class="gallery__frame" aria-hidden="true">
-          <svg class="gallery__corner gallery__corner--tl" viewBox="0 0 40 40"><use href="#orn-frame-corner"/></svg>
-          <svg class="gallery__corner gallery__corner--tr" viewBox="0 0 40 40"><use href="#orn-frame-corner"/></svg>
-          <svg class="gallery__corner gallery__corner--bl" viewBox="0 0 40 40"><use href="#orn-frame-corner"/></svg>
-          <svg class="gallery__corner gallery__corner--br" viewBox="0 0 40 40"><use href="#orn-frame-corner"/></svg>
-        </span>
-        <button class="gallery__nav gallery__nav--prev" id="galPrev" type="button" aria-label="Previous photo">&#8249;</button>
-        <button class="gallery__nav gallery__nav--next" id="galNext" type="button" aria-label="Next photo">&#8250;</button>
-      </div>
+      <!-- A handful of prints tipped onto the paper. Built in main.js from
+           the photos in content.js. -->
+      <div class="scatter" id="gallerySlides"></div>
       <p class="gallery__caption reveal" id="galleryCaption"></p>
-      <div class="gallery__dots" id="galleryDots" role="tablist" aria-label="Choose photo"></div>
     </div>
   </section>
 

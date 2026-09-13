@@ -204,8 +204,8 @@ window.WEDDING = {
     ],
     solo: { en: "Jay Pankaj Jabuvani", gu: "જય પંકજભાઈ જબુઆણી" },
     children: {
-      en: "and Miti, Khushi, Vanshika, Kashyap, Yakshit, Darsh, Trisha, Bhavyansh, Jiyansh, Kiyanshi",
-      gu: "તથા મિતિ, ખુશી, વંશીકા, કશ્યપ, યક્ષીત, દર્શ, ત્રિશા, ભવ્યાંશ, જિયાંશ, કિયાંશી",
+      en: "Miti, Khushi, Vanshika, Kashyap, Yakshit, Darsh, Trisha, Bhavyansh, Jiyansh, Kiyanshi",
+      gu: "મિતિ, ખુશી, વંશીકા, કશ્યપ, યક્ષીત, દર્શ, ત્રિશા, ભવ્યાંશ, જિયાંશ, કિયાંશી",
     },
   },
 

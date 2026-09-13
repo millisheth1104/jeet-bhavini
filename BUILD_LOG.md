@@ -1175,3 +1175,45 @@ gap, so `Jay Pankaj Jabuvani` sits as the last line of the list rather than as a
 block after it.
 
 Checked every referenced asset with a HEAD request afterwards — nothing 404s.
+
+## Gallery: carousel out, scattered prints in
+
+Seven photographs tipped onto the paper as aged prints, replacing the one-at-a-
+time carousel with its arrows, dots, swipe handler and filigree frame. Every
+photo is now visible without a guest touching anything.
+
+**Laid out in CSS columns, not at absolute positions.** An absolute scatter is
+pinned to one viewport width and falls apart at every other; columns hold at any
+width — two on a phone, three from 760px up. Each print's tilt, width and
+horizontal nudge come from a fixed table in `main.js`, not `Math.random()`: a
+random scatter re-rolls on every load and roughly one roll in ten looks wrong.
+
+**Burnt edges.** The mount is aged stock `#F7F2E4`, corners are unequal
+(`border-radius: 2px 3px 2px 4px`), padding is heavier at the foot the way a
+photo print is, and a `::after` multiplies four corner scorches of different
+sizes and strengths over one all-round edge darkening — through the picture as
+well as the mount, because an old print browns right through.
+
+### Two bugs worth recording
+
+**`startDate` went out with the gallery.** It had been lifted out of the deleted
+`rsvp()` and left sitting between `gallery()` and the calendar. The gallery
+rewrite's cut ran from `(function gallery() {` to the save-the-date comment and
+swallowed it. `main.js` then threw at the calendar, which killed everything after
+it — **all 49 `.reveal` elements stayed invisible and the countdown never
+started**. The assertion guarding that cut only checked the chunk *contained*
+`galPrev` and `touchstart`; it never checked what else was in there. A cut by
+landmarks needs to assert on what it is *removing*, not just on what it expects
+to find.
+
+**`.reveal` owns `translate`.** `.print` set `translate: var(--dx) 0` for its
+nudge and `.reveal` sets `translate: 0 24px` for the rise — and `.reveal` is
+declared later, so it won both the nudge and the hover lift. The nudge moved to
+`margin-left`, which the reveal animation does not touch.
+
+Also: `.gallery__caption` lost its body to a mis-sliced replacement and was
+restored from `git show HEAD:styles.css`; brace balance checked afterwards.
+
+Verified clean on a fresh load: no failed requests, reveal running, countdown
+ticking, calendar marked, seven prints, and the whole thing switching to
+તસવીરો / અમને પ્રિય ક્ષણો with Gujarati alt text.

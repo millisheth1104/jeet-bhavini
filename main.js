@@ -506,71 +506,42 @@
     var photos = (W.gallery && W.gallery.photos) || [];
     if (!photos.length) { section.hidden = true; return; }
 
-    var slides = $("gallerySlides"), dots = $("galleryDots");
-    var idx = 0;
+    put("galleryTitle", t(W.gallery.heading));
+    put("galleryCaption", t(W.gallery.caption));
 
+    /* Each print gets its own tilt, width and nudge so the set reads as a
+       handful of photographs dropped on a table rather than a grid. The
+       values are fixed, not random: a random scatter re-rolls on every load
+       and one roll in ten looks wrong. */
+    var LAY = [
+      { rot: -2.4, w: 96,  dx: -3 },
+      { rot:  1.9, w: 100, dx:  2 },
+      { rot:  2.2, w: 86,  dx:  5 },
+      { rot: -1.5, w: 92,  dx: -4 },
+      { rot: -2.2, w: 100, dx:  3 },
+      { rot:  1.5, w: 88,  dx: -2 },
+      { rot:  2.7, w: 94,  dx:  4 }
+    ];
+
+    var host = $("gallerySlides");
     photos.forEach(function (p, i) {
+      var lay = LAY[i % LAY.length];
+      var fig = el("figure", "print reveal");
+      fig.style.setProperty("--rot", lay.rot + "deg");
+      fig.style.setProperty("--w", lay.w + "%");
+      fig.style.setProperty("--dx", lay.dx + "px");
+      fig.style.setProperty("--d", (i % 3) * 90 + "ms");
+
       var img = el("img");
       img.src = p.src;
       img.alt = t(p.alt);
       if (i) img.loading = "lazy";
-      if (!i) img.classList.add("is-active");
-      slides.appendChild(img);
-
-      var b = el("button");
-      b.type = "button";
-      b.setAttribute("role", "tab");
-      b.setAttribute("aria-label", u("aPhotoN") + " " + (i + 1));
-      if (!i) b.classList.add("is-active");
-      b.addEventListener("click", function () { show(i); });
-      dots.appendChild(b);
+      fig.appendChild(img);
+      host.appendChild(fig);
     });
-
-    function show(n) {
-      idx = (n + photos.length) % photos.length;
-      var imgs = slides.children, btns = dots.children, i;
-      for (i = 0; i < imgs.length; i++) imgs[i].classList.toggle("is-active", i === idx);
-      for (i = 0; i < btns.length; i++) {
-        btns[i].classList.toggle("is-active", i === idx);
-        btns[i].setAttribute("aria-selected", i === idx ? "true" : "false");
-      }
-    }
-
-    $("galPrev").addEventListener("click", function () { show(idx - 1); });
-    $("galNext").addEventListener("click", function () { show(idx + 1); });
-
-    // one photo needs no controls
-    if (photos.length < 2) {
-      $("galPrev").hidden = true; $("galNext").hidden = true; dots.hidden = true;
-    }
-
-    // swipe
-    var x0 = null;
-    slides.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
-    slides.addEventListener("touchend", function (e) {
-      if (x0 === null) return;
-      var dx = e.changedTouches[0].clientX - x0;
-      if (Math.abs(dx) > 40) show(idx + (dx < 0 ? 1 : -1));
-      x0 = null;
-    }, { passive: true });
-
-    // arrow keys while the gallery is on screen
-    document.addEventListener("keydown", function (e) {
-      var r = section.getBoundingClientRect();
-      if (r.top > window.innerHeight || r.bottom < 0) return;
-      if (e.key === "ArrowLeft")  show(idx - 1);
-      if (e.key === "ArrowRight") show(idx + 1);
-    });
-
-    put("galleryCaption", W.gallery.caption);
-    put("galleryTitle", t(W.gallery.heading));
-    put("galleryCaption", t(W.gallery.caption));
-    $("galPrev").setAttribute("aria-label", u("aPrevPhoto"));
-    $("galNext").setAttribute("aria-label", u("aNextPhoto"));
-    dots.setAttribute("aria-label", u("aChoosePhoto"));
   }());
 
-  /* The instant everything downstream counts from. */
+  /* The instant the calendar and the countdown both work from. */
   var startDate = new Date(W.countdownTo);
 
   /* -- save the date: the wedding month, with its days marked --------------
