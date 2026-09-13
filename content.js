@@ -175,8 +175,13 @@ window.WEDDING = {
     heading: "Gallery",
     caption: "Moments we love",
     photos: [
-      { src: "assets/photos/couple-beach-01.jpg", alt: "Jeet and Bhavini on the shore" },
-      { src: "assets/photos/couple-beach-02.jpg", alt: "Jeet and Bhavini by the water" },
+      { src: "assets/photos/couple-beach-01.jpg",  alt: "Jeet and Bhavini walking the shore below a limestone cliff" },
+      { src: "assets/photos/couple-beach-02.jpg",  alt: "Jeet and Bhavini running along the sand" },
+      { src: "assets/photos/couple-beach-03.jpg",  alt: "Jeet and Bhavini sitting under a tree on the beach" },
+      { src: "assets/photos/couple-beach-04.jpg",  alt: "Jeet and Bhavini on the sand by the water" },
+      { src: "assets/photos/couple-street-01.jpg", alt: "Jeet and Bhavini beside a white vintage car on a colonial street" },
+      { src: "assets/photos/couple-cafe-01.jpg",   alt: "Jeet and Bhavini at a cafe by an arched window" },
+      { src: "assets/photos/couple-street-02.jpg", alt: "Jeet and Bhavini crossing an old town street" },
     ],
   },
 

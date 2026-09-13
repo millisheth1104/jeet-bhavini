@@ -941,3 +941,28 @@ rose-and-violet caparison; ours had come back grey.
 
 Verified: no English escapes its card, none runs under an ornament, 0px copy
 collision on all five.
+
+## Gallery — five photos added, and all seven put on a diet
+
+Five pre-wedding photos dropped into the project root (`DSCF*.jpeg`,
+`_MGL*.jpeg`) at 2–4 MB each. The two already in the gallery were 3.9 and
+5.3 MB. Twenty-two megabytes of photographs on an invitation most guests open on
+mobile data.
+
+All seven re-encoded: EXIF orientation applied then stripped, long edge capped at
+1600px, JPEG q82 progressive.
+
+    22.1 MB  ->  2.1 MB      (196-465 KB each)
+
+Originals are untouched in `%TEMP%\photo_originals`. Re-run the compression from
+there if a larger size is ever wanted — do not re-compress the published files, a
+second pass at q82 loses more than it saves.
+
+Two ordering notes: the whole set is read into memory before anything is written,
+because `couple-beach-02.jpg` is both an existing published name and a new
+destination; and the carousel eager-loads only the first slide, so seven photos
+cost the same first paint as two.
+
+`gallery__stage` is `aspect-ratio: 4/5` with `object-fit: cover`. The one
+landscape frame (the beach run) crops to it cleanly — checked all seven, nobody
+is cut.
