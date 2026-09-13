@@ -15,7 +15,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Noto+Serif+Gujarati:wght@400;500;600&family=Rasa:wght@500;600;700&family=Great+Vibes&family=Mogra&family=Playfair+Display:ital,wght@1,400;1,500;1,600&display=swap">
-<link rel="stylesheet" href="styles.css">
+<!-- ?v= is bumped whenever styles.css or a generated asset changes; this
+     site is edited in place with no build step, and browsers hold on to
+     both the stylesheet and the PNGs otherwise. -->
+<link rel="stylesheet" href="styles.css?v=20260913a">
 </head>
 <body>
 
@@ -77,13 +80,24 @@
      the bell swings, then the whole thing lifts away. Tap to skip. -->
 <div class="intro" id="intro" role="dialog" aria-label="Opening the invitation">
   <div class="intro__scene">
-    <img class="intro__backdrop" src="assets/generated/intro_backdrop.png" alt="">
-    <!-- Bell and elephant share one aspect-locked box, so the bell stays
-         over the trunk tip at every viewport size. See styles.css. -->
+    <img class="intro__backdrop" src="assets/generated/intro_backdrop.png?v=20260913a" alt="">
+    <!-- Bell and elephant share one aspect-locked box - the box IS the
+         elephant - so the bell stays over the trunk tip and the feet stay on
+         the ground line at every viewport size. The chain is a tiled strip
+         rather than part of the bell image, because it has to stretch: its
+         top is pinned to the pavilion's hook, which lives in the backdrop's
+         coordinates, while its bottom is pinned to the trunk, which lives in
+         the scene's. The trunk is a sprite sheet lifted off the elephant.
+         See styles.css. -->
     <div class="intro__pair">
-      <img class="intro__bell"     id="introBell" src="assets/generated/intro_bell.png" alt="">
-      <img class="intro__elephant" id="introEle"  src="assets/generated/intro_elephant.png"
-           alt="A ceremonial elephant ringing a temple bell">
+      <div class="intro__rig">
+        <img class="intro__bell" src="assets/generated/intro_bell_body.png?v=20260913a" alt="">
+      </div>
+      <div class="intro__ele">
+        <img class="intro__elebody" src="assets/generated/intro_elephant_body.png?v=20260913a"
+             alt="A ceremonial elephant ringing a temple bell">
+        <div class="intro__trunk" aria-hidden="true"></div>
+      </div>
     </div>
   </div>
 

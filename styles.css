@@ -174,7 +174,7 @@ img { max-width: 100%; display: block; }
 
 /* --------------------------------------------------------------------------
    Intro screen
-   The strike lands at 58% of a 3.6s timeline; the elephant and the bell share
+   The strike lands at 56% of a 3.6s timeline; the elephant and the bell share
    that duration so the swing reads as a consequence of the reach.
    -------------------------------------------------------------------------- */
 
@@ -200,6 +200,7 @@ body.intro-open { overflow: hidden; }
   position: relative;
   overflow: hidden;
   min-height: 0;
+  container-type: size;           /* 100cqh/100cqw = the scene box */
 }
 
 .intro__backdrop {
@@ -208,51 +209,125 @@ body.intro-open { overflow: hidden; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 42%;
+  object-position: center 67%;  /* puts a floor at the scene's bottom edge */
   animation: introFade 1.2s ease both;
 }
 
-/* Bell + elephant in one aspect-locked box, so their geometry survives any
-   viewport. All figures measured off the trimmed PNGs and the backdrop:
+/* Bell + elephant.
 
-     backdrop  arch apex sits at 50% across, 42% down; dry courtyard from 80%
-     elephant  raised trunk tip at 25.4% across, 0% down its own image
-     bell      hook at 51% across, body bottom at 100% down
+   The backdrop is a 576x1024 painting cropped with `cover`, so how much of it
+   a viewport shows varies enormously - a phone sees almost all of it, a wide
+   desktop sees a ~27% tall band. Two coordinate systems therefore exist and
+   they do not scale together:
 
-   The box is one elephant-width wide. The bell hangs from the box's top so
-   its hook can be pinned to the arch apex, and the elephant sits at the
-   bottom with its trunk tip just under the bell's rim. Pinning is done by
-   translating the box left by 25.4% of its OWN width, which puts the hook
-   exactly on the 50% mark. */
+     scene   the visible box. The elephant lives here: its feet sit on a
+             ground line at 92% of the scene, and `object-position: center 67%`
+             is chosen so the painting puts a floor under that line at every
+             size - the pavilion deck on wide screens, the courtyard tiles on
+             phones.
+     stage   the painting as actually rendered, `max(100cqh, 177.78cqw)` tall
+             and offset by the object-position. The bell's hook lives here: it
+             is the little brass pendant painted under the pavilion's eave, at
+             49.7% across and 38.3% down the image.
+
+   The chain has one end in each, so it is not part of the bell image - it is a
+   tiled strip whose length is whatever the two ends ask for. When the eave is
+   off the top of the crop the hook goes with it and the chain simply runs out
+   of frame, which is the same moment the roof stops being visible, so it never
+   reads as hanging from nothing.
+
+   Measured off the trimmed elephant PNG:
+
+     trunk tip   24.6% across (mean of its rest and contact poses), ~0% down
+     back feet   78% across, 100% down   (the strike pivots here)
+
+   The elephant is capped at 58cqw so its rump cannot run off a narrow screen;
+   on a phone that, not the height, is what sets its size. */
 .intro__pair {
   position: absolute;
-  left: 50%;                      /* the arch apex, horizontally */
-  top: 42%;                       /* the arch apex, vertically */
-  height: 48%;                    /* elephant's feet then land at 90% */
-  aspect-ratio: 76.5 / 100;
-  translate: -25.4% 0;            /* puts the bell's hook on the 50% mark */
+  left: 50%;
+  bottom: 8%;                     /* the ground line */
+  height: 40%;                    /* fallback: no container query units */
+  height: min(46cqh, 58cqw);      /* = the elephant's height */
+  aspect-ratio: 800 / 742;
+  translate: -24.6% 0;            /* puts the trunk tip under the hook */
 }
 
+/* contact shadow, spanning the four feet (27%-95% of the elephant's width) */
+.intro__pair::before {
+  content: "";
+  position: absolute;
+  left: 22%;
+  width: 78%;
+  bottom: -2.5%;
+  height: 9%;
+  background: radial-gradient(50% 50% at 50% 50%,
+              rgba(78,62,48,.30), rgba(78,62,48,.11) 55%, rgba(78,62,48,0) 76%);
+  animation: introFade 1.1s ease .5s both;
+}
+
+/* The chain. Its top is the painted hook, converted from stage to scene and
+   then to this box:  hook - pairTop  =  (67cqh - .287*stage) - (92cqh - He).
+   Its bottom is the clapper, just clear of the trunk.
+
+   The bell is 41.8% of the elephant's height tall and hangs at the bottom of
+   this box, so the box has to be longer than that or the bell swallows the
+   hook. It always is, except in a narrow band of scene aspect ratios around
+   0.76-0.82 where it falls short by about 1cqh - the `min()` is the floor that
+   covers it, at the cost of the chain starting a hair above the hook there. */
+.intro__rig {
+  position: absolute;
+  left: 24.6%;
+  width: 2.85%;
+  margin-left: -1.425%;
+  top: -55%;                      /* fallback: no container query units */
+  top: min(calc(min(46cqh, 58cqw) - 25cqh - .287 * max(100cqh, 177.7778cqw)), -50%);
+  bottom: 103%;
+  background: url(assets/generated/intro_chain.png?v=20260913a) repeat-y 50% 100% / 100% auto;
+  animation: introFade .8s ease .3s both;
+}
+
+/* The bell hangs off the bottom of the chain and rocks about the ring it hangs
+   by, which is where a tapped bell actually articulates - the chain barely
+   moves. Rocking about its own ring also keeps the swing proportional to the
+   bell at every viewport, which rotating the whole chain would not. */
 .intro__bell {
   position: absolute;
-  left: 18.33%;
-  top: 0;                         /* hangs from the arch apex */
-  height: 30%;
-  width: auto;
-  transform-origin: top center;   /* swings from the hook */
-  animation: introFade .8s ease .3s both,
-             bellSwing 3.6s cubic-bezier(.32,.72,.4,1) .3s both;
+  left: 50%;
+  bottom: 0;
+  width: 947%;                    /* 27% of the elephant's width */
+  max-width: none;                /* the global img rule would clamp it to the
+                                     chain's width, which is 1/9th of this */
+  height: auto;
+  translate: -50.3% 0;            /* the ring, not the rim, sits on the chain */
+  transform-origin: 50.3% 13%;    /* the ring */
+  animation: bellRock 3.6s cubic-bezier(.33,.7,.4,1) .3s both;
 }
 
-.intro__elephant {
+.intro__ele {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;                    /* = one elephant-width, by construction */
-  height: auto;
-  transform-origin: 70% 100%;     /* pivots on its back feet */
+  inset: 0;
+  transform-origin: 78% 100%;     /* pivots on its back feet */
   animation: introRise 1s cubic-bezier(.22,.61,.36,1) .2s both,
-             elephantRing 3.6s cubic-bezier(.32,.72,.4,1) .3s both;
+             elephantRing 3.6s cubic-bezier(.33,.7,.4,1) .3s both;
+}
+.intro__elebody { width: 100%; height: 100%; display: block; }
+
+/* The trunk is lifted off the elephant into its own layer and replaced by 11
+   warped poses on a sprite sheet - a twirl about the joint plus a lift, both
+   weighted to nothing at the joint so the seam never opens. The poses are a
+   designed sequence, not a slider: frame 0 rest, 4 wound left, 6 the strike,
+   7 the follow-through right. The tip covers 7.8% of the elephant's width
+   between 4 and 7, which is what makes the swing read as a swing. Held on
+   step-end, so it looks drawn rather than tweened. */
+.intro__trunk {
+  position: absolute;
+  left: 1.25%;
+  top: -7.547%;
+  width: 33.75%;
+  height: 37.197%;
+  background: url(assets/generated/intro_trunk_sheet.png?v=20260913a) no-repeat 50% 0 / 1100% 100%;
+  animation: trunkCurl 3.6s step-end .3s both;
 }
 
 .intro__copy {
@@ -297,33 +372,52 @@ body.intro-open { overflow: hidden; }
 
 @keyframes introFade { from { opacity: 0 } to { opacity: 1 } }
 @keyframes introRise {
-  from { opacity: 0; translate: 0 26px; }
+  from { opacity: 0; translate: 0 5%; }
   to   { opacity: 1; translate: 0 0; }
 }
 
-/* the reach: a lift onto the front feet, then a smaller second tap */
+/* The reach. Rotating clockwise about the back feet is what lifts the front
+   of the elephant, so the trunk rises; the translate adds the rest. Both are
+   relative, so the reach scales with the elephant. Contact is at 56%, which
+   is exactly where the bell starts to move - the bell must never lead. */
 @keyframes elephantRing {
-  0%, 52%   { transform: translateY(0)    rotate(0deg); }
-  58%       { transform: translateY(-10px) rotate(-2.6deg); }
-  66%       { transform: translateY(0)    rotate(0deg); }
-  73%       { transform: translateY(-6px) rotate(-1.5deg); }
-  80%, 100% { transform: translateY(0)    rotate(0deg); }
+  0%, 44%   { transform: translateY(0) rotate(0deg); }
+  56%       { transform: translateY(-.6%) rotate(1.2deg); }
+  68%       { transform: translateY(0) rotate(0deg); }
+  76%       { transform: translateY(0) rotate(.5deg); }
+  86%, 100% { transform: translateY(0) rotate(0deg); }
 }
 
-/* the swing: struck at 58%, then damping out */
-@keyframes bellSwing {
-  0%, 57%  { transform: rotate(0deg); }
-  62%      { transform: rotate(12deg); }
-  68%      { transform: rotate(-8.5deg); }
-  74%      { transform: rotate(5.5deg); }
-  80%      { transform: rotate(-3.4deg); }
-  86%      { transform: rotate(2deg); }
-  92%      { transform: rotate(-1deg); }
+/* Frame index x 10%. Idle sway, wind left, sweep right through the bell at
+   56%, follow through, settle. */
+@keyframes trunkCurl {
+  0%   { background-position-x: 0%; }    /* rest */
+  9%   { background-position-x: 10%; }
+  18%  { background-position-x: 20%; }
+  26%  { background-position-x: 0%; }
+  34%  { background-position-x: 30%; }
+  44%  { background-position-x: 40%; }   /* wound left */
+  50%  { background-position-x: 50%; }
+  56%  { background-position-x: 60%; }   /* the strike */
+  61%  { background-position-x: 70%; }   /* follow through, right of the bell */
+  66%  { background-position-x: 80%; }
+  71%  { background-position-x: 90%; }
+  77%  { background-position-x: 100%; }
+  84%  { background-position-x: 10%; }
+  91%  { background-position-x: 20%; }
+  100% { background-position-x: 0%; }
+}
+
+/* Struck at 56% and pushed to its right, then damping out. */
+@keyframes bellRock {
+  0%, 56%  { transform: rotate(0deg); }
+  61%      { transform: rotate(9deg); }
+  67%      { transform: rotate(-6.5deg); }
+  73%      { transform: rotate(4.4deg); }
+  79%      { transform: rotate(-2.8deg); }
+  85%      { transform: rotate(1.7deg); }
+  91%      { transform: rotate(-.9deg); }
   100%     { transform: rotate(0deg); }
-}
-
-@media (max-width: 560px) {
-  .intro__pair { height: 44%; }
 }
 
 /* --------------------------------------------------------------------------

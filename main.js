@@ -155,7 +155,7 @@
   var second = first === groom ? bride : groom;
 
   /* -- intro screen --------------------------------------------------------
-     The elephant strikes at 58% of a 3.6s timeline starting at 300ms, so the
+     The elephant strikes at 56% of a 3.6s timeline starting at 300ms, so the
      swing has rung out by ~3.9s. Dismiss just after that.                   */
 
   (function intro() {
