@@ -44,16 +44,15 @@
   --script: "Great Vibes", "Apple Chancery", "Segoe Script", cursive;
   /* Card lettering.
 
-     Gujarati: of the ONLY six decorative Gujarati faces on Google Fonts
-     (Shrikhand, Mogra, Kumar One, Kumar One Outline, Farsan, Baloo Bhai 2),
-     Shrikhand is the calligraphic one - thick-to-thin contrast and sweeping
-     curves. Swap to "Mogra" for a more handwritten, brush-drawn feel.
+     Gujarati: Mogra, chosen from the ONLY six decorative Gujarati faces on
+     Google Fonts (Mogra, Shrikhand, Kumar One, Kumar One Outline, Farsan,
+     Baloo Bhai 2) - brush-drawn, with the largest flowing curves of the set.
      None of Kalam / Tiro Devanagari Hindi / Yatra One / Modak / Khand carry
      Gujarati glyphs at all, and Tiro Gujarati is not on Google Fonts.
 
      English: the reference's long sweeping swashes are a connected script,
      not a serif, so Great Vibes matches it far better than Playfair. */
-  --gu-card: "Shrikhand", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
+  --gu-card: "Mogra", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
   --card-en: "Great Vibes", "Playfair Display", "Apple Chancery", cursive;
 
   /* ---- rhythm ---- */
@@ -686,13 +685,17 @@ body.intro-open { overflow: hidden; }
 
 /* ---- titles ------------------------------------------------------------ */
 .inv__gu {
+  /* Title placement, matched to the reference: the Gujarati sits flush LEFT at
+     the very top of the card, riding slightly past the left edge. The English
+     below it aligns RIGHT. Everything under the title stays centred. */
+  align-self: stretch;
+  text-align: left;
   font-family: var(--gu-card);
   font-weight: 400;
-  /* large enough to nearly span the card, as in the reference */
-  font-size: clamp(3.2rem, 19cqw, 5rem);
-  line-height: 1.24;
+  font-size: clamp(2.7rem, 16cqw, 4.2rem);
+  line-height: 1.42;              /* Mogra needs headroom for matras */
   color: var(--ink-c);
-  margin: 0;
+  margin: 0 0 0 -.06em;           /* optical bleed past the left edge */
   letter-spacing: -.02em;
 }
 .inv__en {

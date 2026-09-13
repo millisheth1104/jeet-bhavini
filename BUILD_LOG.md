@@ -675,3 +675,45 @@ reads as the intended bleed rather than a scrollbar.
 Verified at 430px and 1280px: titles fit within their cards on every card,
 including શામ શાનદાર which wraps to two lines, and the page has no horizontal
 overflow.
+
+---
+
+## 2026-09-13 — Mogra, and the reason the title fix kept "not working"
+
+### The real bug: silent no-op edits
+
+The user asked three times for the title to sit left with the English right, and
+each time it appeared unchanged. The CSS edits were **silently doing nothing**.
+
+Every edit to `.inv__gu` was made with a Python `str.replace()` whose search
+text omitted a comment line that was actually present in the file:
+
+```
+    /* large enough to nearly span the card, as in the reference */
+```
+
+`str.replace()` returns the string untouched when the pattern does not match —
+no error, no warning. So the `align-self`/`text-align` change, and two separate
+font-size changes, all no-opped while the script reported success. `.inv__en`
+happened to match, which made it look like a specificity or cascade problem
+rather than an edit that never landed.
+
+**Rule going forward: every string replacement asserts the pattern matched, and
+the result is verified against computed style in the browser, not assumed.**
+
+Fixed by replacing the whole `.inv__gu` block by regex on its braces and
+printing the before/after, then confirming in the page:
+
+```
+guFont Mogra · guAlign left · enAlign right
+title starts 14px from the card's left edge
+english ends 17px from the card's right edge
+```
+
+### Font
+
+**Mogra**, chosen by the user from a rendered comparison of all six decorative
+Gujarati faces shown on a real card. Brush-drawn with the largest flowing
+curves of the set — the "cursive with large curves" that was asked for.
+It is also narrower than Shrikhand, so શામ શાનદાર now sets on one line.
+`line-height: 1.42` for matra headroom.
