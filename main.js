@@ -246,9 +246,7 @@
 
   /* -- events: five individual invitation cards ---------------------------
      Every card is built by the same factory from one entry in W.events, so a
-     card is edited in content.js and nowhere else. The fifth, the central
-     invitation, is its own entry (W.invitationCard) rather than a special
-     case bolted onto the others.                                           */
+     card is edited in content.js and nowhere else.                         */
 
   (function events() {
     var list = $("eventsList");
@@ -334,34 +332,6 @@
       return card;
     }
 
-    /* ---- the central invitation card ---- */
-    function mainCard(cfg, i) {
-      var card = el("article", "inv inv--main reveal");
-      card.setAttribute("data-ink", cfg.ink);
-      card.setAttribute("data-paper", cfg.paper);
-      card.style.setProperty("--d", i * 90 + "ms");
-
-      if (cfg.motif) {
-        var m = el("img", "inv__motif");
-        m.src = cfg.motif; m.alt = ""; m.loading = "lazy";
-        card.appendChild(m);
-      }
-      card.appendChild(el("p", "inv__eyebrow", t(cfg.eyebrow)));
-
-      card.appendChild(el("p", "inv__name", t(groom)));
-      if (W.invitation.groomLine)
-        card.appendChild(el("p", "inv__parents", t(W.invitation.groomLine)));
-      card.appendChild(el("p", "inv__weds", t(cfg.weds)));
-      card.appendChild(el("p", "inv__name", t(bride)));
-      if (W.invitation.brideLine)
-        card.appendChild(el("p", "inv__parents", t(W.invitation.brideLine)));
-
-      card.appendChild(el("p", "inv__dates", t(W.headline.datesLabel)));
-      var place = t(W.headline.venue) || t(W.headline.city);
-      if (place) card.appendChild(el("p", "inv__city", place));
-      return card;
-    }
-
     W.events.forEach(function (ev, i) { list.appendChild(eventCard(ev, i)); });
 
     /* Titles run from 2 glyphs (લગ્ન) to 10 (શામ શાનદાર). Left to itself that
@@ -436,7 +406,6 @@
       img.addEventListener("load", scheduleFit);
       img.addEventListener("error", scheduleFit);
     });
-    if (W.invitationCard) list.appendChild(mainCard(W.invitationCard, W.events.length));
 
     /* ---- detail dialog -------------------------------------------------- */
 

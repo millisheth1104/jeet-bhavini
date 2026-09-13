@@ -1156,3 +1156,22 @@ frame / the event cards' aged paper) rendered on the real background.
 
 Final order: hero → invitation → events → gallery → **save the date** →
 countdown → families → compliments → footer.
+
+## Central invitation card removed; solo name tightened
+
+The fifth card — the Om motif with `Jeet weds Bhavini` and both sets of parents —
+is gone. The events row is now the four ceremonies and nothing else.
+
+Removed with it: `W.invitationCard`, the `mainCard()` factory and its call, the
+eight `.inv--main *` rules, and the orphaned `html[data-lang="gu"] .inv__eyebrow`
+selector. `ill_om.png` is retired to `assets/unused/`.
+
+`W.invitation` stays — the formal invitation panel near the top of the page is a
+different thing and still uses `blessing`, `lead`, `groomLine`, `brideLine` and
+`weds`. Only the *card* went.
+
+`.awaiting--solo` also drops from `margin-top: 1.2rem` to `.6rem`, the list's own
+gap, so `Jay Pankaj Jabuvani` sits as the last line of the list rather than as a
+block after it.
+
+Checked every referenced asset with a HEAD request afterwards — nothing 404s.

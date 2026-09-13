@@ -860,58 +860,6 @@ body.intro-open { overflow: hidden; }
 .inv:hover .inv__more, .inv:focus-visible .inv__more { opacity: 1; }
 
 /* ---- card 5: the central invitation ------------------------------------ */
-.inv--main { justify-content: center; }
-.inv--main .inv__motif {
-  width: clamp(48px, 17cqw, 66px);
-  height: auto;
-  margin: 0 auto clamp(.9rem, 4cqw, 1.4rem);
-  opacity: .92;
-}
-.inv--main .inv__eyebrow {
-  font-family: var(--serif);
-  font-size: clamp(.82rem, 4.2cqw, 1rem);
-  line-height: 1.5;
-  color: #4A4238;
-  margin: 0 0 clamp(1rem, 5cqw, 1.6rem);
-  max-width: 17em;
-  margin-inline: auto;
-}
-.inv--main .inv__name {
-  font-family: var(--card-en);
-  font-size: clamp(2.1rem, 12cqw, 3rem);
-  line-height: 1;
-  color: var(--ink-c);
-  margin: 0;
-}
-.inv--main .inv__parents {
-  font-family: var(--serif);
-  font-size: clamp(.7rem, 3.5cqw, .84rem);
-  line-height: 1.4;
-  color: #4A4238;
-  margin: .5rem 0 0;
-  max-width: 20em;
-  margin-inline: auto;
-}
-.inv--main .inv__weds {
-  font-family: var(--card-en);
-  font-size: clamp(1.3rem, 7cqw, 1.8rem);
-  color: var(--ink-en);
-  margin: clamp(.7rem, 3.5cqw, 1.1rem) 0;
-}
-.inv--main .inv__dates {
-  font-family: var(--serif);
-  font-size: clamp(.84rem, 4cqw, .98rem);
-  letter-spacing: .04em;
-  color: #3A332A;
-  margin: clamp(1rem, 5cqw, 1.6rem) 0 0;
-}
-.inv--main .inv__city {
-  font-family: var(--serif);
-  font-size: clamp(.76rem, 3.6cqw, .88rem);
-  color: #4A4238;
-  margin: .3rem 0 0;
-}
-
 /* type inside the cards scales with the CARD, not the viewport, so a card
    reads identically whether it is one of five across or alone on a phone */
 .inv { container-type: inline-size; }
@@ -1127,7 +1075,8 @@ body.intro-open { overflow: hidden; }
 .awaiting { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
 .awaiting li { font-size: clamp(.85rem, 2.4vw, .98rem); color: var(--ink-soft); }
 .awaiting--solo {
-  margin-top: 1.2rem;
+  /* the list's own gap, so this reads as its last line rather than a new block */
+  margin-top: .6rem;
   font-size: clamp(.85rem, 2.4vw, .98rem);   /* same as the names above it */
   color: var(--ink-soft);
 }
@@ -1585,7 +1534,6 @@ html[data-lang="gu"] .hero__meta,
 html[data-lang="gu"] .scroll-cue,
 html[data-lang="gu"] .invite__when,
 html[data-lang="gu"] .inv__more,
-html[data-lang="gu"] .inv__eyebrow,
 html[data-lang="gu"] .locket__num span,
 html[data-lang="gu"] .signoff__date,
 html[data-lang="gu"] .compliments__heading,

@@ -163,20 +163,6 @@ window.WEDDING = {
     },
   ],
 
-  /* The fifth card: the central invitation itself, set apart from the four
-     ceremonies. Its wording comes from `invitation` and `couple` above. */
-  invitationCard: {
-    ink: "terracotta",
-    paper: "b",
-    motif: "assets/generated/ill_om.png",
-    eyebrow: { en: "Together with their families", gu: "પરિવારજનો સહિત" },
-    weds: { en: "weds", gu: "સાથે" },
-    lead: {
-      en: "request the honour of your presence",
-      gu: "આપની ઉપસ્થિતિની હાર્દિક અપેક્ષા",
-    },
-  },
-
   /* લી. સ્નેહાધીન — the hosting couples, as they appear on the kankotri. */
   hostsPaired: {
     heading: { en: "With love, yours affectionately", gu: "લી. સ્નેહાધીન" },
