@@ -1262,3 +1262,29 @@ Card content had to come down to fit: it overflowed its own 2:3 box by 365–470
 at first. The subject illustration moved up to become the crest instead of
 sitting separately, and the one-line `tagline` replaced the sentence-long `note`.
 Zero overflow on all four, desktop and 375px, in both languages.
+
+## Card shape and the swing-in
+
+Two corrections from the latest frame.
+
+**The outline is cusped, not rounded.** The reference's frame turns inward at
+each corner and peaks at the top centre — a shape `border-radius` cannot
+describe. Both keylines are now one inline SVG on a 200×300 field (the card's
+own ratio), `preserveAspectRatio="none"` to stretch to the card and
+`vector-effect: non-scaling-stroke` so the two lines keep an even weight at any
+size. `framePath(inset, cusp)` builds either line from the same geometry.
+
+**"Animate hoke aara hai" means it swings in, not that it sways forever.** The
+constant sway was the wrong reading. It now swings in when it scrolls into view
+and settles — a damped pendulum — then breathes:
+
+    -9°  →  +5.2°  →  -2.8°  →  +1.5°  →  -0.7°  →  -1.15°
+
+The last keyframe lands exactly where the idle sway begins, so the handover
+between the two animations has no jump. Both ride on `.hang.is-in`, so the swing
+fires on reveal rather than on load, and each card's idle sway is offset by
+`--sway-delay`. `prefers-reduced-motion` stops both.
+
+**On the recording**: I cannot process video of any kind — Instagram, Drive, or
+otherwise — so the three still frames the client sent are the whole source for
+this. Stills or a sentence work; links to video do not.

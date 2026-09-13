@@ -650,13 +650,27 @@ body.intro-open { overflow: hidden; }
   --tassel-drop: clamp(2.5rem, 12vw, 4.5rem);
   padding-bottom: var(--tassel-drop);            /* room for the tassels */
   transform-origin: 50% -6%;
-  animation: sway 7s ease-in-out var(--sway-delay, 0s) infinite;
+}
+/* It swings in when it comes into view and settles, then breathes. Two
+   animations on one property: the second only starts once the first is done,
+   so the swing hands over to the idle sway without a jump. */
+.hang.is-in {
+  animation: swingIn 1.5s cubic-bezier(.28,.66,.32,1) both,
+             sway 7s ease-in-out calc(1.5s + var(--sway-delay, 0s)) infinite;
+}
+@keyframes swingIn {
+  0%   { rotate: -9deg;   }
+  32%  { rotate:  5.2deg; }
+  55%  { rotate: -2.8deg; }
+  74%  { rotate:  1.5deg; }
+  88%  { rotate: -0.7deg; }
+  100% { rotate: -1.15deg; }   /* lands where the sway begins */
 }
 @keyframes sway {
   0%, 100% { rotate: -1.15deg; }
   50%      { rotate:  1.15deg; }
 }
-@media (prefers-reduced-motion: reduce) { .hang { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .hang.is-in { animation: none; } }
 
 .hang__rod {
   position: absolute;
@@ -758,19 +772,17 @@ body.intro-open { overflow: hidden; }
    over each corner - the way an engraved card is ruled. */
 .inv__frame {
   position: absolute;
-  inset: clamp(.55rem, 3cqw, .95rem);
-  border-radius: clamp(.35rem, 2.2cqw, .7rem);
-  border: 1.5px solid color-mix(in srgb, var(--ink-c) 52%, transparent);
+  inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: 0;
   pointer-events: none;
+  overflow: visible;
 }
-.inv__frame::after {
-  content: "";
-  position: absolute;
-  inset: clamp(3px, 1.4cqw, 6px);
-  border-radius: inherit;
-  border: 1px solid color-mix(in srgb, var(--ink-c) 30%, transparent);
-}
+.inv__frame path { fill: none; vector-effect: non-scaling-stroke; }
+.inv__frame-o { stroke: color-mix(in srgb, var(--ink-c) 55%, transparent); stroke-width: 1.6; }
+.inv__frame-i { stroke: color-mix(in srgb, var(--ink-c) 32%, transparent); stroke-width: 1; }
+
 .inv__corner {
   position: absolute;
   width: clamp(38px, 20cqw, 74px);

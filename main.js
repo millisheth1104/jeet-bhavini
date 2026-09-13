@@ -254,6 +254,28 @@
     var list = $("eventsList");
     if (!list) return;
 
+    /* Two nested cusped outlines on a 200x300 field - the card's own ratio -
+       so the shape holds at any size. `i` is the inset of each line. */
+    function framePath(i, cusp) {
+      var L = i, R = 200 - i, T = i, B = 300 - i, c = cusp;
+      return "M" + L + "," + (T + c) +
+             "Q" + L + "," + T + " " + (L + c) + "," + T +
+             "L" + (100 - c * 1.4) + "," + T +
+             "Q100," + (T - c * 0.9) + " " + (100 + c * 1.4) + "," + T +
+             "L" + (R - c) + "," + T +
+             "Q" + R + "," + T + " " + R + "," + (T + c) +
+             "L" + R + "," + (B - c) +
+             "Q" + R + "," + B + " " + (R - c) + "," + B +
+             "L" + (L + c) + "," + B +
+             "Q" + L + "," + B + " " + L + "," + (B - c) + "Z";
+    }
+    function frameSVG() {
+      return '<svg class="inv__frame" viewBox="0 0 200 300" ' +
+             'preserveAspectRatio="none" aria-hidden="true">' +
+             '<path class="inv__frame-o" d="' + framePath(6, 13) + '"/>' +
+             '<path class="inv__frame-i" d="' + framePath(11, 10) + '"/></svg>';
+    }
+
     /* ---- an event card ----
        Everything a guest needs is on the face now: crest, title in both
        languages, date, times, venue, a line about the evening, and a link to
@@ -277,8 +299,11 @@
       card.setAttribute("data-paper", ev.paper);
       card.setAttribute("data-key", ev.key);
 
-      // double keyline plus a flourish in each corner
-      card.appendChild(el("span", "inv__frame"));
+      /* The frame is an SVG, not a border: the reference's outline is cusped at
+         the corners and peaks at the top centre, which a border-radius cannot
+         describe. preserveAspectRatio="none" stretches it to the card and
+         non-scaling-stroke keeps both keylines an even weight. */
+      card.insertAdjacentHTML("beforeend", frameSVG());
       ["tl", "tr", "br", "bl"].forEach(function (pos) {
         var c = el("img", "inv__corner inv__corner--" + pos);
         c.src = "assets/generated/orn_corner.png";
