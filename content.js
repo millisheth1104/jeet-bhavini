@@ -264,22 +264,19 @@ window.WEDDING = {
     cdMinutes:         { en: "Minutes", gu: "મિનિટ" },
     cdSeconds:         { en: "Seconds", gu: "સેકન્ડ" },
 
-    viewDetails:       { en: "View details", gu: "વિગતો જુઓ" },
-    timeBegins:        { en: "Begins", gu: "શરૂઆત" },
-    venueToFollow:     { en: "Venue details to follow.", gu: "સ્થળની વિગતો ટૂંક સમયમાં." },
 
     /* Weekday heads for the save-the-date calendar, Sunday first. */
     calWeekdays:       { en: ["S", "M", "T", "W", "T", "F", "S"],
                          gu: ["ર", "સો", "મં", "બુ", "ગુ", "શુ", "શ"] },
+
+    openInMaps:        { en: "Open in Maps", gu: "નકશામાં જુઓ" },
 
     // Screen-reader and tooltip labels.
     aPrevPhoto:        { en: "Previous photo", gu: "પાછલી તસવીર" },
     aNextPhoto:        { en: "Next photo", gu: "આગલી તસવીર" },
     aChoosePhoto:      { en: "Choose photo", gu: "તસવીર પસંદ કરો" },
     aPhotoN:           { en: "Photo", gu: "તસવીર" },
-    aClose:            { en: "Close", gu: "બંધ કરો" },
     aMusic:            { en: "Music", gu: "સંગીત" },
     aTop:              { en: "Back to top", gu: "ઉપર જાઓ" },
-    aEventDetails:     { en: "Event details", gu: "પ્રસંગની વિગતો" },
   },
 };

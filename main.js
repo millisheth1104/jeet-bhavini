@@ -98,11 +98,8 @@
       if (OTHER === "gu") alt.classList.add("gu");
     }
 
-    aria("evdlgClose", "aClose");
     aria("musicBtn",   "aMusic", true);
     aria("topBtn",     "aTop",   true);
-    var d = $("evdlg");
-    if (d) d.setAttribute("aria-label", u("aEventDetails"));
   }());
 
   /* A language switch reloads. Put the reader back where they were. */
@@ -145,6 +142,11 @@
     span.appendChild(s);
     return span;
   }
+
+  /* The instant the cards, the calendar and the countdown all work from.
+     Declared up here because the event cards read it, and they render long
+     before the calendar does - `var` hoists the name but not the value. */
+  var startDate = new Date(W.countdownTo);
 
   /* -- hero --------------------------------------------------------------- */
 
@@ -252,58 +254,67 @@
     var list = $("eventsList");
     if (!list) return;
 
-    /* ---- an event card ---- */
+    /* ---- an event card ----
+       Everything a guest needs is on the face now: crest, title in both
+       languages, date, times, venue, a line about the evening, and a link to
+       the map. Nothing is hidden behind a tap, so there is no dialog.      */
     function eventCard(ev, i) {
-      var card = el("button", "inv reveal");
-      card.type = "button";
+      /* The card hangs from a rod with tassels below it and sways, so the
+         whole assembly is wrapped: the hanger carries the reveal and the
+         sway, the card inside stays still relative to it. */
+      var hang = el("div", "hang reveal");
+      hang.setAttribute("data-side", i % 2 ? "r" : "l");
+      hang.style.setProperty("--d", i * 90 + "ms");
+      hang.style.setProperty("--sway-delay", (i * 0.7).toFixed(2) + "s");
+
+      /* Drawn rather than generated: every render of a brass stave came back
+         with a finial far too heavy for its height, and the reference's is
+         hair-thin. Two gradients hold it at any size. */
+      hang.appendChild(el("span", "hang__rod"));
+
+      var card = el("article", "inv");
       card.setAttribute("data-ink", ev.ink);
       card.setAttribute("data-paper", ev.paper);
       card.setAttribute("data-key", ev.key);
-      if (ev.wideIllustration) card.setAttribute("data-wide", "true");
-      card.style.setProperty("--d", i * 90 + "ms");
-      card.setAttribute("aria-label",
-        ev.en + " — " + t(ev.date) + ". " + u("viewDetails") + ".");
 
-      if (ev.ornament) {
-        var orn = el("img", "inv__orn");
-        orn.src = "assets/generated/orn_hanging.png";
-        orn.alt = ""; orn.loading = "lazy";
-        card.appendChild(orn);
-      }
+      // double keyline plus a flourish in each corner
+      card.appendChild(el("span", "inv__frame"));
+      ["tl", "tr", "br", "bl"].forEach(function (pos) {
+        var c = el("img", "inv__corner inv__corner--" + pos);
+        c.src = "assets/generated/orn_corner.png";
+        c.alt = ""; c.loading = "lazy";
+        card.appendChild(c);
+      });
 
-      /* Title and English form ONE group sized to the wider of the two, so the
-         English anchors to the title's right edge rather than the card's. The
-         titles vary a lot in length (લગ્ન is 2 glyphs, શામ શાનદાર is 10), and
-         pinning to the card edge left a hole in the short ones. */
+      /* The card's own subject at the head - kalash, dhol, mandap, elephant.
+         The generic crest is the fallback for a card without one. */
+      var crest = el("img", "inv__crest");
+      crest.src = ev.illustration ||
+        (ev.cornerIllustrations && ev.cornerIllustrations[1]) ||
+        "assets/generated/card_crest.png";
+      crest.alt = ""; crest.loading = "lazy";
+      card.appendChild(crest);
+
+      /* Both languages, centred, one above the other - the heading is the one
+         place the site deliberately shows both at once. */
       var title = el("div", "inv__title");
       title.appendChild(el("h3", "inv__gu", ev.gu));
       if (ev.en) title.appendChild(el("p", "inv__en", ev.en));
-      /* The English sits against the title's right edge, which lands in a
-         different place on every card - too near the hanging ornament on the
-         long titles, too far left on the short ones. `enShift` in content.js
-         nudges it per card. */
-      if (ev.enShift) title.style.setProperty("--en-shift", ev.enShift);
       card.appendChild(title);
 
-      var times = (ev.times || []).filter(function (t) { return t.value; });
-
       if (ev.dateShort) {
-        var when = el("div", "inv__when");
-        when.appendChild(el("span", "inv__day", ev.dateShort.day));
-        var md = el("span", "inv__md");
-        md.appendChild(el("b", null, t(ev.dateShort.month)));
-        md.appendChild(el("span", null, times.length ? times[0].value : "2026"));
-        when.appendChild(md);
-        card.appendChild(when);
+        card.appendChild(el("p", "inv__date",
+          parseInt(ev.dateShort.day, 10) + " " + t(ev.dateShort.month) + " " +
+          startDate.getFullYear()));
       }
 
-      // one unlabelled time already reads beside the date
-      if (times.length > 1) {
+      var times = (ev.times || []).filter(function (x) { return x.value; });
+      if (times.length) {
         var ul = el("ul", "inv__times");
         times.forEach(function (tm) {
           var li = el("li");
           var lbl = t(tm.label);
-          if (lbl) li.appendChild(document.createTextNode(lbl + "  "));
+          if (lbl) li.appendChild(el("span", guIf(null), lbl));
           li.appendChild(el("b", null, tm.value));
           ul.appendChild(li);
         });
@@ -311,25 +322,44 @@
       }
 
       if (ev.venue) card.appendChild(el("p", guIf("inv__venue"), t(ev.venue)));
+      var line = t(ev.tagline) || t(ev.note);
+      if (line) card.appendChild(el("p", guIf("inv__note"), line));
 
-      /* Most cards carry one engraving centred at the foot. The લગ્ન card
-         carries two, one in each bottom corner, and says so in its data. */
-      if (ev.cornerIllustrations && ev.cornerIllustrations.length) {
-        card.setAttribute("data-ill-corners", "true");
-        ev.cornerIllustrations.slice(0, 2).forEach(function (src, n) {
-          var ci = el("img", "inv__cornerill inv__cornerill--" + (n ? "r" : "l"));
-          ci.src = src; ci.alt = ""; ci.loading = "lazy";
-          card.appendChild(ci);
-        });
-      } else if (ev.illustration) {
-        var ill = el("img", "inv__ill");
-        ill.src = ev.illustration; ill.alt = ""; ill.loading = "lazy";
-        card.appendChild(ill);
+      /* A map link needs somewhere to point. `mapsUrl` wins; otherwise the
+         venue text goes to Maps as a search. With no venue at all the button
+         would be claiming to know where to go, so it is left off. */
+      var href = ev.mapsUrl || (ev.venue
+        ? "https://www.google.com/maps/search/?api=1&query=" +
+          encodeURIComponent(
+            t(ev.venue).split("\n")
+              .map(function (x) { return x.replace(/[,\s]+$/, "").trim(); })
+              .filter(Boolean).join(", "))
+        : "");
+      if (href) {
+        var a = el("a", "inv__maps", u("openInMaps"));
+        a.href = href; a.target = "_blank"; a.rel = "noopener";
+        card.appendChild(a);
       }
 
-      card.appendChild(el("span", "inv__more", u("viewDetails")));
-      card.addEventListener("click", function () { openDialog(ev); });
-      return card;
+      var spray = el("img", "inv__spray");
+      spray.src = "assets/generated/card_spray.png";
+      spray.alt = ""; spray.loading = "lazy";
+      card.appendChild(spray);
+
+      hang.appendChild(card);
+
+      // beaded strings hanging off the foot, three of them, uneven lengths
+      var tassels = el("div", "hang__tassels");
+      [0, 1, 2].forEach(function (n) {
+        var tz = el("img", "hang__tassel");
+        tz.src = "assets/generated/orn_hanging.png";
+        tz.alt = ""; tz.loading = "lazy";
+        tz.style.setProperty("--n", n);
+        tassels.appendChild(tz);
+      });
+      hang.appendChild(tassels);
+
+      return hang;
     }
 
     W.events.forEach(function (ev, i) { list.appendChild(eventCard(ev, i)); });
@@ -407,65 +437,6 @@
       img.addEventListener("error", scheduleFit);
     });
 
-    /* ---- detail dialog -------------------------------------------------- */
-
-    var dlg = $("evdlg"), sheet = $("evdlgSheet"), lastFocus = null;
-
-    function openDialog(ev) {
-      lastFocus = document.activeElement;
-      sheet.setAttribute("data-ink", ev.ink);
-
-      var body = $("evdlgBody");
-      body.textContent = "";
-      body.appendChild(el("h3", "evdlg__gu", ev.gu));
-      if (ev.en) body.appendChild(el("p", "evdlg__en", ev.en));
-      body.appendChild(el("p", "evdlg__date", t(ev.date)));
-
-      var times = (ev.times || []).filter(function (x) { return x.value; });
-      if (times.length) {
-        var ul = el("ul", "evdlg__times");
-        times.forEach(function (tm) {
-          var li = el("li");
-          li.appendChild(el("span", guIf(null), t(tm.label) || u("timeBegins")));
-          li.appendChild(el("b", null, tm.value));
-          ul.appendChild(li);
-        });
-        body.appendChild(ul);
-      }
-
-      if (ev.venue) body.appendChild(el("p", guIf("evdlg__date"), t(ev.venue)));
-      if (ev.dress) body.appendChild(el("p", guIf("evdlg__note"), t(ev.dress)));
-      if (ev.note)  body.appendChild(el("p", guIf("evdlg__note"), t(ev.note)));
-
-      // venue is still to be confirmed; say so rather than showing a gap
-      if (!ev.venue) {
-        body.appendChild(el("p", "evdlg__blank", u("venueToFollow")));
-      }
-
-      if (ev.illustration) {
-        var ill = el("img", "evdlg__ill");
-        ill.src = ev.illustration; ill.alt = "";
-        body.appendChild(ill);
-      }
-
-      dlg.classList.add("is-open");
-      dlg.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-      $("evdlgClose").focus();
-    }
-
-    function closeDialog() {
-      dlg.classList.remove("is-open");
-      dlg.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-      if (lastFocus) lastFocus.focus();
-    }
-
-    $("evdlgClose").addEventListener("click", closeDialog);
-    dlg.addEventListener("click", function (e) { if (e.target === dlg) closeDialog(); });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && dlg.classList.contains("is-open")) closeDialog();
-    });
   }());
 
   /* -- families ----------------------------------------------------------- */
@@ -540,9 +511,6 @@
       host.appendChild(fig);
     });
   }());
-
-  /* The instant the calendar and the countdown both work from. */
-  var startDate = new Date(W.countdownTo);
 
   /* -- save the date: the wedding month, with its days marked --------------
      Month, length and first weekday are all derived from countdownTo, and the

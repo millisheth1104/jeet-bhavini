@@ -1217,3 +1217,48 @@ restored from `git show HEAD:styles.css`; brace balance checked afterwards.
 Verified clean on a fresh load: no failed requests, reveal running, countdown
 ticking, calendar marked, seven prints, and the whole thing switching to
 તસવીરો / અમને પ્રિય ક્ષણો with Gujarati alt text.
+
+## Event cards rebuilt as hanging invitations
+
+Rebuilt against the screen recording's three frames. Each card now hangs from a
+brass stave with beaded strings below it and sways — a punkah, which is what
+"like an old fan" meant.
+
+**The card**: rounded double keyline in the card's own ink with a flourish over
+each corner, the event's own subject at the head, both languages centred, date,
+times, venue, its one-line tagline, an `OPEN IN MAPS` button, and the floral
+border across the foot.
+
+**The hanger**: `.hang` wraps rod, card and tassels and carries both the reveal
+and the sway, so the three move as one. `transform-origin: 50% -6%` puts the
+pivot above the rod's top finial. The rod alternates sides card to card, as the
+reference does, and each card's sway is offset by `--sway-delay` so they do not
+move in lockstep. `prefers-reduced-motion` stops it.
+
+**The rod is drawn, not generated.** Three renders of a brass stave all came back
+with a finial far too heavy for its height — the reference's is hair-thin. Two
+gradients and two pseudo-elements hold it at any size, and it costs no request.
+The generated attempt is in `assets/unused/`.
+
+**Gone with the redesign**: the detail dialog (everything is on the face now, so
+nothing is behind a tap), `.evdlg*` markup and CSS, and the `viewDetails`,
+`timeBegins`, `venueToFollow`, `aEventDetails` and `aClose` labels.
+
+### Four things that broke on the way
+
+1. **`startDate` was read before it was assigned.** It sat at line 545; the card
+   factory runs at 253. `var` hoists the name but not the value, so every card
+   threw on `startDate.getFullYear()` and the events list rendered empty. Moved
+   above `events()`.
+2. **The card lost its width.** The rewrite of `.inv` dropped `width: 100%;
+   max-width: 21rem` and the tablet media query with it, so `justify-items:
+   center` shrank each card to its min-content width — 68px.
+3. **`.gallery__caption` lost its body** to a mis-sliced replacement; restored
+   from git, brace balance checked.
+4. **The maps query read `Gandhidham,, Gujarat`** — the venue's own trailing
+   comma plus the joiner. Each line is now trimmed of trailing commas first.
+
+Card content had to come down to fit: it overflowed its own 2:3 box by 365–470px
+at first. The subject illustration moved up to become the crest instead of
+sitting separately, and the one-line `tagline` replaced the sentence-long `note`.
+Zero overflow on all four, desktop and 375px, in both languages.
