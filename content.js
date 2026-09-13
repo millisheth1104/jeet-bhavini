@@ -37,54 +37,71 @@ window.WEDDING = {
      Format: YYYY-MM-DDTHH:MM:SS+05:30 */
   countdownTo: "2026-12-02T17:41:00+05:30",
 
+  /* The five invitation cards.
+
+     Each is its own card: `ink` drives every coloured element on it, `paper`
+     picks one of three aged sheets so no two neighbours look identical, and
+     `illustration` is the engraving that anchors its foot. Editing an entry
+     here changes only that card. */
   events: [
     {
       key: "mameru",
       gu: "મામેરું",
       en: "Mameru",
       tagline: "Where Blessings Begin",
-      accent: "sage",
-      motif: "assets/generated/motif_mamera.png",
+      ink: "sage",
+      paper: "a",
+      illustration: "assets/generated/ill_mameru.png",
+      ornament: false,
       date: "Tuesday, 1 December 2026",
       dateShort: { day: "01", month: "December" },
       times: [{ label: "", value: "9:00 AM" }],
-      venue: "",
+      venue: "Gandhidham,\nGujarat",
       dress: "",
+      note: "The maternal blessing, offered before the wedding days begin.",
     },
     {
       key: "sangeet",
       gu: "શામ શાનદાર",
       en: "Sangeet",
       tagline: "An Evening of Song",
-      accent: "charcoal",
-      motif: "assets/generated/motif_sangeet.png",
+      ink: "indigo",
+      paper: "b",
+      illustration: "assets/generated/ill_sangeet.png",
+      wideIllustration: true,
+      ornament: true,
       date: "Tuesday, 1 December 2026",
       dateShort: { day: "01", month: "December" },
       times: [{ label: "", value: "7:00 PM" }],
-      venue: "",
+      venue: "Gandhidham,\nGujarat",
       dress: "",
+      note: "An evening of dhol, song and dancing.",
     },
     {
       key: "mandap",
       gu: "માંડવ રોપણ",
       en: "Mandap Ropan",
       tagline: "Raising the Sacred Canopy",
-      accent: "terracotta",
-      motif: "assets/generated/motif_mandap.png",
+      ink: "gold",
+      paper: "c",
+      illustration: "assets/generated/ill_mandap.png",
+      ornament: false,
       date: "Wednesday, 2 December 2026",
       dateShort: { day: "02", month: "December" },
       times: [{ label: "", value: "8:00 AM" }],
-      venue: "",
+      venue: "Gandhidham,\nGujarat",
       dress: "",
+      note: "The raising of the mandap, where the vows will be taken.",
     },
     {
       key: "lagna",
       gu: "લગ્ન",
       en: "Wedding",
       tagline: "The Joining of Hands",
-      accent: "magenta",
-      motif: "assets/generated/motif_lagna.png",
-      wideMotif: true,
+      ink: "rose",
+      paper: "a",
+      illustration: "assets/generated/ill_lagna.png",
+      ornament: true,
       date: "Wednesday, 2 December 2026",
       dateShort: { day: "02", month: "December" },
       times: [
@@ -92,10 +109,22 @@ window.WEDDING = {
         { label: "Bharat Aagman",  value: "5:00 PM" },
         { label: "હસ્તમેળાપ · Hastamelap", value: "5:41 PM" },
       ],
-      venue: "",
+      venue: "Gandhidham,\nGujarat",
       dress: "",
+      note: "Hastamelap, the joining of hands, falls at 5:41 in the evening.",
     },
   ],
+
+  /* The fifth card: the central invitation itself, set apart from the four
+     ceremonies. Its wording comes from `invitation` and `couple` above. */
+  invitationCard: {
+    ink: "terracotta",
+    paper: "b",
+    motif: "assets/generated/ill_om.png",
+    eyebrow: "Together with their families",
+    weds: "weds",
+    lead: "request the honour of your presence",
+  },
 
   /* લી. સ્નેહાધીન — the hosting couples, as they appear on the kankotri. */
   hostsPaired: {

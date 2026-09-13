@@ -524,3 +524,75 @@ site at the invitation, events and families sections — no lines anywhere.
 
 Tuned to `--amp 2.6 --grain 1.7` (grain sd 2.6 levels); those are baked in as
 the script defaults so a rerun reproduces this exact tile (fixed seed).
+
+---
+
+## 2026-09-13 — Events rebuilt as five invitation cards; paper warmth restored
+
+### 1. The site's warmth came back
+
+User: *"the whole site's vibe was changed yesterday when I asked to remove the
+line."* Correct, and it was a regression I introduced, not a style choice.
+
+The seam fix replaced the warm cream paper texture with a **greyscale** one
+(`250, 250, 250`). That tile multiplies over `--paper`, so it drained the warmth
+out of every section at once — the ground went from warm ivory to pale grey:
+
+```
+effective ground before the seam fix : warm ivory
+effective ground after  the seam fix : rgb(237, 236, 232)   <- neutral
+effective ground now                 : rgb(237, 231, 216)   <- warm ivory
+```
+
+`make_seamless.py` now carries the grain into three warm-tinted channels
+(`TINT = (1.0, 0.978, 0.933)`) instead of shipping grey. Seamlessness is
+unaffected — join/interior ratio is still 1.07.
+
+**Lesson:** a texture used with `background-blend-mode: multiply` is not a
+neutral overlay. Making it greyscale desaturates everything under it.
+
+### 2. Events section rebuilt to the reference card set
+
+Four real ceremonies plus the central invitation — **five separate cards**, each
+its own element rendered from its own entry in `content.js`, independently
+editable and clickable. Not one composite image.
+
+The spec asked for Hindi Mehndi/Haldi cards, which this wedding does not have,
+while also saying not to invent event information. Confirmed with the user:
+real Gujarati events win. **Tiro Gujarati** rather than Tiro Devanagari Hindi —
+same family and feel, but the Devanagari face has no Gujarati glyphs and would
+have rendered every title as boxes.
+
+Matched to the reference, point by point:
+
+| Reference | Implementation |
+|---|---|
+| No keyline at all | borders removed; the card is just the sheet |
+| Title nearly spans the card | `clamp(3.2rem, 19cqw, 5rem)` in Tiro Gujarati |
+| Title in the event colour | `--ink-c` per card |
+| English in **warm orange**, offset right | `--ink-en`, Playfair Display italic, `padding-left: 1.5em` |
+| Full-bleed sepia architecture | `card_wash_a/b/c`, `cover`, 22% multiply |
+| Big numeral \| month over time | `.inv__day` + `.inv__md` with a rule between |
+| Large illustration across the foot | `clamp(150px, 80%, 240px)` |
+| Hanging ornaments on some cards | `orn_hanging`, alternating |
+
+Type inside a card scales with **the card** (`container-type: inline-size`,
+`cqw` units), not the viewport, so a card reads identically whether it is one of
+five across or alone on a phone.
+
+Layout: 1 per row on mobile, 2–3 on tablet, five across on desktop with
+per-card rotation and vertical offset so they sit like sheets laid on a table.
+Hover straightens and lifts the sheet. Clicking opens that event's details in a
+dialog built from the same data — Esc and backdrop-click close, focus returns to
+the card.
+
+### New assets
+
+`card_paper_a/b/c` (the generated sheets came with printed borders baked in, so
+only the borderless centres are kept), `card_wash_a/b/c`, `ill_mameru`,
+`ill_sangeet`, `ill_mandap`, `ill_lagna`, `ill_om`, `orn_hanging`, `orn_corner`,
+`orn_rule_band`.
+
+`ill_lagna` matted to nothing on the first pass — faded ink on white gives
+BiRefNet nothing to separate. Re-rendered on a mid-grey ground, which is the
+same fix the mogra garlands needed.

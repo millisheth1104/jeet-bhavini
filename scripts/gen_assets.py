@@ -51,6 +51,11 @@ BASE = (
 # Isolated props that get cut out and layered by CSS.
 CUT = "single object, centred, isolated on pure plain flat white background. "
 
+# The invitation cards use a more vintage register than the rest of the site.
+VINT = (
+    'vintage Indian wedding invitation illustration, hand drawn with fine ink linework and flat faded inks, letterpress printed on aged ivory paper, muted desaturated traditional palette, softly worn and slightly faded, antique lithograph feel, elegant and restrained, no 3D, no photorealism, no cartoon, no gloss, no gradient mesh, no text, no lettering, no words, no watermark'
+)
+
 ASSETS = {
     # ---- pin 1 shell: hanging garlands, palm, brass -----------------------
     # The mogra garlands are pin 1's signature. They are thin and mostly white,
@@ -202,6 +207,94 @@ ASSETS = {
                "simply in fine antique brass outline with soft ivory fill, auspicious, "
                "elegant, restrained, minimal. " + CUT + BASE,
         size="square_hd", cutout=True),
+
+    # ---- invitation-card set -----------------------------------------------
+    # Vintage stationery, not the softer painted style used elsewhere on the
+    # site: fine ink linework, faded flat inks, letterpress on aged paper.
+
+    "card_paper_a": dict(
+        prompt='An empty sheet of aged ivory handmade wedding-card paper, warm cream, very subtle cloudy mottling and a few faint tea-coloured age stains near the edges, fine cotton fibre grain, completely blank, no objects, no pattern, no border, evenly lit.'
+               " " + VINT,
+        size="square_hd", cutout=False),
+
+    "card_paper_b": dict(
+        prompt='An empty sheet of aged ivory handmade paper in a slightly warmer sand tone, faint soft blotches and gentle foxing toward one corner, fine fibre grain, completely blank, no objects, no pattern, no border.'
+               " " + VINT,
+        size="square_hd", cutout=False),
+
+    "card_paper_c": dict(
+        prompt='An empty sheet of pale antique cream paper with a very faint cool grey cast, subtle mottling, fine grain, completely blank, no objects, no pattern, no border.'
+               " " + VINT,
+        size="square_hd", cutout=False),
+
+    "ill_mameru": dict(
+        prompt='A brass kalash pot brimming with mango leaves and a coconut, draped with a marigold garland, a sheaf of wheat leaning beside it, drawn in muted sage green and faded brass ink. '
+               " " + CUT + VINT,
+        size="square_hd", cutout=True, matte="birefnet"),
+
+    "ill_sangeet": dict(
+        prompt='A dhol drum and a pair of tabla with a slender shehnai horn resting against them and a few small musical notes drifting above, drawn in muted indigo and faded terracotta ink. '
+               " " + CUT + VINT,
+        size="landscape_16_9", cutout=True, matte="birefnet"),
+
+    "ill_mandap": dict(
+        prompt='A four post wedding mandap canopy with a draped fabric roof and swags of marigold and mango leaves, slender carved posts, front elevation, symmetrical, drawn in muted antique gold and olive ink. '
+               " " + CUT + VINT,
+        size="square_hd", cutout=True, matte="birefnet"),
+
+    # Rendered on mid-grey: faded ink on white gives BiRefNet nothing to
+    # separate, and the first attempt matted away to nothing.
+    "ill_lagna": dict(
+        prompt="A seated Lord Ganesha on a lotus throne, flanked by a delicate spray of "
+               "roses and trailing foliage, reverent, simple and clearly drawn with "
+               "definite outlines, muted dusty rose and faded gold ink, single centred "
+               "object on a flat medium warm grey background. " + VINT,
+        size="square_hd", cutout=True, matte="birefnet"),
+
+    "ill_om": dict(
+        prompt='A single ornate Aum Om symbol with a small lotus beneath it and two fine curving flourishes either side, drawn in faded terracotta and antique gold ink, centred, small and delicate. '
+               " " + CUT + VINT,
+        size="square_hd", cutout=True, matte="birefnet"),
+
+    "orn_hanging": dict(
+        prompt='Three very slender hanging ornaments of different lengths suspended from fine beaded threads that run up to the top edge of the frame, small teardrop and bell shaped pendants with tiny tassels, thin and delicate, drawn in faded antique gold ink. '
+               " " + CUT + VINT,
+        size="portrait_4_3", cutout=True, matte="birefnet"),
+
+    "orn_corner": dict(
+        prompt='A delicate corner flourish of fine trailing vine, small paisley buds and tiny five petal flowers radiating from one corner, thin ink linework, faded antique gold and sage, the rest of the frame empty plain white. '
+               " " + CUT + VINT,
+        size="square_hd", cutout=True, matte="birefnet"),
+
+    "orn_rule_band": dict(
+        prompt='A slender horizontal ornamental band of tiny repeating paisley and floral motifs in faded antique gold ink on plain white, very thin, symmetrical, wide, delicate. '
+               " " + CUT + VINT,
+        size="landscape_16_9", cutout=True, matte="birefnet"),
+
+    # Full-card architecture wash. The reference cards carry a faint sepia
+    # photograph of palace architecture across the WHOLE card, not a strip at
+    # the foot, so these are portrait and framed to fill a 2:3 card.
+    "card_wash_a": dict(
+        prompt="A faded sepia photograph of an ornate Rajasthani palace facade with carved "
+               "jharokha balconies, arched windows and a domed chhatri, filling the whole "
+               "tall vertical frame, heavily washed out and low contrast, pale warm sepia "
+               "and cream, like an old print bleached by sunlight, no sky, no people. "
+               + VINT,
+        size="portrait_16_9", cutout=False),
+
+    "card_wash_b": dict(
+        prompt="A faded sepia photograph of a Mughal fort archway and colonnade with carved "
+               "stone pillars receding into shadow, filling the whole tall vertical frame, "
+               "heavily washed out and low contrast, pale warm sepia and cream, like an old "
+               "print bleached by sunlight, no people. " + VINT,
+        size="portrait_16_9", cutout=False),
+
+    "card_wash_c": dict(
+        prompt="A faded sepia photograph of an Indian palace courtyard with scalloped arches, "
+               "a distant dome and a stepped plinth, filling the whole tall vertical frame, "
+               "heavily washed out and low contrast, pale warm sepia and cream, like an old "
+               "print bleached by sunlight, no people. " + VINT,
+        size="portrait_16_9", cutout=False),
 
     # ---- intro screen -----------------------------------------------------
     # Matched to the reel: flat watercolour, blue tiled domes, the bell hanging

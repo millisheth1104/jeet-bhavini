@@ -34,6 +34,9 @@ AMP = 2.6           # grain amplitude in levels; keep small, it multiplies
 GRAIN = 1.7         # blur radius for the fibre, px
 FLATTEN = 24.0      # radius of the low-frequency copy that gets subtracted
 TARGET = 250.0      # near-white, so the multiply blend is a whisper
+# The tile multiplies over --paper, so a NEUTRAL grey tile drains the warmth
+# out of every section. These per-channel factors keep the page on warm ivory.
+TINT = (1.0, 0.978, 0.933)
 SEED = 20261202
 
 
@@ -55,11 +58,17 @@ def build(size=SIZE, amp=AMP, grain=GRAIN, seed=SEED):
     detail = fibre - low                      # fine grain only
 
     sd = detail.std() or 1.0
-    out = TARGET + (detail / sd) * amp
-    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8), "L")
+    grey = TARGET + (detail / sd) * amp
+
+    # carry the grain into three warm-tinted channels rather than shipping grey
+    rgb = np.dstack([np.clip(grey * t, 0, 255) for t in TINT])
+    return Image.fromarray(rgb.astype(np.uint8), "RGB")
 
 
 def report(img, label):
+    c = np.asarray(img.convert("RGB")).astype(float)
+    print("        tile mean RGB %.0f, %.0f, %.0f"
+          % (c[:, :, 0].mean(), c[:, :, 1].mean(), c[:, :, 2].mean()))
     a = np.asarray(img.convert("L")).astype(float)
     h, w = a.shape
     corners = np.mean([a[:h // 6, :w // 6].mean(), a[:h // 6, -w // 6:].mean(),

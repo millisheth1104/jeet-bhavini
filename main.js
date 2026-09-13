@@ -127,76 +127,163 @@
     put("invWhen", when);
   }());
 
-  /* -- events ------------------------------------------------------------- */
+  /* -- events: five individual invitation cards ---------------------------
+     Every card is built by the same factory from one entry in W.events, so a
+     card is edited in content.js and nowhere else. The fifth, the central
+     invitation, is its own entry (W.invitationCard) rather than a special
+     case bolted onto the others.                                           */
 
   (function events() {
     var list = $("eventsList");
     if (!list) return;
 
-    W.events.forEach(function (ev, i) {
-      var card = el("article", "ecard reveal");
-      card.setAttribute("data-accent", ev.accent);
-      if (ev.wideMotif) card.setAttribute("data-wide", "true");
-      card.style.setProperty("--d", i * 80 + "ms");
+    /* ---- an event card ---- */
+    function eventCard(ev, i) {
+      var card = el("button", "inv reveal");
+      card.type = "button";
+      card.setAttribute("data-ink", ev.ink);
+      card.setAttribute("data-paper", ev.paper);
+      card.setAttribute("data-key", ev.key);
+      if (ev.wideIllustration) card.setAttribute("data-wide", "true");
+      card.style.setProperty("--d", i * 90 + "ms");
+      card.setAttribute("aria-label", ev.en + " — " + ev.date + ". Open details.");
 
-      // lanterns hang into alternating cards, as on the reference set
-      if (i % 2 === 1) {
-        var lant = el("img", "ecard__lantern");
-        lant.src = "assets/generated/hanging_lantern.png";
-        lant.alt = ""; lant.loading = "lazy";
-        card.appendChild(lant);
+      if (ev.ornament) {
+        var orn = el("img", "inv__orn");
+        orn.src = "assets/generated/orn_hanging.png";
+        orn.alt = ""; orn.loading = "lazy";
+        card.appendChild(orn);
       }
 
-      /* Title block: Gujarati large and flush left, English in script tucked
-         below and offset right — the arrangement on the reference cards. */
-      var title = el("header", "ecard__title");
-      title.appendChild(el("h3", "ecard__gu", ev.gu));
-      if (ev.en) title.appendChild(el("p", "ecard__en", ev.en));
-      card.appendChild(title);
-      if (ev.tagline) card.appendChild(el("p", "ecard__tagline", ev.tagline));
+      card.appendChild(el("h3", "inv__gu", ev.gu));
+      if (ev.en) card.appendChild(el("p", "inv__en", ev.en));
 
       var times = (ev.times || []).filter(function (t) { return t.value; });
 
-      // big numeral, then month over the headline time
       if (ev.dateShort) {
-        var when = el("div", "ecard__when");
-        when.appendChild(el("span", "ecard__day", ev.dateShort.day));
-        var md = el("span", "ecard__md");
+        var when = el("div", "inv__when");
+        when.appendChild(el("span", "inv__day", ev.dateShort.day));
+        var md = el("span", "inv__md");
         md.appendChild(el("b", null, ev.dateShort.month));
         md.appendChild(el("span", null, times.length ? times[0].value : "2026"));
         when.appendChild(md);
         card.appendChild(when);
       }
 
-      /* A single unlabelled time is already shown beside the date, so only
-         list times when there is more than one (the લગ્ન card). */
+      // one unlabelled time already reads beside the date
       if (times.length > 1) {
-        var ul = el("ul", "ecard__times");
+        var ul = el("ul", "inv__times");
         times.forEach(function (t) {
           var li = el("li");
-          if (t.label) li.appendChild(el("span", null, t.label));
+          if (t.label) li.appendChild(document.createTextNode(t.label + "  "));
           li.appendChild(el("b", null, t.value));
           ul.appendChild(li);
         });
         card.appendChild(ul);
       }
 
-      if (ev.venue) card.appendChild(el("p", "ecard__venue", ev.venue));
-      if (ev.dress) card.appendChild(el("p", "ecard__dress", ev.dress));
+      if (ev.venue) card.appendChild(el("p", "inv__venue", ev.venue));
 
-      if (ev.mapsUrl) {
-        var a = el("a", "ecard__maps", "Open in Maps");
-        a.href = ev.mapsUrl; a.target = "_blank"; a.rel = "noopener";
-        card.appendChild(a);
+      if (ev.illustration) {
+        var ill = el("img", "inv__ill");
+        ill.src = ev.illustration; ill.alt = ""; ill.loading = "lazy";
+        card.appendChild(ill);
       }
 
-      if (ev.motif) {
-        var m = el("img", "ecard__motif");
-        m.src = ev.motif; m.alt = ""; m.loading = "lazy";
+      card.appendChild(el("span", "inv__more", "View details"));
+      card.addEventListener("click", function () { openDialog(ev); });
+      return card;
+    }
+
+    /* ---- the central invitation card ---- */
+    function mainCard(cfg, i) {
+      var card = el("article", "inv inv--main reveal");
+      card.setAttribute("data-ink", cfg.ink);
+      card.setAttribute("data-paper", cfg.paper);
+      card.style.setProperty("--d", i * 90 + "ms");
+
+      if (cfg.motif) {
+        var m = el("img", "inv__motif");
+        m.src = cfg.motif; m.alt = ""; m.loading = "lazy";
         card.appendChild(m);
       }
+      card.appendChild(el("p", "inv__eyebrow", cfg.eyebrow));
 
-      list.appendChild(card);
+      card.appendChild(el("p", "inv__name", groom.en));
+      if (W.invitation.groomLine)
+        card.appendChild(el("p", "inv__parents", W.invitation.groomLine));
+      card.appendChild(el("p", "inv__weds", cfg.weds));
+      card.appendChild(el("p", "inv__name", bride.en));
+      if (W.invitation.brideLine)
+        card.appendChild(el("p", "inv__parents", W.invitation.brideLine));
+
+      card.appendChild(el("p", "inv__dates", W.headline.datesLabel));
+      var place = W.headline.venue || W.headline.city;
+      if (place) card.appendChild(el("p", "inv__city", place));
+      return card;
+    }
+
+    W.events.forEach(function (ev, i) { list.appendChild(eventCard(ev, i)); });
+    if (W.invitationCard) list.appendChild(mainCard(W.invitationCard, W.events.length));
+
+    /* ---- detail dialog -------------------------------------------------- */
+
+    var dlg = $("evdlg"), sheet = $("evdlgSheet"), lastFocus = null;
+
+    function openDialog(ev) {
+      lastFocus = document.activeElement;
+      sheet.setAttribute("data-ink", ev.ink);
+
+      var body = $("evdlgBody");
+      body.textContent = "";
+      body.appendChild(el("h3", "evdlg__gu", ev.gu));
+      if (ev.en) body.appendChild(el("p", "evdlg__en", ev.en));
+      body.appendChild(el("p", "evdlg__date", ev.date));
+
+      var times = (ev.times || []).filter(function (t) { return t.value; });
+      if (times.length) {
+        var ul = el("ul", "evdlg__times");
+        times.forEach(function (t) {
+          var li = el("li");
+          li.appendChild(el("span", null, t.label || "Begins"));
+          li.appendChild(el("b", null, t.value));
+          ul.appendChild(li);
+        });
+        body.appendChild(ul);
+      }
+
+      if (ev.venue) body.appendChild(el("p", "evdlg__date", ev.venue));
+      if (ev.dress) body.appendChild(el("p", "evdlg__note", ev.dress));
+      if (ev.note)  body.appendChild(el("p", "evdlg__note", ev.note));
+
+      // venue is still to be confirmed; say so rather than showing a gap
+      if (!ev.venue) {
+        body.appendChild(el("p", "evdlg__blank", "Venue details to follow."));
+      }
+
+      if (ev.illustration) {
+        var ill = el("img", "evdlg__ill");
+        ill.src = ev.illustration; ill.alt = "";
+        body.appendChild(ill);
+      }
+
+      dlg.classList.add("is-open");
+      dlg.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      $("evdlgClose").focus();
+    }
+
+    function closeDialog() {
+      dlg.classList.remove("is-open");
+      dlg.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      if (lastFocus) lastFocus.focus();
+    }
+
+    $("evdlgClose").addEventListener("click", closeDialog);
+    dlg.addEventListener("click", function (e) { if (e.target === dlg) closeDialog(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && dlg.classList.contains("is-open")) closeDialog();
     });
   }());
 
