@@ -325,6 +325,17 @@ ASSETS = {
     # bleeding off the card edge.
     # The લગ્ન card's bottom-LEFT corner. Replaces the Ganesha: the reference
     # card puts a loose spray of lavender blooms here, not a deity.
+    # Foot of the save-the-date calendar. A pair facing each other over a
+    # ribbon, the way the reference card sets its lovebirds - peacocks instead.
+    "cal_peacocks": dict(
+        prompt="Two ornamental Indian peacocks facing each other in mirror symmetry, "
+               "their long tail feathers sweeping down and outward, standing on a "
+               "slender curling ribbon banner that runs between them, a few small "
+               "blossoms and fine leaves at either end, delicate and symmetrical, "
+               "wide and low. "
+               + WC,
+        size="landscape_4_3", cutout=True, matte="birefnet"),
+
     "ill_lagna_blooms": dict(
         prompt="A loose spray of soft lavender and pale pink crocus and iris blooms "
                "on slender stems with a few fine grasses, rising and fanning out "

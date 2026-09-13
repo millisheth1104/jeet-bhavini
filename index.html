@@ -213,15 +213,14 @@
         </p>
         <p class="rsvp__note reveal" style="--d:260ms" id="rsvpNote"></p>
 
-        <div class="save reveal" style="--d:320ms">
-          <span class="save__label" id="saveLabel"></span>
-          <a class="btn-ghost" id="calGoogle" href="#" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cal"/></svg> 
-          </a>
-          <a class="btn-ghost" id="calIcs" href="#" download="jeet-bhavini-wedding.ics">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cal"/></svg> 
-          </a>
-        </div>
+        <!-- Save the date: the wedding month with its days marked. Month,
+             weekday heads and marked days are all built in main.js from the
+             dates in content.js, so this cannot drift from the cards. -->
+        <figure class="cal reveal" style="--d:320ms">
+          <figcaption class="cal__month" id="calMonth"></figcaption>
+          <div class="cal__grid" id="calGrid"></div>
+          <img class="cal__motif" src="assets/generated/cal_peacocks.png" alt="" loading="lazy">
+        </figure>
       </div>
     </section>
 

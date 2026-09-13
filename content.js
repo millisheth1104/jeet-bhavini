@@ -253,7 +253,6 @@ window.WEDDING = {
       en: "You'll be redirected to WhatsApp to confirm your attendance.",
       gu: "આપની ઉપસ્થિતિ નોંધાવવા માટે આપને WhatsApp પર લઈ જવાશે.",
     },
-    saveLabel: { en: "Save the Date", gu: "તારીખ નોંધી લો" },
     /* The message that lands in WhatsApp. {names} is replaced by the couple. */
     whatsappMessage: {
       en: "Hi! I'd love to attend {names}'s wedding. Count me in!",
@@ -306,8 +305,9 @@ window.WEDDING = {
     timeBegins:        { en: "Begins", gu: "શરૂઆત" },
     venueToFollow:     { en: "Venue details to follow.", gu: "સ્થળની વિગતો ટૂંક સમયમાં." },
 
-    calGoogle:         { en: "Google Calendar", gu: "Google Calendar" },
-    calApple:          { en: "Apple Calendar", gu: "Apple Calendar" },
+    /* Weekday heads for the save-the-date calendar, Sunday first. */
+    calWeekdays:       { en: ["S", "M", "T", "W", "T", "F", "S"],
+                         gu: ["ર", "સો", "મં", "બુ", "ગુ", "શુ", "શ"] },
 
     // Screen-reader and tooltip labels.
     aPrevPhoto:        { en: "Previous photo", gu: "પાછલી તસવીર" },

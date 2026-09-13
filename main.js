@@ -611,9 +611,6 @@
     put("rsvpHeading", t(r.heading));
     put("rsvpBody", t(r.body));
     put("rsvpNote", t(r.note));
-    put("saveLabel", t(r.saveLabel));
-    $("calGoogle").lastChild.textContent = " " + u("calGoogle");
-    $("calIcs").lastChild.textContent    = " " + u("calApple");
 
     var cta = $("rsvpCta");
     cta.textContent = t(r.cta);
@@ -626,25 +623,50 @@
       cta.setAttribute("aria-disabled", "true");
     }
 
-    // ---- calendar links ----
-    var title = first.en + " & " + second.en + " — Wedding";   // calendars stay English
-    var where = [t(W.headline.venue), t(W.headline.city)].filter(Boolean).join(", ");
-    var end   = new Date(startDate.getTime() + 4 * 3600 * 1000);
+  }());
 
-    // Google wants UTC basic-format stamps.
-    function utc(d) { return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); }
+  /* -- save the date: the wedding month, with its days marked --------------
+     Month, length and first weekday are all derived from countdownTo, and the
+     marked days from the event cards, so the calendar cannot drift from the
+     dates printed elsewhere on the page. */
 
-    $("calGoogle").href = "https://calendar.google.com/calendar/render?action=TEMPLATE" +
-      "&text=" + encodeURIComponent(title) +
-      "&dates=" + utc(startDate) + "/" + utc(end) +
-      "&details=" + encodeURIComponent(W.couple.hashtag || "") +
-      (where ? "&location=" + encodeURIComponent(where) : "");
+  (function calendar() {
+    var grid = $("calGrid");
+    if (!grid) return;
 
-    /* Apple/Outlook get a real .ics served over HTTP with a text/calendar
-       MIME type. A data: URL works on desktop but iOS Safari — which is how
-       most guests will open a WhatsApp link — refuses to hand it to Calendar.
-       assets/wedding.ics carries all four events, not just the muhurat. */
-    $("calIcs").href = "assets/wedding.ics";
+    var year  = startDate.getFullYear();
+    var month = startDate.getMonth();
+
+    // day 0 of the NEXT month is the last day of this one
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+    var firstWeekday = new Date(year, month, 1).getDay();   // 0 = Sunday
+
+    var marked = {};
+    (W.events || []).forEach(function (ev) {
+      var d = ev.dateShort && parseInt(ev.dateShort.day, 10);
+      if (d) marked[d] = true;
+    });
+
+    // the month's name is already written, bilingually, on the cards
+    var firstEvent = (W.events || [])[0];
+    put("calMonth", firstEvent && firstEvent.dateShort
+          ? t(firstEvent.dateShort.month) : "");
+
+    var heads = t(W.ui.calWeekdays) || [];
+    heads.forEach(function (h) {
+      grid.appendChild(el("span", "cal__head", h));
+    });
+
+    var i;
+    for (i = 0; i < firstWeekday; i++) grid.appendChild(el("span", "cal__pad"));
+    for (i = 1; i <= daysInMonth; i++) {
+      var cell = el("span", marked[i] ? "cal__day cal__day--on" : "cal__day", String(i));
+      if (marked[i]) {
+        cell.setAttribute("aria-current", "date");
+        cell.title = t(W.headline.datesLabel);
+      }
+      grid.appendChild(cell);
+    }
   }());
 
   /* -- countdown ---------------------------------------------------------- */

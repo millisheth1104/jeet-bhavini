@@ -1094,3 +1094,36 @@ both languages and the `.gu` layering still works.
 **The lesson is the same one this log keeps recording**: a style that only works
 because of a class applied somewhere else breaks silently the moment that class
 becomes conditional. Grep for `.gu` before assuming a font is set.
+
+## Save the date is now a calendar, not two buttons
+
+The `SAVE THE DATE` label and the Google / Apple Calendar buttons are gone,
+replaced by a leaf of the wedding month with the two days marked — the printed
+save-the-date card the user referenced, with peacocks in place of its lovebirds.
+
+**Nothing about the calendar is typed in.** The month, its length and the weekday
+it starts on all come from `countdownTo`; the marked days come from the event
+cards' `dateShort.day`. Change a date in `content.js` and the calendar follows.
+A hand-built grid would have gone stale the first time a date moved.
+
+    1 December 2026 → Tuesday → 2 leading blanks, 31 cells, 1 and 2 marked
+
+Reference marks its one date with a heart. Two adjacent days as two hearts is a
+lot of heart, so they are filled discs in the cards' berry plum.
+
+Bilingual: the month name is the one already written on the cards
+(`dateShort.month`), and `ui.calWeekdays` carries both sets of heads — Gujarati
+runs ર સો મં બુ ગુ શુ શ, two letters where one is ambiguous. The script face has
+no Gujarati, so `.cal__month` falls to Rasa under `html[data-lang="gu"]`.
+
+Removed with the buttons: `rsvp.saveLabel`, `ui.calGoogle`, `ui.calApple`, the
+Google Calendar URL builder, the `.save`/`.btn-ghost`/`.save__label` rules and
+their Gujarati overrides. `assets/wedding.ics` is retired to `assets/unused/` —
+nothing links it now.
+
+**What this costs**: guests can no longer add the wedding to their phone in one
+tap. That was the user's call, made explicitly. The `.ics` is still in the repo
+if it is ever wanted back.
+
+Contrast on the card: day 10.95, weekday head 5.34, marked day 6.7. Checked at
+375px — no horizontal overflow, cells 27px.
