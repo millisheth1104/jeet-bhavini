@@ -46,6 +46,7 @@ window.WEDDING = {
   events: [
     {
       key: "mameru",
+      illSide: "right",
       gu: "મામેરું",
       en: "Mameru",
       tagline: "Where Blessings Begin",
@@ -62,6 +63,7 @@ window.WEDDING = {
     },
     {
       key: "sangeet",
+      illSide: "left",
       gu: "શામ શાનદાર",
       en: "Sangeet",
       tagline: "An Evening of Song",
@@ -79,7 +81,8 @@ window.WEDDING = {
     },
     {
       key: "mandap",
-      gu: "માંડવ રોપણ",
+      illSide: "right",
+      gu: "મંડપ રોપણ",
       en: "Mandap Ropan",
       tagline: "Raising the Sacred Canopy",
       ink: "gold",
@@ -95,12 +98,13 @@ window.WEDDING = {
     },
     {
       key: "lagna",
+      illSide: "right",
       gu: "લગ્ન",
       en: "Wedding",
       tagline: "The Joining of Hands",
       ink: "rose",
       paper: "a",
-      illustration: "assets/generated/ill_lagna.png",
+      illustration: "assets/generated/ill_lagna_elephant.png",
       ornament: true,
       date: "Wednesday, 2 December 2026",
       dateShort: { day: "02", month: "December" },

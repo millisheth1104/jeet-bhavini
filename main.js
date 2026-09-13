@@ -145,6 +145,7 @@
       card.setAttribute("data-paper", ev.paper);
       card.setAttribute("data-key", ev.key);
       if (ev.wideIllustration) card.setAttribute("data-wide", "true");
+      card.setAttribute("data-ill-side", ev.illSide || "right");
       card.style.setProperty("--d", i * 90 + "ms");
       card.setAttribute("aria-label", ev.en + " — " + ev.date + ". Open details.");
 

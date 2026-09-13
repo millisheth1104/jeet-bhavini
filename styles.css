@@ -576,7 +576,7 @@ body.intro-open { overflow: hidden; }
 .invite .deco--corner-tl,
 .invite .deco--corner-br { width: clamp(90px, 22vw, 190px); opacity: .8; }
 .invite .deco--corner-tl { top: 2%;  left: 0; }
-.invite .deco--corner-br { bottom: 2%; right: 0; rotate: 180deg; }
+.invite .deco--corner-br { bottom: 2%; right: 0; scale: -1 1; }
 
 /* --------------------------------------------------------------------------
    Events — five individual invitation cards
@@ -769,22 +769,32 @@ body.intro-open { overflow: hidden; }
   white-space: pre-line;           /* venue is written as multiple lines */
 }
 
+/* keeps the copy clear of the corner engraving behind it */
+.inv__venue { margin-bottom: clamp(5.5rem, 34cqw, 8rem); }
+
 /* ---- illustration across the foot -------------------------------------- */
+/* The engraving is anchored to a BOTTOM CORNER and allowed to run off the
+   card's edge, which is what the reference does — its dholaks bleed off the
+   left of the Sangeet card and its elephant off the right of the Vivah card.
+   Sitting it centred at the foot was what made the cards read as stacked
+   boxes rather than printed stationery.
+
+   Because it is taken out of flow, it can no longer squeeze the copy, so the
+   title never has to shrink to make room for it. */
 .inv__ill {
-  /* Constrained by HEIGHT as well as width, so it yields space instead of
-     forcing the card to overflow. The લગ્ન card carries three timings and had
-     been squeezing its own title down to nothing to make room. */
-  margin: auto auto 0;
-  padding-top: clamp(.5rem, 2.5cqw, 1rem);
-  width: auto;
+  position: absolute;
+  bottom: -3%;
+  width: clamp(150px, 62%, 215px);
   height: auto;
-  max-width: clamp(150px, 78%, 235px);
-  max-height: 34%;
-  object-fit: contain;
-  filter: saturate(.88) contrast(.97);
+  z-index: 0;
+  filter: saturate(.9) contrast(.97);
   transition: transform .6s cubic-bezier(.22,.61,.36,1);
+  pointer-events: none;
 }
-.inv[data-wide="true"] .inv__ill { max-width: clamp(175px, 100%, 285px); }
+.inv[data-ill-side="right"] .inv__ill { right: -6%; }
+.inv[data-ill-side="left"]  .inv__ill { left:  -6%; }
+.inv[data-wide="true"] .inv__ill { width: clamp(175px, 76%, 250px); }
+.inv:hover .inv__ill { transform: translateY(-4px); }
 .inv:hover .inv__ill { transform: translateY(-3px); }
 
 .inv__more {

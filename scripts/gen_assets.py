@@ -296,6 +296,18 @@ ASSETS = {
                "print bleached by sunlight, no people. " + VINT,
         size="portrait_16_9", cutout=False),
 
+    # The લગ્ન card's corner piece, matched to the reference's વિવાહ card: a
+    # caparisoned elephant with lavender blooms, anchored bottom-right and
+    # bleeding off the card edge.
+    "ill_lagna_elephant": dict(
+        prompt="A richly caparisoned Indian ceremonial elephant facing left, wearing an "
+               "ornate embroidered jhool in magenta, gold and violet with tassels and a "
+               "domed headpiece, standing among tall lavender and purple iris blooms and "
+               "soft feathery grasses that rise around its legs, drawn in muted dusty rose, "
+               "violet and faded gold ink, single group centred on a flat medium warm grey "
+               "background. " + VINT,
+        size="square_hd", cutout=True, matte="birefnet"),
+
     # ---- intro screen -----------------------------------------------------
     # Matched to the reel: flat watercolour, blue tiled domes, the bell hanging
     # from a bracket at the arch apex, the elephant on DRY paved floor with the

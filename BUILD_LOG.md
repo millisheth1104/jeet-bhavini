@@ -766,3 +766,49 @@ rose     32%   1.147        0px            0
 
 `rose` sits at 32% because લગ્ન is two glyphs on the most content-heavy card —
 it is as large as that card can carry, and the English stays anchored to it.
+
+---
+
+## 2026-09-13 — Engravings moved to the corner; spelling; the inverted floral
+
+### The cards read as boxes because the engraving was in the wrong place
+
+Looking at the reference again: its illustrations are **anchored to a bottom
+corner and run off the card's edge** — the dholaks bleed off the left of the
+Sangeet card, the elephant off the right of Vivah. Mine were centred at the
+foot, in normal flow. That is the single biggest reason the set read as stacked
+boxes rather than printed stationery.
+
+`.inv__ill` is now `position: absolute`, pinned to a bottom corner with a ~6%
+overhang, and which corner is data-driven per event (`illSide` in
+`content.js`). Sides follow the reference: Sangeet left, the rest right.
+
+Taking it out of flow also fixed a knock-on problem. The engraving could no
+longer squeeze the copy, so the fit loop stopped having to shrink titles to
+make room for it — **લગ્ન's title went from 32% of the card to 50%**.
+
+`.inv__venue` carries a bottom margin so the copy always clears the corner
+piece; verified as `clear` on every card.
+
+### The Ganesha was being cut
+
+It was centred at the foot with `max-height`, so the card's `overflow: hidden`
+clipped its base — a crop that read as a mistake rather than a bleed. Replaced
+for this card with `ill_lagna_elephant`, a caparisoned elephant among lavender
+blooms, matched to the reference's વિવાહ card and anchored bottom-right where a
+bleed is clearly deliberate.
+
+### Spelling
+
+**માંડવ રોપણ → મંડપ રોપણ**, as corrected by the user.
+
+### The upside-down floral
+
+`.invite .deco--corner-br` was set to `rotate: 180deg`, which turned the
+botanical spray literally upside down — blooms pointing at the floor. Changed to
+`scale: -1 1`, so it mirrors into the corner and the flowers still grow upward.
+
+### Verified
+
+Every card: zero overflow, copy clear of the engraving, 15px of deliberate
+bleed below the card edge.
