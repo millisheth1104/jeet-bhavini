@@ -162,9 +162,12 @@
 
   <!-- ==== invitation =================================================== -->
   <section class="section invite" aria-labelledby="inviteName">
-    <div class="deco deco--corner-tl reveal"><img src="assets/generated/corner_botanical.png" alt=""></div>
-    <div class="deco deco--corner-br reveal" style="--d:120ms"><img src="assets/generated/corner_botanical.png" alt=""></div>
     <div class="invite__card reveal">
+      <!-- Anchored to the CARD's own corner, not the section's - the card is
+           the narrow, centred, bordered thing; positioning against the full-
+           width section left them floating in the empty margin beside it. -->
+      <div class="deco deco--corner-tl"><img src="assets/generated/corner_botanical.png" alt=""></div>
+      <div class="deco deco--corner-br"><img src="assets/generated/corner_botanical.png" alt=""></div>
       <img class="invite__ganesha" src="assets/generated/ganesha_motif.png" alt="Shri Ganesha">
       <p class="invite__blessing" id="invBlessing"></p>
       <p class="invite__lead"     id="invLead"></p>

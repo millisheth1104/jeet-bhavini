@@ -692,10 +692,28 @@ body.intro-open { overflow: hidden; }
   color: var(--ink-soft);
 }
 
+/* Sitting right at the card's own corner, spilling slightly past its
+   border - not floating in the section's margin beside it, which is what
+   positioning against the full-width section instead of the card used to
+   do. */
 .invite .deco--corner-tl,
-.invite .deco--corner-br { width: clamp(90px, 22vw, 190px); opacity: .8; }
-.invite .deco--corner-tl { top: 2%;  left: 0; }
-.invite .deco--corner-br { bottom: 2%; right: 0; scale: -1 1; }
+.invite .deco--corner-br {
+  position: absolute;
+  width: clamp(70px, 17vw, 150px);
+  opacity: .85;
+  z-index: 0;
+  pointer-events: none;
+}
+.invite .deco--corner-tl { top: -7%;  left: -7%; }
+.invite .deco--corner-br { bottom: -7%; right: -7%; scale: -1 1; }
+@media (max-width: 26rem) {
+  /* the card has little enough width of its own on a phone that a 17vw
+     flourish plus a 7% overhang starts crowding the blessing text */
+  .invite .deco--corner-tl,
+  .invite .deco--corner-br { width: clamp(56px, 13vw, 90px); }
+  .invite .deco--corner-tl { top: -4%; left: -4%; }
+  .invite .deco--corner-br { bottom: -4%; right: -4%; }
+}
 
 /* --------------------------------------------------------------------------
    Events — five individual invitation cards

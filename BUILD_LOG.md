@@ -1804,3 +1804,26 @@ verified: the wrap-around arithmetic lands correctly at the boundary
 (index 6 of 7 wraps to 0), and the full existing interaction battery -
 drag, wheel, both buttons, both arrow keys, hover in/out - all still fire
 without error now that each one also calls into the new pause logic.
+
+## Invite card: garlands moved onto the card's own corner
+
+User: the corner floral decorations on the formal invitation panel were
+floating in the empty page margin beside the card, not attached to it.
+
+The cause: `.deco--corner-tl`/`.deco--corner-br` were positioned against
+`.invite` - the full-width section - with `left: 0` / `right: 0`. That
+placed them at the section's own edges. `.invite__card`, the thing they were
+meant to decorate, is centred and capped at `33rem`, so on anything wider
+than a phone there was a gap of empty section between the card's actual edge
+and where the flowers sat.
+
+Moved the two `<div class="deco...">` elements from being children of
+`.invite` (siblings of the card) to children of `.invite__card` itself, so
+`position: absolute` resolves against the card's own box - the nearest
+positioned ancestor - not the section's. Small negative insets (`-7%`, `-4%`
+under 26rem) let them spill slightly over the card's actual border, which is
+what "at the edge" means for a corner flourish: straddling it, not floating
+near it.
+
+Verified at 375px and desktop, both languages: no horizontal overflow, no
+failed loads, flowers sit on the card's own corner in both.
