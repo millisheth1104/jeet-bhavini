@@ -1786,6 +1786,22 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
 .reveal--drop { opacity: 0; translate: 0 -40px; }
 .reveal--drop.is-in { opacity: 1; translate: 0 0; }
 
+/* Directional entrances - cards, prints, lockets and list rows sliding in
+   from alternating sides as they cross into view, instead of every single
+   thing on the site rising the same way. Kept short (32px) and on the same
+   timing as the base .reveal, so it reads as "the same motion, a different
+   axis" rather than a competing animation. */
+.reveal--left  { opacity: 0; translate: -32px 0; }
+.reveal--left.is-in  { opacity: 1; translate: 0 0; }
+.reveal--right { opacity: 0; translate: 32px 0; }
+.reveal--right.is-in { opacity: 1; translate: 0 0; }
+@media (max-width: 30rem) {
+  /* halved on a phone - the sideways travel reads as a lurch on a narrow
+     card, where 32px is a much larger fraction of the width than on desktop */
+  .reveal--left  { translate: -16px 0; }
+  .reveal--right { translate: 16px 0; }
+}
+
 /* --------------------------------------------------------------------------
    Motion off
    -------------------------------------------------------------------------- */

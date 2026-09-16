@@ -254,7 +254,9 @@
 
     /* ---- an event card ---- */
     function eventCard(ev, i) {
-      var card = el("button", "inv reveal");
+      // Alternate the entrance side card by card - Mameru and Mandap (even)
+      // from the left, Sangeet and Lagna (odd) from the right.
+      var card = el("button", "inv reveal " + (i % 2 ? "reveal--right" : "reveal--left"));
       card.type = "button";
       card.setAttribute("data-ink", ev.ink);
       card.setAttribute("data-paper", ev.paper);
@@ -434,9 +436,10 @@
     var boxA = $("hostsPaired");
     if (p && p.pairs && p.pairs.length) {
       boxA.appendChild(el("h3", guIf("hosts__heading reveal"), t(p.heading)));
-      var ul = el("ul", "pairs reveal");
-      p.pairs.forEach(function (pair) {
-        var li = el("li");
+      var ul = el("ul", "pairs");
+      p.pairs.forEach(function (pair, pi) {
+        var li = el("li", "reveal " + (pi % 2 ? "reveal--right" : "reveal--left"));
+        li.style.setProperty("--d", (pi % 6) * 60 + "ms");
         li.appendChild(el("span", guIf("l"), t(pair[0])));
         li.appendChild(el("span", "dot", "◆"));
         li.appendChild(el("span", guIf("r"), t(pair[1])));
@@ -449,8 +452,13 @@
     if (a && a.names && a.names.length) {
       boxB.appendChild(ornRule());
       boxB.appendChild(el("h3", guIf("hosts__heading reveal"), t(a.heading)));
-      var ul2 = el("ul", "awaiting reveal");
-      a.names.forEach(function (nm) { ul2.appendChild(el("li", guIf(null), t(nm))); });
+      var ul2 = el("ul", "awaiting");
+      a.names.forEach(function (nm, ni) {
+        var li = el("li", guIf("reveal " + (ni % 2 ? "reveal--right" : "reveal--left")));
+        li.style.setProperty("--d", (ni % 6) * 60 + "ms");
+        li.textContent = t(nm);
+        ul2.appendChild(li);
+      });
       boxB.appendChild(ul2);
       if (a.solo)     boxB.appendChild(el("p", guIf("awaiting--solo reveal"), t(a.solo)));
       if (a.children) boxB.appendChild(el("p", guIf("awaiting--kids reveal"), t(a.children)));
@@ -484,7 +492,7 @@
     var host = $("gallerySlides");
     photos.forEach(function (p, i) {
       var lay = LAY[i % LAY.length];
-      var fig = el("figure", "print reveal");
+      var fig = el("figure", "print reveal " + (i % 2 ? "reveal--right" : "reveal--left"));
       fig.style.setProperty("--rot", lay.rot + "deg");
       fig.style.setProperty("--w", lay.w + "%");
       fig.style.setProperty("--dx", lay.dx + "px");
@@ -569,8 +577,9 @@
                  ["minutes", u("cdMinutes")], ["seconds", u("cdSeconds")]];
     var nums = {};
 
-    units.forEach(function (u) {
-      var wrap = el("div", "locket");
+    units.forEach(function (u, ui) {
+      var wrap = el("div", "locket reveal " + (ui % 2 ? "reveal--right" : "reveal--left"));
+      wrap.style.setProperty("--d", ui * 90 + "ms");
       var img = el("img");
       img.src = "assets/generated/countdown_locket.png";
       img.alt = ""; img.loading = "lazy";

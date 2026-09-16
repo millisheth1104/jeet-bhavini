@@ -1664,3 +1664,50 @@ template for a different couple, a different venue and a different family
 name. However these were produced, they are not ours to reproduce directly,
 and I did not - the medallion, urn, and corner flourish above are original,
 generated in the site's own established palette.
+
+## Directional scroll reveals, sitewide
+
+User asked for "immersive animation throughout the site" and specifically
+for the event cards to alternate in from left and right as you scroll to
+them. Scoped down after a few back-and-forth questions to: subtle CSS
+slide+fade, reusing the existing `.reveal` + IntersectionObserver system
+rather than a new animation engine, applied broadly rather than to cards
+alone.
+
+Two new variants alongside the existing `.reveal`/`.reveal--drop`:
+
+    .reveal--left   translate: -32px 0  (-16px under 30rem, so the
+    .reveal--right  translate:  32px 0   sideways travel doesn't read as a
+                                          lurch on a narrow card)
+
+Applied alternating by index (even = left, odd = right) to:
+
+- the four event cards (Mameru/Mandap from the left, Sangeet/Lagna from the
+  right, per the user's explicit pattern)
+- the seven gallery prints
+- the four countdown lockets
+- every row of the hosts-paired list and every name in the awaiting list
+  (19 items total), which previously revealed as one flat block rather than
+  per row
+
+Hero and the intro were left alone - both already carry dedicated motion
+(parallax layers, the elephant/bell sequence) built earlier, and stacking a
+directional slide on top risked fighting those rather than adding to them.
+
+No JS beyond assigning the class name changed; `.reveal--left`/`--right`
+combine with the base `.reveal` class exactly the way `.reveal--drop` already
+does; reduced-motion continues to work through `.reveal`'s existing
+`!important` overrides in the reduced-motion query, which apply regardless of
+which direction variant is also present.
+
+**Testing note for the log, not a site bug**: while verifying this, every
+`.reveal` element read as permanently un-revealed (0 elements with `is-in`,
+even ones plainly on screen) and a fresh IntersectionObserver placed on the
+same elements never fired at all. `document.hidden` was `true` on the
+preview tab at the time - browsers throttle IntersectionObserver (and
+timers, rAF) on backgrounded tabs, which is exactly what was happening to
+this session's own preview tab, not a defect in the reveal system. Confirmed
+by forcing `is-in` directly and screenshotting the settled layout for events,
+gallery and the families lists, all of which held up with no positioning
+issues, no failed asset loads, and no horizontal overflow in either
+language.
