@@ -617,7 +617,7 @@
        background, and while the carousel has scrolled out of view - no
        point ticking a deck nobody can see, and it avoids the deck landing
        several cards further along than where the visitor left it. */
-    var AUTO_MS = 1900;          // medium-high: quick, but each photo still registers
+    var AUTO_MS = 1100;           // fast: barely a beat between photos
     var RESUME_MS = 3200;        // how long a touch/drag/click buys before it resumes
     var autoTimer = null, resumeTimer = null;
     var pausedByUser = false, inView = false;
@@ -641,8 +641,13 @@
 
     stage.addEventListener("pointerdown", function () { pauseAuto(); });
     stage.addEventListener("wheel", function () { pauseAuto(); }, { passive: true });
-    stage.addEventListener("mouseenter", function () { pauseAuto(false); });
-    stage.addEventListener("mouseleave", function () { pausedByUser = false; scheduleAuto(); });
+    /* pointerType check: touch fires a synthetic mouseenter on tap with no
+       matching mouseleave on some browsers, which would pause autoplay for
+       good after a single tap. Real mice only. */
+    stage.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") pauseAuto(false); });
+    stage.addEventListener("pointerleave", function (e) {
+      if (e.pointerType === "mouse") { pausedByUser = false; scheduleAuto(); }
+    });
     prevBtn.addEventListener("click", function () { pauseAuto(); });
     nextBtn.addEventListener("click", function () { pauseAuto(); });
     stage.addEventListener("keydown", function (e) {

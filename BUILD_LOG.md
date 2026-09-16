@@ -1827,3 +1827,26 @@ near it.
 
 Verified at 375px and desktop, both languages: no horizontal overflow, no
 failed loads, flowers sit on the card's own corner in both.
+
+## Gallery: faster autoplay, and a touch-safe hover pause
+
+User: the gallery's autoplay should move faster, and keep going rather than
+stopping before every photo has had its turn.
+
+- Step interval `1.9s → 1.1s`, snap transition `.5s → .38s` to match - the
+  whole thing reads noticeably quicker rather than just ticking faster with
+  the same slow settle in between.
+- The wraparound step (`(current + 1) % cards.length`) already guarantees
+  every photo comes up on a perpetual loop; nothing changed there.
+- Hardened the one way autoplay could get stuck rather than looping forever:
+  hover-pause was on `mouseenter`/`mouseleave`, and some browsers fire a
+  synthetic `mouseenter` for a touch tap with no matching `mouseleave` -
+  which would pause it for good after a single tap on a phone, with nothing
+  to un-pause it. Switched to `pointerenter`/`pointerleave` gated on
+  `e.pointerType === "mouse"`, so only a real mouse hover pauses indefinitely;
+  a touch tap still pauses briefly (through the existing `pointerdown`
+  handler) and resumes on its own after 3.2s same as any other interaction.
+
+Verified: no console errors and no horizontal overflow after simulating a
+touch tap (`pointerenter`/`pointerdown`/`pointerup` with `pointerType:
+"touch"`) on the stage.

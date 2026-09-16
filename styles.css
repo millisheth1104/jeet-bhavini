@@ -1402,8 +1402,8 @@ body.intro-open { overflow: hidden; }
 /* Snap animates smoothly; mid-drag every frame is instant so the deck
    tracks the pointer 1:1, with no lag chasing a transition. */
 .depthcar__track.is-settling .depthcar__card {
-  transition: transform .5s cubic-bezier(.22,.61,.36,1),
-              opacity .5s ease;
+  transition: transform .38s cubic-bezier(.22,.61,.36,1),
+              opacity .38s ease;
 }
 
 .depthcar__nav {
