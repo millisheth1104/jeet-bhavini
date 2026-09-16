@@ -1307,32 +1307,71 @@ body.intro-open { overflow: hidden; }
 .closing .eyebrow { color: var(--gold-ink); }
 .closing .rule { color: var(--gold); }
 
-.savedate { text-align: center; padding-top: clamp(6rem, 16vw, 10rem); }
+.savedate {
+  text-align: center;
+  padding-top: clamp(6rem, 16vw, 10rem);
+  overflow: clip;   /* the leaf bleeds off the edge; it must not widen the page */
+}
+
+/* Thin gold corner flourishes echoing the invite card's own corner
+   botanicals - the postcard framing the reference has, built from an
+   ornament already on the page rather than a fresh, unrelated one. A leaf
+   was tried here too but the only ones on hand are green, which breaks the
+   whole point of the closing section's palette. */
+.deco--cal-corner-tl,
+.deco--cal-corner-br {
+  position: absolute;
+  width: clamp(70px, 16vw, 130px);
+  opacity: .75;
+}
+.deco--cal-corner-tl { top: clamp(1rem, 6vw, 2.5rem); left: clamp(.5rem, 4vw, 2rem); }
+.deco--cal-corner-br {
+  bottom: clamp(2.5rem, 10vw, 4.5rem);
+  right: clamp(.5rem, 4vw, 2rem);
+  scale: -1 -1;
+}
+
 
 /* save the date -----------------------------------------------------------
    A leaf torn from the wedding month, the way a printed save-the-date card
    sets it: the month in the script face, the days in a plain serif grid, and
    the two days the couple is asking for marked. */
 .cal {
+  position: relative;
+  z-index: 1;
   margin: 0 auto;
   max-width: 22rem;
   /* No card: no ground, no keyline, no shadow. The calendar is printed ON the
      closing's paper, which is the only surface this half of the site has. */
   padding: 0 clamp(1.2rem, 4vw, 1.8rem);
 }
+.cal__border {
+  display: block;
+  width: 100%;
+  max-width: 20rem;
+  margin: 0 auto clamp(1rem, 4vw, 1.6rem);
+  opacity: .9;
+}
+
+/* A bolder small-caps anchor rather than a script flourish - the calendar
+   reads as a printed postcard's masthead, not another card title. */
 .cal__month {
-  font-family: var(--script);
-  font-size: clamp(2.2rem, 10vw, 3rem);
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 6vw, 1.7rem);
+  letter-spacing: .16em;
+  text-transform: uppercase;
   line-height: 1;
-  color: var(--dusk-ink);
+  color: var(--dusk-accent);
   margin: 0 0 clamp(1rem, 4vw, 1.4rem);
   text-align: center;
 }
 /* Rasa, not Great Vibes: the script face carries no Gujarati. */
+/* Gujarati is never tracked or capitalised - see the earlier note on why. */
 html[data-lang="gu"] .cal__month {
-  font-family: var(--serif);
-  font-weight: 600;
-  font-size: clamp(1.7rem, 7.5vw, 2.2rem);
+  letter-spacing: .02em;
+  text-transform: none;
+  font-size: clamp(1.5rem, 7vw, 2rem);
 }
 
 .cal__grid {

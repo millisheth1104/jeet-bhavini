@@ -327,6 +327,18 @@ ASSETS = {
     # card puts a loose spray of lavender blooms here, not a deity.
     # Foot of the save-the-date calendar. A pair facing each other over a
     # ribbon, the way the reference card sets its lovebirds - peacocks instead.
+    # A thin repeating floral border band across the top of the save-the-date
+    # calendar - the postcard framing the reference uses. Wide and shallow so
+    # it can be repeated or stretched as a CSS background.
+    "cal_border_top": dict(
+        prompt="A thin horizontal repeating border pattern of tiny five petal "
+               "blossoms and small leaves in a single tidy row, evenly spaced and "
+               "seamless left to right, delicate line art with soft watercolour "
+               "fill, very shallow and much wider than tall, nothing above or "
+               "below the row. "
+               + WC,
+        size="landscape_16_9", cutout=True, matte="birefnet"),
+
     "cal_peacocks": dict(
         prompt="Two ornamental Indian peacocks facing each other in mirror symmetry, "
                "their long tail feathers sweeping down and outward, standing on a "

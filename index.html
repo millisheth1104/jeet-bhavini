@@ -210,8 +210,14 @@
          heads and marked days are all built in main.js from the dates in
          content.js, so this cannot drift from the cards. -->
     <section class="section savedate" id="savedate">
+      <!-- Corner ornament, positioned at the section level so it can bleed
+           past the narrow calendar - the same pattern the invite section
+           uses for its own corner botanicals. -->
+      <div class="deco deco--cal-corner-tl reveal"><img src="assets/generated/orn_corner.png" alt=""></div>
+      <div class="deco deco--cal-corner-br reveal" style="--d:120ms"><img src="assets/generated/orn_corner.png" alt=""></div>
       <div class="wrap--narrow">
         <figure class="cal reveal">
+          <img class="cal__border" src="assets/generated/cal_border_top.png" alt="">
           <figcaption class="cal__month" id="calMonth"></figcaption>
           <div class="cal__grid" id="calGrid"></div>
           <img class="cal__motif" src="assets/generated/cal_peacocks.png" alt="" loading="lazy">

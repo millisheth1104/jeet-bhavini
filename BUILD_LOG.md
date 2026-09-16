@@ -1577,3 +1577,48 @@ rest, strike and follow-through. All three render correctly at 420x760 and
 1440x900: big bell on a chain from the pavilion ceiling, no duplicate painted
 bell, elephant's feet on the floor, trunk swinging up to the clapper, bell
 rocking after. The changes are live and correct on the server.
+
+## Save-the-date calendar: postcard framing to match the reference
+
+User sent a Pinterest-style save-the-date reference (a repeating floral border
+across the top, gold corner flourishes, bold caps month heading, an
+illustrated garden scene at the foot) and asked for the calendar section to
+match. Kept the site's own peacocks and marked-day discs — both were
+deliberate choices from an earlier round in this session — and adopted the
+reference's framing and typography around them, rather than replacing what
+already fit.
+
+**New asset**: `cal_border_top.png`, a thin repeating row of small watercolour
+blossoms, generated with the same `WC` style constant every other card
+illustration uses, so it reads as part of the same set rather than a new one.
+
+**Reused rather than regenerated**: `orn_corner.png`, a gold vine flourish
+already in the project and unused since the card revert, placed top-left and
+mirrored bottom-right at the `.savedate` section level — the identical pattern
+the invite section already uses for its own corner botanicals
+(`.invite .deco--corner-tl/br`). Consistency over novelty was the whole lesson
+from the illustration-palette work earlier in this session; this is that
+lesson applied rather than re-learned.
+
+**Typography**: `.cal__month` moved from the script face to a bold small-caps
+serif (`var(--serif)`, weight 600, `.16em` tracking) — a postcard masthead
+rather than another card title. Gujarati keeps its own untracked, non-uppercase
+rule, per the standing rule that Gujarati is never tracked.
+
+**Tried and reverted**: a banana palm frond bleeding in from the side, to
+echo the reference's tree. It is the only "tree" asset on hand and it is
+green — the one colour the `PALETTE` constant explicitly bans, established
+earlier this session after the illustrations first shipped in five
+uncoordinated palettes. Pulling it in here would have reintroduced exactly
+that problem for one section. Removed; two corner flourishes carry the frame
+on their own.
+
+**Left out**: the reference's venue line and "Warm Regards / [Family] Name"
+signoff beneath the calendar. The site already closes with an equivalent
+signoff in the countdown section (couple's names, date, "Forever begins
+today"), and `W.headline.venue` is currently blank — adding a second,
+redundant closing statement with invented venue text was judged out of scope
+for a framing request. Easy to add later once a venue is confirmed.
+
+Verified in both languages at 375px and desktop: no failed requests, no
+horizontal overflow, Gujarati renders in Rasa without tracking.
