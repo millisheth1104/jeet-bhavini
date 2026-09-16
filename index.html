@@ -111,10 +111,10 @@
 </div>
 
 <!-- ==== language ====================================================== -->
-<!-- Fixed to the top right, above everything, on every screen. The label
-     names the language you would switch TO, never the current one. -->
+<!-- Fixed to the top right, above everything, on every screen. Both
+     languages sit in the toggle at once; the active one is filled. -->
 <div class="topbar">
-  <button class="lang" id="langBtn" type="button"></button>
+  <div class="langswitch" id="langSwitch" role="group"></div>
 </div>
 
 <main id="top">
@@ -157,7 +157,6 @@
       <p class="hero__meta reveal" style="--d:280ms" id="heroMeta"></p>
     </div>
 
-    <span class="scroll-cue" id="scrollCue" aria-hidden="true"></span>
   </header>
 
   <!-- ==== invitation =================================================== -->

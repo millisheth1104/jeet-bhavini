@@ -1889,3 +1889,31 @@ card's own paper.
 Verified in both languages, 375px and desktop: 0px overflow on all four
 cards (`.inv` clips overflow silently rather than erroring, so this was
 checked by measurement, not assumed), no failed loads.
+
+## Language switch is now a two-segment toggle, and the scroll cue is gone
+
+**Language toggle.** Was a single pill that always named the OTHER language
+("read in Gujarati" while reading English, "read in English" while reading
+Gujarati") - one tap target, one label, the current language never shown.
+Replaced with a two-segment switch, both languages visible at once
+(`EN` | `ગુ`), the active one filled in the cards' own berry plum, matching
+the reference sent. `content.js` gained `ui.langShort` (`EN`/`ગુ`) alongside
+the existing full-name `langName`, which nothing else used and is now gone.
+Each segment is its own button; only the inactive one is clickable, so a tap
+on the language already showing does nothing rather than reloading the page
+for no reason.
+
+Gujarati keeps its own rule inside the toggle too - `.langswitch__opt--gu`
+carries no letter-spacing and a slightly larger size for the same reason
+every other Gujarati label on the page doesn't: tracking pulls a matra away
+from its consonant.
+
+**Scroll cue removed.** The "SCROLL" label and falling line beneath the hero
+fountain - `.scroll-cue`, `#scrollCue`, and its `content.js` entry are gone
+outright, along with the reduced-motion and Gujarati overrides that only
+existed to adjust it.
+
+Verified at 375px and desktop, both languages: switching works in both
+directions, the correct segment is marked `is-active`/`aria-pressed`, no
+horizontal overflow, no failed loads, scroll cue confirmed absent from the
+DOM.

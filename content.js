@@ -248,12 +248,14 @@ window.WEDDING = {
      reads that is not part of the invitation's own wording.
      --------------------------------------------------------------------- */
   ui: {
-    langName:          { en: "English", gu: "ગુજરાતી" },
+    /* short codes for the segmented EN | ગુ toggle - both are always shown,
+       so there's no room for the full "English"/"ગુજરાતી" the single-button
+       version used. */
+    langShort:         { en: "EN", gu: "ગુ" },
     langSwitchTo:      { en: "ગુજરાતીમાં વાંચો", gu: "Read in English" },
 
     introEyebrow:      { en: "The wedding of", gu: "શુભ લગ્ન" },
     introSkip:         { en: "Skip", gu: "છોડો" },
-    scrollCue:         { en: "Scroll", gu: "નીચે જુઓ" },
 
     heroEyebrow:       { en: "Together with their families", gu: "પરિવારજનો સહિત" },
 

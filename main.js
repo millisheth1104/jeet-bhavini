@@ -64,14 +64,26 @@
   } catch (e) {}
 
   (function langToggle() {
-    var btn = $("langBtn");
-    if (!btn) return;
-    // the button names the language you would switch TO
-    btn.textContent = (W.ui.langName || {})[OTHER] || OTHER.toUpperCase();
-    btn.className = "lang" + (OTHER === "gu" ? " lang--gu" : "");
-    btn.setAttribute("aria-label", u("langSwitchTo"));
-    btn.title = u("langSwitchTo");
-    btn.addEventListener("click", function () { setLang(OTHER); });
+    var host = $("langSwitch");
+    if (!host) return;
+    var short = W.ui.langShort || { en: "EN", gu: "GU" };
+    // Both languages sit in the toggle at once - the active one filled, the
+    // other plain - rather than one button that only ever names where a tap
+    // would take you.
+    LANGS.forEach(function (code) {
+      var isActive = code === LANG;
+      var seg = el("button", "langswitch__opt" +
+        (isActive ? " is-active" : "") + (code === "gu" ? " langswitch__opt--gu" : ""));
+      seg.type = "button";
+      seg.textContent = short[code] || code.toUpperCase();
+      seg.setAttribute("aria-pressed", isActive ? "true" : "false");
+      if (!isActive) {
+        seg.setAttribute("aria-label", u("langSwitchTo"));
+        seg.title = u("langSwitchTo");
+        seg.addEventListener("click", function () { setLang(code); });
+      }
+      host.appendChild(seg);
+    });
   }());
 
   /* Static labels that live in index.html rather than in a render function:
@@ -84,7 +96,6 @@
       if (alsoTitle) e.title = u(key);
     }
     label("heroEyebrow",     "heroEyebrow");
-    label("scrollCue",       "scrollCue");
     label("eventsEyebrow",   "eventsEyebrow");
     label("eventsTitle",     "eventsTitle");
     label("familiesEyebrow", "familiesEyebrow");

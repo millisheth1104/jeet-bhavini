@@ -605,33 +605,6 @@ body.intro-open { overflow: hidden; }
   .hero__inner { padding-top: 4vh; }
 }
 
-/* scroll cue -------------------------------------------------------------- */
-.scroll-cue {
-  position: absolute;
-  bottom: clamp(1rem, 3vh, 2rem);
-  left: 50%;
-  translate: -50% 0;
-  z-index: 3;
-  font-size: .6rem;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  display: grid;
-  justify-items: center;
-  gap: .55rem;
-}
-.scroll-cue::after {
-  content: "";
-  width: 1px;
-  height: 2.4rem;
-  background: linear-gradient(var(--brass), transparent);
-  animation: cue 2.4s ease-in-out infinite;
-}
-@keyframes cue {
-  0%, 100% { transform: scaleY(.35); transform-origin: top; opacity: .4; }
-  50%      { transform: scaleY(1);   transform-origin: top; opacity: 1; }
-}
-
 /* --------------------------------------------------------------------------
    Invitation panel
    -------------------------------------------------------------------------- */
@@ -1882,7 +1855,6 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
     translate: none !important;
     transition: none !important;
   }
-  .scroll-cue::after { animation: none; }
   * { scroll-behavior: auto !important; }
 }
 
@@ -1895,40 +1867,48 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
   right: clamp(.6rem, 2vw, 1.2rem);
   z-index: 120;                      /* .intro is 100, .controls 40 */
 }
-.lang {
-  appearance: none;
-  cursor: pointer;
-  font-family: var(--sans);
-  font-size: .78rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  padding: .5rem .85rem;
+.langswitch {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
   border: 1px solid var(--hairline);
   border-radius: 999px;
   background: rgba(255,255,255,.86);
   backdrop-filter: blur(6px);
   box-shadow: 0 1px 2px rgba(61,52,40,.08), 0 8px 20px -14px rgba(61,52,40,.5);
-  transition: background .25s ease, color .25s ease, border-color .25s ease;
 }
-/* the Gujarati label is a script, not a set of capitals */
-.lang--gu {
+.langswitch__opt {
+  appearance: none;
+  cursor: pointer;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: .74rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  padding: .42rem .8rem;
+  color: var(--ink-soft);
+  background: transparent;
+  transition: background .25s ease, color .25s ease;
+}
+/* the Gujarati segment is a script, not a set of capitals - no tracking */
+.langswitch__opt--gu {
   font-family: var(--gujarati);
-  font-size: .92rem;
+  font-size: .86rem;
   letter-spacing: 0;
-  text-transform: none;
-  padding: .34rem .85rem .44rem;
+  font-weight: 500;
 }
-.lang:hover, .lang:focus-visible {
-  background: #fff;
-  color: var(--ink);
-  border-color: color-mix(in srgb, var(--ink) 28%, transparent);
+.langswitch__opt.is-active {
+  background: var(--dusk-accent);
+  color: #FBF6EE;
+  cursor: default;
 }
-.lang:focus-visible { outline: 1px solid var(--brass); outline-offset: 3px; }
+.langswitch__opt:not(.is-active):hover { background: rgba(142,58,93,.1); color: var(--ink); }
+.langswitch__opt:focus-visible { outline: 1px solid var(--brass); outline-offset: 2px; }
 
 @media (max-width: 480px) {
-  .lang { font-size: .72rem; padding: .42rem .7rem; }
-  .lang--gu { font-size: .85rem; }
+  .langswitch__opt { font-size: .68rem; padding: .38rem .65rem; }
+  .langswitch__opt--gu { font-size: .8rem; }
 }
 
 /* ---- Gujarati typography ------------------------------------------------
@@ -1936,12 +1916,12 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
    for Latin pulls a matra away from the consonant it belongs to, which reads
    as a spelling error rather than a style. `text-transform: uppercase` does
    nothing to the script and mangles any Latin word standing beside it, so both
-   come off together. `.lang` is deliberately not in this list: its Gujarati
-   state has its own rule, and its English state must stay in caps. */
+   come off together. `.langswitch__opt` is deliberately not in this list:
+   its Gujarati segment has its own rule (`.langswitch__opt--gu`), and its
+   English segment must stay in caps. */
 html[data-lang="gu"] .eyebrow,
 html[data-lang="gu"] .intro__skip,
 html[data-lang="gu"] .hero__meta,
-html[data-lang="gu"] .scroll-cue,
 html[data-lang="gu"] .invite__when,
 html[data-lang="gu"] .inv__more,
 html[data-lang="gu"] .locket__num span,
@@ -1954,6 +1934,5 @@ html[data-lang="gu"] .hosts__heading {
 }
 /* Those labels lean on tracking for their weight; give it back as size. */
 html[data-lang="gu"] .eyebrow,
-html[data-lang="gu"] .scroll-cue,
 html[data-lang="gu"] .compliments__heading { font-size: .88rem; }
 html[data-lang="gu"] .locket__num span { font-size: .78rem; }
