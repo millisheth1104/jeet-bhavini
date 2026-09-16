@@ -475,36 +475,145 @@
     put("galleryTitle", t(W.gallery.heading));
     put("galleryCaption", t(W.gallery.caption));
 
-    /* Each print gets its own tilt, width and nudge so the set reads as a
-       handful of photographs dropped on a table rather than a grid. The
-       values are fixed, not random: a random scatter re-rolls on every load
-       and one roll in ten looks wrong. */
-    var LAY = [
-      { rot: -2.4, w: 96,  dx: -3 },
-      { rot:  1.9, w: 100, dx:  2 },
-      { rot:  2.2, w: 86,  dx:  5 },
-      { rot: -1.5, w: 92,  dx: -4 },
-      { rot: -2.2, w: 100, dx:  3 },
-      { rot:  1.5, w: 88,  dx: -2 },
-      { rot:  2.7, w: 94,  dx:  4 }
-    ];
+    /* ---- a depth carousel ---------------------------------------------
+       One focused centre card, the rest scaled down and stacked toward the
+       edges by distance. `current` is a continuous number, not an integer -
+       mid-drag it sits between two cards, which is what makes the drag feel
+       like it is actually moving the deck rather than jumping card to card.
+       On release it snaps to the nearest whole index. */
+    var stage = $("galleryStage");
+    var track = $("galleryTrack");
+    var prevBtn = $("galPrev");
+    var nextBtn = $("galNext");
 
-    var host = $("gallerySlides");
-    photos.forEach(function (p, i) {
-      var lay = LAY[i % LAY.length];
-      var fig = el("figure", "print reveal " + (i % 2 ? "reveal--right" : "reveal--left"));
-      fig.style.setProperty("--rot", lay.rot + "deg");
-      fig.style.setProperty("--w", lay.w + "%");
-      fig.style.setProperty("--dx", lay.dx + "px");
-      fig.style.setProperty("--d", (i % 3) * 90 + "ms");
-
+    var cards = photos.map(function (p, i) {
+      var fig = el("figure", "depthcar__card");
+      fig.setAttribute("role", "listitem");
       var img = el("img");
       img.src = p.src;
       img.alt = t(p.alt);
       if (i) img.loading = "lazy";
       fig.appendChild(img);
-      host.appendChild(fig);
+      track.appendChild(fig);
+      return fig;
     });
+
+    prevBtn.setAttribute("aria-label", u("aPrevPhoto"));
+    nextBtn.setAttribute("aria-label", u("aNextPhoto"));
+    prevBtn.innerHTML = "&#8249;";
+    nextBtn.innerHTML = "&#8250;";
+    if (cards.length < 2) { prevBtn.hidden = nextBtn.hidden = true; }
+
+    var current = 0;             // continuous focus position, 0..cards.length-1
+    var gap = 190;               // px between card centres, recalculated below
+    var falloff = 0.16;          // scale lost per card-step away from centre
+    var minScale = 0.55;
+
+    function measure() {
+      // The gap and falloff both track the stage width, so the deck reads
+      // the same share of the screen on a phone as on a desktop rather than
+      // spilling past the edges or shrinking to a strip.
+      var w = stage.clientWidth;
+      gap = Math.max(96, Math.min(220, w * 0.34));
+      falloff = w < 480 ? 0.22 : 0.16;
+      minScale = w < 480 ? 0.5 : 0.55;
+      layout();
+    }
+
+    function layout() {
+      cards.forEach(function (card, i) {
+        var d = i - current;
+        var abs = Math.abs(d);
+        var scale = Math.max(minScale, 1 - abs * falloff);
+        var x = d * gap;
+        card.style.transform =
+          "translate(-50%, -50%) translateX(" + x.toFixed(1) + "px) scale(" + scale.toFixed(3) + ")";
+        card.style.zIndex = String(1000 - Math.round(abs * 10));
+        card.style.opacity = String(Math.max(0.45, 1 - abs * 0.16));
+        card.setAttribute("aria-hidden", abs < 0.5 ? "false" : "true");
+      });
+    }
+
+    function clamp(n) { return Math.max(0, Math.min(cards.length - 1, n)); }
+
+    var snapping = false;
+    function snapTo(index, instant) {
+      current = clamp(index);
+      snapping = !instant;
+      track.classList.toggle("is-settling", snapping);
+      layout();
+    }
+    track.addEventListener("transitionend", function () {
+      track.classList.remove("is-settling");
+    });
+
+    /* ---- drag (mouse + touch, one Pointer Events path for both) -------- */
+    var dragging = false, startX = 0, startCurrent = 0, lastX = 0, lastT = 0, vel = 0;
+
+    stage.addEventListener("pointerdown", function (e) {
+      if (cards.length < 2) return;
+      dragging = true;
+      track.classList.remove("is-settling");
+      startX = lastX = e.clientX;
+      lastT = performance.now();
+      startCurrent = current;
+      vel = 0;
+      stage.setPointerCapture(e.pointerId);
+      stage.classList.add("is-dragging");
+    });
+    stage.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      var now = performance.now();
+      var dt = Math.max(1, now - lastT);
+      vel = (e.clientX - lastX) / dt;
+      lastX = e.clientX; lastT = now;
+      var dx = e.clientX - startX;
+      current = clamp(startCurrent - dx / gap);
+      layout();
+    });
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      stage.classList.remove("is-dragging");
+      // a flick keeps going a little, weighted by how fast the release was
+      var glide = -vel * 90 / gap;
+      snapTo(Math.round(current + glide));
+    }
+    stage.addEventListener("pointerup", endDrag);
+    stage.addEventListener("pointercancel", endDrag);
+
+    // a plain click/tap on an off-centre card brings it to focus
+    cards.forEach(function (card, i) {
+      card.addEventListener("click", function () {
+        if (Math.abs(i - current) > 0.05) snapTo(i);
+      });
+    });
+
+    /* ---- wheel: trackpad horizontal swipe, or a vertical wheel --------- */
+    var wheelTimer;
+    stage.addEventListener("wheel", function (e) {
+      if (cards.length < 2) return;
+      e.preventDefault();
+      track.classList.remove("is-settling");
+      var delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      current = clamp(current + delta / gap);
+      layout();
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(function () { snapTo(Math.round(current)); }, 140);
+    }, { passive: false });
+
+    /* ---- buttons + keyboard --------------------------------------------- */
+    prevBtn.addEventListener("click", function () { snapTo(Math.round(current) - 1); });
+    nextBtn.addEventListener("click", function () { snapTo(Math.round(current) + 1); });
+    stage.setAttribute("tabindex", "0");
+    stage.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft")  { snapTo(Math.round(current) - 1); }
+      if (e.key === "ArrowRight") { snapTo(Math.round(current) + 1); }
+    });
+
+    window.addEventListener("resize", measure);
+    measure();
+    snapTo(0, true);
   }());
 
   /* The instant the calendar and the countdown both work from. */

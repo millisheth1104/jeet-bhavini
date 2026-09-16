@@ -195,9 +195,14 @@
       <span class="rule reveal" style="--d:120ms" aria-hidden="true">
         <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
       </span>
-      <!-- A handful of prints tipped onto the paper. Built in main.js from
-           the photos in content.js. -->
-      <div class="scatter" id="gallerySlides"></div>
+      <!-- A depth carousel: a focused centre print with the rest scaled
+           down toward the edges, dragged or scrolled through. Built in
+           main.js from the photos in content.js. -->
+      <div class="depthcar" id="galleryStage">
+        <div class="depthcar__track" id="galleryTrack" role="list"></div>
+        <button class="depthcar__nav depthcar__nav--prev" id="galPrev" type="button"></button>
+        <button class="depthcar__nav depthcar__nav--next" id="galNext" type="button"></button>
+      </div>
       <p class="gallery__caption reveal" id="galleryCaption"></p>
     </div>
   </section>

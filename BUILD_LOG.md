@@ -1711,3 +1711,57 @@ by forcing `is-in` directly and screenshotting the settled layout for events,
 gallery and the families lists, all of which held up with no positioning
 issues, no failed asset loads, and no horizontal overflow in either
 language.
+
+## Gallery rebuilt as a depth carousel
+
+User linked a Framer plugin ("Depthline Carousel") and asked for its behaviour
+on the gallery: a focused centre card, cards scaling down toward the edges,
+smooth drag with momentum, snap-to-centre, wheel navigation, hover lift. The
+plugin itself only runs inside Framer's own builder - this site has no build
+step and no dependencies - so the mechanics are rebuilt from scratch in plain
+JS/CSS rather than installed, and skinned in the site's own aged-print look
+(cream mount, corner scorch, soft shadow) rather than the reference's plain
+stark cards, so it reads as part of this invitation rather than a dropped-in
+widget.
+
+Replaces the "scattered prints" layout from two sessions ago (a static CSS-
+column grid, every photo visible at once, each with a fixed tilt). That
+approach and this one solve different problems - all-at-once vs. one focused
+photo at a time - so this is a real swap, not a refinement.
+
+**The mechanics**: `current` is one continuous number (not an integer) - the
+position of the deck relative to its centre. Every card's transform is a pure
+function of its own index distance from `current`:
+
+    translateX = distance * gap        scale = 1 - |distance| * falloff
+
+Drag, wheel, buttons and arrow keys all just change `current` and re-run that
+same function - there's one layout path, not four.
+
+- **Drag**: Pointer Events (one code path for mouse and touch). While
+  dragging, `current` tracks the pointer 1:1 with no CSS transition, so there
+  is no lag between the finger and the deck. On release, velocity from the
+  last move carries into a short glide before it snaps to the nearest card -
+  a fast flick lands a card or two further than a slow one.
+- **Snap**: a `.is-settling` class toggles a `transition: transform` on the
+  cards only while animating to rest; it's removed again on the next drag or
+  wheel so the next interaction is instant, not fighting a transition already
+  in flight.
+- **Wheel**: trackpad `deltaX` or a plain mouse `deltaY` both drive `current`
+  directly, debounced to a snap once scrolling stops.
+- **Responsive**: card width, the gap between centres, and the falloff curve
+  are all recomputed from the stage's own width on load and on resize, so the
+  deck occupies the same share of the screen on a phone as on a desktop
+  rather than spilling past the edges or shrinking to a strip. Nav arrows
+  hide under 30rem, where they'd crowd the deck more than help it.
+- Off-centre cards are click-to-focus; the centred card is not (nothing to
+  do by clicking it). `aria-hidden` follows which one is centred.
+
+Verified: dragging, wheel, both nav buttons, arrow keys and click-to-focus
+each land on the expected card, checked by dispatching real `PointerEvent`/
+`WheelEvent`/`KeyboardEvent`s and reading which card's `aria-hidden` flipped
+- not by eyeballing a screenshot. One photo that looked blank in a first
+screenshot turned out to be real image data at reduced opacity (a bright
+beach photo faded toward the edge of the deck), confirmed by sampling its
+pixels on a canvas rather than assumed. No failed loads, no horizontal
+overflow, correct in both languages.
