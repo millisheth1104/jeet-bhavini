@@ -33,9 +33,8 @@ window.WEDDING = {
   // Shown under the names in the hero.
   headline: {
     datesLabel: { en: "1 – 2 December 2026", gu: "1 – 2 ડિસેમ્બર 2026" },
-    // Leave blank until the venue is confirmed; the line disappears.
-    venue: "",
-    city: { en: "Gandhidham", gu: "ગાંધીધામ" },
+    venue: { en: "Oleander Farms", gu: "ઓલિએન્ડર ફાર્મ્સ" },
+    city: { en: "Karjat, Maharashtra", gu: "કર્જત, મહારાષ્ટ્ર" },
   },
 
   // The formal invitation panel.
@@ -68,7 +67,6 @@ window.WEDDING = {
   countdownTo: "2026-12-02T17:41:00+05:30",
 
   /* The four ceremony cards.
-
      `gu` and `en` are the card's heading. They are shown TOGETHER on every
      card in both languages - do not make these a { en, gu } pair. Everything
      else on the card follows the site's language. */
@@ -77,16 +75,19 @@ window.WEDDING = {
       key: "mameru",
       gu: "મામેરું",
       en: "Mameru",
-      enShift: "0.6em",
+      enShift: "0.2em",
       tagline: { en: "Where Blessings Begin", gu: "આશીર્વાદનો આરંભ" },
       ink: "sage",
       paper: "a",
-      illustration: "assets/generated/ill_mameru.png",
-      ornament: false,
+      illustration: "assets/generated/user_mameru_final.png",
+      wideIllustration: true,
+      hangingOrnament: "assets/generated/user_hanging_lamps_medium.png",
+      ornament: true,
       date: { en: "Tuesday, 1 December 2026", gu: "મંગળવાર, 1 ડિસેમ્બર 2026" },
       dateShort: { day: "01", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: "9:00 AM" }],
-      venue: { en: "Gandhidham,\nGujarat", gu: "ગાંધીધામ,\nગુજરાત" },
+      venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
+      mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: "",
       note: {
         en: "The maternal blessing, offered before the wedding days begin.",
@@ -97,17 +98,19 @@ window.WEDDING = {
       key: "sangeet",
       gu: "શામ શાનદાર",
       en: "Sangeet",
-      enShift: "-1.7em",
-      tagline: { en: "An Evening of Song", gu: "સંગીતની સંધ્યા" },
+      enShift: "-0.5em",
+      tagline: { en: "An Evening of Song & Dance", gu: "સંગીતની સંધ્યા" },
       ink: "indigo",
       paper: "b",
-      illustration: "assets/generated/ill_sangeet.png",
+      illustration: "assets/generated/user_sangeet_final.png",
       wideIllustration: true,
+      hangingOrnament: "assets/generated/user_hanging_lamps_medium.png",
       ornament: true,
       date: { en: "Tuesday, 1 December 2026", gu: "મંગળવાર, 1 ડિસેમ્બર 2026" },
       dateShort: { day: "01", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: "7:00 PM" }],
-      venue: { en: "Gandhidham,\nGujarat", gu: "ગાંધીધામ,\nગુજરાત" },
+      venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
+      mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: "",
       note: {
         en: "An evening of dhol, song and dancing.",
@@ -118,15 +121,19 @@ window.WEDDING = {
       key: "mandap",
       gu: "મંડપ રોપણ",
       en: "Mandap Ropan",
+      enShift: "-0.2em",
       tagline: { en: "Raising the Sacred Canopy", gu: "મંડપની સ્થાપના" },
       ink: "gold",
       paper: "c",
-      illustration: "assets/generated/ill_mandap.png",
-      ornament: false,
+      illustration: "assets/generated/user_mandap_clean.png",
+      wideIllustration: true,
+      hangingOrnament: "assets/generated/user_hanging_lamps_medium.png",
+      ornament: true,
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: "8:00 AM" }],
-      venue: { en: "Gandhidham,\nGujarat", gu: "ગાંધીધામ,\nગુજરાત" },
+      venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
+      mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: "",
       note: {
         en: "The raising of the mandap, where the vows will be taken.",
@@ -137,15 +144,13 @@ window.WEDDING = {
       key: "lagna",
       gu: "લગ્ન",
       en: "Wedding",
-      enShift: "0.9em",
+      enShift: "0.2em",
       tagline: { en: "The Joining of Hands", gu: "હસ્તમેળાપ" },
       ink: "rose",
       paper: "a",
-      /* The only card with two engravings, one in each bottom corner. */
-      cornerIllustrations: [
-        "assets/generated/ill_lagna_blooms.png",    // lavender blooms, bottom left
-        "assets/generated/ill_lagna_elephant.png",  // elephant, bottom right
-      ],
+      illustration: "assets/generated/user_lagna_scene_final.png",
+      wideIllustration: true,
+      hangingOrnament: "assets/generated/user_hanging_lamps_medium.png",
       ornament: true,
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
@@ -154,7 +159,8 @@ window.WEDDING = {
         { label: { en: "Bharat Aagman",  gu: "બરાત આગમન" },     value: "5:00 PM" },
         { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: "5:41 PM" },
       ],
-      venue: { en: "Gandhidham,\nGujarat", gu: "ગાંધીધામ,\nગુજરાત" },
+      venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
+      mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: "",
       note: {
         en: "Hastamelap, the joining of hands, falls at 5:41 in the evening.",
@@ -269,8 +275,8 @@ window.WEDDING = {
     venueToFollow:     { en: "Venue details to follow.", gu: "સ્થળની વિગતો ટૂંક સમયમાં." },
 
     /* Weekday heads for the save-the-date calendar, Sunday first. */
-    calWeekdays:       { en: ["S", "M", "T", "W", "T", "F", "S"],
-                         gu: ["ર", "સો", "મં", "બુ", "ગુ", "શુ", "શ"] },
+    calWeekdays:       { en: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+                         gu: ["રવિ", "સોમ", "મંગળ", "બુધ", "ગુરુ", "શુક્ર", "શનિ"] },
 
     // Screen-reader and tooltip labels.
     aPrevPhoto:        { en: "Previous photo", gu: "પાછલી તસવીર" },

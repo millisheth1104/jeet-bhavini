@@ -18,7 +18,7 @@
 <!-- ?v= is bumped whenever styles.css or a generated asset changes; this
      site is edited in place with no build step, and browsers hold on to
      both the stylesheet and the PNGs otherwise. -->
-<link rel="stylesheet" href="styles.css?v=20260913a">
+<link rel="stylesheet" href="styles.css?v=20260916L">
 </head>
 <body>
 
@@ -210,27 +210,30 @@
          heads and marked days are all built in main.js from the dates in
          content.js, so this cannot drift from the cards. -->
     <section class="section savedate" id="savedate">
-      <!-- Corner ornament, positioned at the section level so it can bleed
-           past the narrow calendar - the same pattern the invite section
-           uses for its own corner botanicals. -->
-      <div class="deco deco--cal-corner-tl reveal"><img src="assets/generated/orn_corner.png" alt=""></div>
-      <div class="deco deco--cal-corner-br reveal" style="--d:120ms"><img src="assets/generated/orn_corner.png" alt=""></div>
-      <!-- Three small gold medallions stacked down the left, echoing the
-           reference's own stacked corner motifs. -->
-      <div class="cal__medallions" aria-hidden="true">
-        <img src="assets/generated/gold_medallion.png" alt="">
-        <img src="assets/generated/gold_medallion.png" alt="">
-        <img src="assets/generated/gold_medallion.png" alt="">
-      </div>
       <div class="wrap--narrow">
         <figure class="cal reveal">
-          <figcaption class="cal__month" id="calMonth"></figcaption>
-          <div class="cal__grid" id="calGrid"></div>
-          <p class="cal__place" id="calPlace" hidden></p>
+          <div class="cal__top-banner" aria-hidden="true">
+            <img src="assets/generated/cal_top_border_clean.png" alt="">
+          </div>
+          <div class="cal__body">
+            <figcaption class="cal__month" id="calMonth"></figcaption>
+            <div class="cal__grid" id="calGrid"></div>
+            <div class="cal__meta" id="calMeta">
+              <p class="cal__venue-line">
+                <span class="cal__pin" aria-hidden="true">📍</span>
+                <span class="cal__venue-name">OLEANDER FARMS</span>
+              </p>
+              <p class="cal__city-line" id="calCityLine">Karjat, Maharashtra</p>
+              <div class="cal__divider" aria-hidden="true"></div>
+              <p class="cal__regards-title" id="calRegardsTitle">Warm Regards</p>
+              <p class="cal__family" id="calFamily">Jabuvani &amp; Nakrani Family</p>
+              <div class="cal__leaf-orn" aria-hidden="true">
+                <svg width="24" height="14" viewBox="0 0 24 14" fill="#B38B4D" opacity=".85"><path d="M12 7c-2-3-5-4-8-3 2 3 4 5 8 3zm0 0c2-3 5-4 8-3-2 3-4 5-8 3zm0 0v5"/></svg>
+              </div>
+            </div>
+          </div>
           <div class="cal__foot">
-            <img class="cal__urn" src="assets/generated/cal_foot_urn.png" alt="">
-            <img class="cal__motif" src="assets/generated/cal_peacocks.png" alt="" loading="lazy">
-            <img class="cal__urn cal__urn--r" src="assets/generated/cal_foot_urn.png" alt="">
+            <img class="cal__garden-art" src="assets/generated/cal_elephant_garden_clean.png" alt="" loading="lazy">
           </div>
         </figure>
       </div>
@@ -293,7 +296,7 @@
   </button>
 </div>
 
-<script src="content.js"></script>
-<script src="main.js"></script>
+<script src="content.js?v=20260916i"></script>
+<script src="main.js?v=20260916i"></script>
 </body>
 </html>

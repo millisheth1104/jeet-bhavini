@@ -264,35 +264,19 @@
       card.setAttribute("aria-label",
         ev.en + " — " + t(ev.date) + ". " + u("viewDetails") + ".");
 
-      /* A single gold corner flourish, top-left, on every card - the same
-         ornament the calendar section now carries, so the two feel like one
-         set rather than the calendar being dressed up and the cards left
-         plain beside it. Top-left only: top-right is already claimed by the
-         hanging ornament on some cards, and the bottom corners by the foot
-         illustration (two of them on the લગ્ન card). */
-      var flourish = el("img", "inv__flourish");
-      flourish.src = "assets/generated/orn_corner.png";
-      flourish.alt = ""; flourish.loading = "lazy";
-      card.appendChild(flourish);
-
-      if (ev.ornament) {
+      var ornSrc = ev.hangingOrnament || (ev.ornament ? "assets/generated/orn_hanging.png" : null);
+      if (ornSrc) {
         var orn = el("img", "inv__orn");
-        orn.src = "assets/generated/orn_hanging.png";
+        orn.src = ornSrc;
         orn.alt = ""; orn.loading = "lazy";
         card.appendChild(orn);
       }
 
       /* Title and English form ONE group sized to the wider of the two, so the
-         English anchors to the title's right edge rather than the card's. The
-         titles vary a lot in length (લગ્ન is 2 glyphs, શામ શાનદાર is 10), and
-         pinning to the card edge left a hole in the short ones. */
+         English anchors to the title's right edge rather than the card's. */
       var title = el("div", "inv__title");
       title.appendChild(el("h3", "inv__gu", ev.gu));
       if (ev.en) title.appendChild(el("p", "inv__en", ev.en));
-      /* The English sits against the title's right edge, which lands in a
-         different place on every card - too near the hanging ornament on the
-         long titles, too far left on the short ones. `enShift` in content.js
-         nudges it per card. */
       if (ev.enShift) title.style.setProperty("--en-shift", ev.enShift);
       card.appendChild(title);
 
@@ -308,23 +292,23 @@
         card.appendChild(when);
       }
 
-      // one unlabelled time already reads beside the date
+      // Multiple schedule timings (e.g. for Lagna)
       if (times.length > 1) {
         var ul = el("ul", "inv__times");
         times.forEach(function (tm) {
           var li = el("li");
           var lbl = t(tm.label);
-          if (lbl) li.appendChild(document.createTextNode(lbl + "  "));
+          if (lbl) li.appendChild(el("span", guIf("inv__times-lbl"), lbl));
           li.appendChild(el("b", null, tm.value));
           ul.appendChild(li);
         });
         card.appendChild(ul);
       }
 
+      if (ev.tagline) card.appendChild(el("p", guIf("inv__tagline"), t(ev.tagline)));
       if (ev.venue) card.appendChild(el("p", guIf("inv__venue"), t(ev.venue)));
 
-      /* Most cards carry one engraving centred at the foot. The લગ્ન card
-         carries two, one in each bottom corner, and says so in its data. */
+      /* Bottom illustration: two corner engravings on Lagna, one centered on others */
       if (ev.cornerIllustrations && ev.cornerIllustrations.length) {
         card.setAttribute("data-ill-corners", "true");
         ev.cornerIllustrations.slice(0, 2).forEach(function (src, n) {
@@ -338,17 +322,13 @@
         card.appendChild(ill);
       }
 
-      card.appendChild(el("span", "inv__more", u("viewDetails")));
       card.addEventListener("click", function () { openDialog(ev); });
       return card;
     }
 
     W.events.forEach(function (ev, i) { list.appendChild(eventCard(ev, i)); });
 
-    /* Titles run from 2 glyphs (લગ્ન) to 10 (શામ શાનદાર). Left to itself that
-       is a 2x spread in width, so the short cards read as half the weight of
-       the long ones. Measure each title and scale it to occupy the same share
-       of its card, which is what makes the set look like one deck. */
+    /* Ensure titles are balanced and prominent across cards */
     function fitTitles() {
       Array.prototype.forEach.call(document.querySelectorAll(".inv__title"), function (t) {
         var card = t.closest(".inv");
@@ -358,42 +338,9 @@
         var natural = gu.getBoundingClientRect().width;
         if (!natural) return;
 
-        /* Normalise by SIZE, not by width share. Pinning every title to the
-           same share of the card made the short ones enormous - મામેરું came
-           out at 101px against શામ શાનદાર's 49px, because the same width
-           spread over 4 glyphs instead of 10. So: let every title run at the
-           same base size, and only shrink the ones too wide to fit. */
-        var scale = Math.min(1.45, card.clientWidth * 0.86 / natural);
-        scale = Math.max(0.62, scale);
+        var scale = Math.min(1.25, (card.clientWidth * 0.76) / natural);
+        scale = Math.max(0.95, scale);
         t.style.setProperty("--tscale", scale.toFixed(3));
-
-        /* ...then give the width back if the card cannot take the height.
-
-           Measure the COPY, not scrollHeight. The લગ્ન card's two corner
-           engravings bleed past the foot on purpose, so its scrollHeight is
-           permanently over clientHeight - reading that as overflow shrank its
-           title on every single pass until it hit the 0.75 floor. */
-        function copyOverflows() {
-          var foot = card.getBoundingClientRect().bottom;
-          /* Where there are corner engravings the copy has to stop ABOVE
-             them, not merely inside the card - otherwise a tall title pushes
-             the venue down between Ganesha and the elephant. */
-          var corners = card.querySelectorAll(".inv__cornerill");
-          for (var k = 0; k < corners.length; k++) {
-            foot = Math.min(foot, corners[k].getBoundingClientRect().top);
-          }
-          var flow = card.querySelectorAll(
-            ".inv__title, .inv__when, .inv__times, .inv__venue, .inv__ill");
-          for (var i = 0; i < flow.length; i++) {
-            if (flow[i].getBoundingClientRect().bottom > foot) return true;
-          }
-          return false;
-        }
-        var guard = 0;
-        while (copyOverflows() && scale > 0.75 && guard++ < 30) {
-          scale *= 0.96;
-          t.style.setProperty("--tscale", scale.toFixed(3));
-        }
       });
     }
 
@@ -577,10 +524,10 @@
       if (d) marked[d] = true;
     });
 
-    // the month's name is already written, bilingually, on the cards
+    // the month's name and year matching reference
     var firstEvent = (W.events || [])[0];
-    put("calMonth", firstEvent && firstEvent.dateShort
-          ? t(firstEvent.dateShort.month) : "");
+    var mName = firstEvent && firstEvent.dateShort ? t(firstEvent.dateShort.month) : "December";
+    put("calMonth", mName + " " + year);
 
     var heads = t(W.ui.calWeekdays) || [];
     heads.forEach(function (h) {
@@ -598,18 +545,18 @@
       grid.appendChild(cell);
     }
 
-    // The city already lives in headline.city; no venue name is set yet, so
-    // this reads as "city, state" the way a postcard's location line does.
-    var place = $("calPlace");
-    if (place) {
+    var cityEl = $("calCityLine");
+    if (cityEl) {
       var city = t(W.headline.city);
-      if (city) {
-        place.hidden = false;
-        place.textContent = city + ", " +
-          (LANG === "gu" ? "ગુજરાત" : "Gujarat");
-      } else {
-        place.hidden = true;
-      }
+      if (city) cityEl.textContent = city;
+    }
+    var regardsEl = $("calRegardsTitle");
+    if (regardsEl) {
+      regardsEl.textContent = LANG === "gu" ? "સ્નેહાધીન" : "Warm Regards";
+    }
+    var familyEl = $("calFamily");
+    if (familyEl) {
+      familyEl.textContent = LANG === "gu" ? "જાબુવાણી અને નાકરાણી પરિવાર" : "Jabuvani & Nakrani Family";
     }
   }());
 
