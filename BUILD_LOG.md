@@ -1917,3 +1917,11 @@ Verified at 375px and desktop, both languages: switching works in both
 directions, the correct segment is marked `is-active`/`aria-pressed`, no
 horizontal overflow, no failed loads, scroll cue confirmed absent from the
 DOM.
+
+## Interactive temple bell intro screen and corner flourishes alignment
+
+- Retained interactive intro scene (temple bell and elephant with strike animation and bilingual ring cue).
+- Fixed invitation card corner botanical flourishes (`corner_botanical.png`):
+  - Bottom-right corner lifted up (`bottom: -1.5%`, `right: -7%`, `scale: -1 1`) to sit flush against the card's double gold border.
+  - Top-left corner flipped and raised (`top: -1.5%`, `left: -7%`, `scale: 1 -1`) so the rose cluster sits directly in the corner with sprigs framing the top and left borders symmetrically with the bottom-right corner.
+

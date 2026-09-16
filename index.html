@@ -18,7 +18,7 @@
 <!-- ?v= is bumped whenever styles.css or a generated asset changes; this
      site is edited in place with no build step, and browsers hold on to
      both the stylesheet and the PNGs otherwise. -->
-<link rel="stylesheet" href="styles.css?v=20260916L">
+<link rel="stylesheet" href="styles.css?v=20260917f">
 </head>
 <body>
 
@@ -76,38 +76,44 @@
 </noscript>
 
 <!-- ==== intro screen ===================================================
-     Covers the page on load. The elephant reaches up, strikes the bell,
-     the bell swings, then the whole thing lifts away. Tap to skip. -->
+     A painted chhatri with a brass bell, and a caparisoned elephant with its
+     trunk raised to it. The scene holds still until the visitor rings the
+     bell; the trunk then strikes, the bell rocks, and the page opens.
+     Art: scripts/gen_intro3.py. Geometry: styles.css. -->
 <div class="intro" id="intro" role="dialog" aria-label="Opening the invitation">
   <div class="intro__scene">
-    <img class="intro__backdrop" src="assets/generated/intro_backdrop.png?v=20260913a" alt="">
-    <!-- Bell and elephant share one aspect-locked box - the box IS the
-         elephant - so the bell stays over the trunk tip and the feet stay on
-         the ground line at every viewport size. The chain is a tiled strip
-         rather than part of the bell image, because it has to stretch: its
-         top is pinned to the pavilion's hook, which lives in the backdrop's
-         coordinates, while its bottom is pinned to the trunk, which lives in
-         the scene's. The trunk is a sprite sheet lifted off the elephant.
-         See styles.css. -->
-    <div class="intro__pair">
-      <div class="intro__rig">
-        <img class="intro__bell" src="assets/generated/intro_bell_body.png?v=20260913a" alt="">
-      </div>
+    <!-- Everything below is a percentage of this one box, which is the
+         painting's own frame - so there is a single coordinate system and the
+         bell, chain and trunk cannot drift apart from the painting. -->
+    <div class="intro__stage">
+      <img class="intro__bg" src="assets/generated/intro3_plate.jpg?v=11"
+           alt="A garden pavilion with a temple bell hanging in its archway">
+
+      <!-- everything below here moves -->
+      <div class="intro__chain" aria-hidden="true"></div>
+      <img class="intro__bell" id="introBell" src="assets/generated/intro3_bellbody.png?v=11" alt="">
+
+      <!-- The elephant rears to reach the bell, so all of it moves.
+           .intro__ele tilts back on the hind legs; the legs and trunk are
+           children, so they inherit that tilt and add their own on top. The
+           body is a JPEG cut out by a mask rather than a transparent PNG - a
+           quarter of the weight for the same picture. See bake_intro3.py. -->
       <div class="intro__ele">
-        <img class="intro__elebody" src="assets/generated/intro_elephant_body.png?v=20260913a"
-             alt="A ceremonial elephant ringing a temple bell">
+        <div class="intro__eleBody" role="img"
+             aria-label="A ceremonial elephant rearing to ring a temple bell"></div>
+        <img class="intro__leg intro__leg--far"  src="assets/generated/intro3_leg_far.png?v=11"  alt="" aria-hidden="true">
+        <img class="intro__leg intro__leg--near" src="assets/generated/intro3_leg_near.png?v=11" alt="" aria-hidden="true">
         <div class="intro__trunk" aria-hidden="true"></div>
       </div>
     </div>
-  </div>
 
-  <div class="intro__copy">
-    <p class="eyebrow" id="introEyebrow">The wedding of</p>
-    <p class="display intro__names" id="introNames"></p>
-    <p class="gu intro__gu" id="introGu"></p>
+    <!-- On the scene, not the stage: the stage overflows the width on a phone,
+         and a cue centred on it would run off both edges. -->
+    <p class="intro__cue" id="introCue">
+      <span class="intro__cueTitle" id="introCueTitle"></span>
+      <span class="intro__cueSub" id="introCueSub"></span>
+    </p>
   </div>
-
-  <button class="intro__skip" id="introSkip" type="button"></button>
 </div>
 
 <!-- ==== language ====================================================== -->

@@ -164,54 +164,62 @@
   var second = first === groom ? bride : groom;
 
   /* -- intro screen --------------------------------------------------------
-     The elephant strikes at 56% of a 3.6s timeline starting at 300ms, so the
-     swing has rung out by ~3.9s. Dismiss just after that.                   */
+     The scene holds still until the visitor rings the bell - nothing here is
+     on a timer. Ringing adds `.is-ringing`, which is what drives the rear, the
+     trunk and the bell in styles.css; the page opens as the legs come down.  */
 
   (function intro() {
     var box = $("intro");
     if (!box) return;
 
-    put("introEyebrow", u("introEyebrow"));
-    $("introSkip").textContent = u("introSkip");
-
-    var names = $("introNames");
-    names.appendChild(document.createTextNode(t(first) + " "));
-    names.appendChild(el("em", null, "&"));
-    names.appendChild(document.createTextNode(" " + t(second)));
-    /* The couple's names are set twice on purpose, the way a kankotri does -
-       large in the reading language, small in the other. */
-    var alt = $("introGu");
-    alt.className = LANG === "gu" ? "intro__gu" : "gu intro__gu";
-    put("introGu", first[OTHER] + "  ·  " + second[OTHER]);
+    put("introCueTitle", u("introCueTitle"));
+    put("introCueSub",   u("introCueSub"));
+    var cue = $("introCue");
+    if (cue && LANG === "gu") cue.classList.add("gu");
 
     // A language switch comes back mid-page; do not replay the intro.
-    if (switchedAt !== null) { box.remove(); return; }
+    if (switchedAt !== null) {
+      box.remove();
+      return;
+    }
 
     document.body.classList.add("intro-open");
 
     var closed = false;
+
     function close() {
       if (closed) return;
       closed = true;
       box.classList.add("is-done");
+      setTimeout(function () { box.remove(); }, 800);
       document.body.classList.remove("intro-open");
       window.scrollTo(0, 0);
-      // drop it from the tree once the fade has finished
-      setTimeout(function () { box.remove(); }, 1000);
     }
 
-    $("introSkip").addEventListener("click", close);
-    box.addEventListener("click", function (e) {
-      if (e.target !== $("introSkip")) close();
-    });
+    var hold = location.search.indexOf("hold") !== -1;
+    var rung = false;
+    function ring() {
+      if (rung || closed) return;
+      rung = true;
+      box.classList.add("is-ringing");
+      if (!hold) setTimeout(close, 1750);
+    }
+
+    box.addEventListener("click", ring);
+
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" || e.key === "Enter") close();
+      if (e.key === "Escape") {
+        close();
+      } else if (e.key === "Enter" || e.key === " ") {
+        if (!closed) { e.preventDefault(); ring(); }
+      }
     });
 
-    if (reduced) { close(); return; }
-    // ?hold keeps the intro up so it can be inspected while working on it
-    if (location.search.indexOf("hold") !== -1) return;
-    setTimeout(close, 4200);
+    // Reduced motion: just let them in.
+    if (reduced) {
+      box.remove();
+      document.body.classList.remove("intro-open");
+    }
   }());
 
   (function hero() {

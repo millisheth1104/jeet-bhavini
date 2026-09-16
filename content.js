@@ -256,6 +256,8 @@ window.WEDDING = {
 
     introEyebrow:      { en: "The wedding of", gu: "શુભ લગ્ન" },
     introSkip:         { en: "Skip", gu: "છોડો" },
+    introCueTitle:     { en: "Ring the bell", gu: "ઘંટ વગાડો" },
+    introCueSub:       { en: "to begin the celebration", gu: "ઉજવણીનો પ્રારંભ કરવા" },
 
     heroEyebrow:       { en: "Together with their families", gu: "પરિવારજનો સહિત" },
 
