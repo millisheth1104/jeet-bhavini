@@ -327,35 +327,6 @@ ASSETS = {
     # card puts a loose spray of lavender blooms here, not a deity.
     # Foot of the save-the-date calendar. A pair facing each other over a
     # ribbon, the way the reference card sets its lovebirds - peacocks instead.
-    # Crest at the head of each event card, above the title.
-    # The rod the card hangs from, down one side. Turned brass with a finial
-    # at each end, like the stave of a hanging scroll.
-    "card_rod": dict(
-        prompt="An extremely slender vertical brass stave, a plain thin smooth shaft "
-               "with one small matching teardrop finial at the very top and an "
-               "identical small finial at the very bottom, perfectly straight, "
-               "hair-thin in proportion to its height, antique gold, no base, no "
-               "stand, no foot, no lamp, nothing else in the frame. "
-               + WC,
-        size="portrait_16_9", cutout=True, matte="birefnet"),
-
-    "card_crest": dict(
-        prompt="A small ornate symmetrical heraldic crest for a wedding card: a "
-               "narrow fan of fine peacock feathers rising above a tiny round "
-               "floral medallion, with two slender curling flourishes either side, "
-               "upright, taller than wide, delicate and finely drawn, small. "
-               + WC,
-        size="portrait_4_3", cutout=True, matte="birefnet"),
-
-    # Floral border across the foot of each event card.
-    "card_spray": dict(
-        prompt="A wide low symmetrical floral border spray: small open blossoms, "
-               "buds and fine trailing leaves spreading out to the left and right "
-               "from a small centre, the ends tapering to single stems, delicate, "
-               "much wider than it is tall, nothing above or below it. "
-               + WC,
-        size="landscape_16_9", cutout=True, matte="birefnet"),
-
     "cal_peacocks": dict(
         prompt="Two ornamental Indian peacocks facing each other in mirror symmetry, "
                "their long tail feathers sweeping down and outward, standing on a "

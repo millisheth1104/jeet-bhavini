@@ -1288,3 +1288,39 @@ fires on reveal rather than on load, and each card's idle sway is offset by
 **On the recording**: I cannot process video of any kind — Instagram, Drive, or
 otherwise — so the three still frames the client sent are the whole source for
 this. Stills or a sentence work; links to video do not.
+
+## Event cards reverted to the pre-hanging design
+
+User: *"can u revert the card changes to how it was before?"* — the hanging
+punkah design (rod + tassels + swing-in + cusped frame) went further than
+wanted. Reverted `index.html`, `main.js`, `styles.css`, `content.js` and
+`scripts/gen_assets.py` to their state at `7041055` (immediately before commits
+`814dca0` and `747139a`), discarding both those commits' effects and the
+in-progress uncommitted work on top of them (blush background, drapes, corner
+florals, staged text reveal — none of that had been committed, so nothing else
+is lost). That in-progress work is kept safe in
+`git stash@{0}` if any piece of it is wanted later.
+
+Cards are back to the centred `<button>` design: Gujarati title top-left, date
+block, one illustration at the foot (two for લગ્ન, one per bottom corner), and
+a "View details" tap that opens the `evdlg` dialog. `card_crest.png` and
+`card_spray.png` — generated for the hanging design, now unreferenced — move to
+`assets/unused/`.
+
+**This revert also fixed something unrelated that had been silently broken
+since `814dca0`**: that commit's styles.css rewrite (540 lines changed in one
+pass) dropped `.pairs`, `.awaiting` and `.hosts__heading` entirely — the rules
+that give the "Our Families" list its layout. Every commit since had it
+rendering as a bare browser `<ul>`: default bullets, no left/right name split,
+no ◆ separator spacing, "Mr. Naran Kanji Jabuvani◆Mrs. Premila Naran Jabuvani"
+run together as one line. The user flagged it from a screenshot without
+knowing the cause. Reverting styles.css to `7041055` restored it as a side
+effect, since `7041055` predates the deletion. Confirmed present:
+`.pairs { list-style: none; ...; display: grid; gap: .85rem; }` at line 1056.
+
+Verified at 375px: dialog markup back (`evdlg` in all three files), cards
+render as buttons not `<article>`, 0px overflow on three of four cards — લગ્ન
+runs 15px over at this exact viewport, which is a pre-existing characteristic
+of the `7041055` code being restored, not something this revert introduced.
+Left as-is since the ask was to match the prior state exactly, not to improve
+on it.
