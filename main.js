@@ -514,7 +514,7 @@
       // the same share of the screen on a phone as on a desktop rather than
       // spilling past the edges or shrinking to a strip.
       var w = stage.clientWidth;
-      gap = Math.max(96, Math.min(220, w * 0.34));
+      gap = Math.max(96, Math.min(250, w * 0.34));
       falloff = w < 480 ? 0.22 : 0.16;
       minScale = w < 480 ? 0.5 : 0.55;
       layout();
@@ -610,6 +610,51 @@
       if (e.key === "ArrowLeft")  { snapTo(Math.round(current) - 1); }
       if (e.key === "ArrowRight") { snapTo(Math.round(current) + 1); }
     });
+
+    /* ---- autoplay: steps on its own at a medium-high pace, and gets out
+       of the way the instant a person actually touches the deck ---------
+       Off while prefers-reduced-motion is set, while the tab is in the
+       background, and while the carousel has scrolled out of view - no
+       point ticking a deck nobody can see, and it avoids the deck landing
+       several cards further along than where the visitor left it. */
+    var AUTO_MS = 1900;          // medium-high: quick, but each photo still registers
+    var RESUME_MS = 3200;        // how long a touch/drag/click buys before it resumes
+    var autoTimer = null, resumeTimer = null;
+    var pausedByUser = false, inView = false;
+
+    function autoStep() {
+      snapTo((Math.round(current) + 1) % cards.length);
+    }
+    function scheduleAuto() {
+      clearTimeout(autoTimer);
+      if (reduced || pausedByUser || document.hidden || !inView || cards.length < 2) return;
+      autoTimer = setTimeout(function () { autoStep(); scheduleAuto(); }, AUTO_MS);
+    }
+    function pauseAuto(temporary) {
+      pausedByUser = true;
+      clearTimeout(autoTimer);
+      clearTimeout(resumeTimer);
+      if (temporary !== false) {
+        resumeTimer = setTimeout(function () { pausedByUser = false; scheduleAuto(); }, RESUME_MS);
+      }
+    }
+
+    stage.addEventListener("pointerdown", function () { pauseAuto(); });
+    stage.addEventListener("wheel", function () { pauseAuto(); }, { passive: true });
+    stage.addEventListener("mouseenter", function () { pauseAuto(false); });
+    stage.addEventListener("mouseleave", function () { pausedByUser = false; scheduleAuto(); });
+    prevBtn.addEventListener("click", function () { pauseAuto(); });
+    nextBtn.addEventListener("click", function () { pauseAuto(); });
+    stage.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") pauseAuto();
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) clearTimeout(autoTimer); else scheduleAuto();
+    });
+    new IntersectionObserver(function (entries) {
+      inView = entries[0].isIntersecting;
+      if (inView) scheduleAuto(); else clearTimeout(autoTimer);
+    }, { threshold: 0.3 }).observe(stage);
 
     window.addEventListener("resize", measure);
     measure();

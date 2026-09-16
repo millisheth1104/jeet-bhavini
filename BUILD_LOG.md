@@ -1765,3 +1765,42 @@ screenshot turned out to be real image data at reduced opacity (a bright
 beach photo faded toward the edge of the deck), confirmed by sampling its
 pixels on a canvas rather than assumed. No failed loads, no horizontal
 overflow, correct in both languages.
+
+## Gallery: autoplay, and a slightly bigger stage
+
+Two follow-ups on the depth carousel.
+
+**Autoplay**, medium-high pace (1.9s per step), advancing forward and
+wrapping from the last photo back to the first rather than stopping there -
+`(Math.round(current) + 1) % cards.length`, the one piece of arithmetic this
+added on top of the already-proven `snapTo()`.
+
+It steps aside the moment anyone actually touches the deck: a drag, a wheel
+nudge, either nav button, or an arrow key all pause it for 3.2s before it
+resumes; hovering pauses it for as long as the pointer stays and resumes the
+instant it leaves, with no countdown. It also will not run at all under
+`prefers-reduced-motion` - a carousel that moves on its own is exactly the
+kind of motion that setting exists to suppress - and it stops while the tab
+is backgrounded or the gallery has scrolled out of view, via
+`visibilitychange` and an `IntersectionObserver` on the stage, so it can't
+burn through several photos while nobody is looking and then dump the
+visitor several cards further along than where they left it.
+
+**Stage size**: `.depthcar` height `380px → 440px` at its ceiling,
+`.depthcar__card` width `230px → 270px`, and the JS-side gap ceiling raised
+to match (`220px → 250px`) so the spacing between card centres keeps the
+same proportion to the now-larger cards rather than compressing their
+overlap.
+
+**Verification note**: the live "does it actually tick every 1.9s" behaviour
+could not be observed directly in this session's own preview tab -
+`document.hidden` reads `true` there regardless of front/back state, which
+throttles `IntersectionObserver` entirely (established earlier this session
+with an unrelated, freshly-created observer that also never fired under the
+same condition). That gate is exactly what should stop autoplay on a
+real visitor's backgrounded tab, so the same thing blocking my test here is
+the feature working, not evidence against it. What's independently
+verified: the wrap-around arithmetic lands correctly at the boundary
+(index 6 of 7 wraps to 0), and the full existing interaction battery -
+drag, wheel, both buttons, both arrow keys, hover in/out - all still fire
+without error now that each one also calls into the new pause logic.

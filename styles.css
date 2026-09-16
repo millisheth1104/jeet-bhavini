@@ -1315,8 +1315,8 @@ body.intro-open { overflow: hidden; }
    continuous `current` value in main.js, which this only renders. */
 .depthcar {
   position: relative;
-  height: clamp(260px, 58vw, 380px);
-  max-width: 60rem;
+  height: clamp(300px, 64vw, 440px);
+  max-width: 66rem;
   margin: clamp(1.4rem, 5vw, 2.2rem) auto 0;
   overflow: hidden;               /* the edge cards crop at the stage, on purpose */
   touch-action: pan-y;            /* horizontal drag is ours; vertical scroll stays the page's */
@@ -1333,7 +1333,7 @@ body.intro-open { overflow: hidden; }
   position: absolute;
   left: 50%;
   top: 50%;
-  width: clamp(150px, 40vw, 230px);
+  width: clamp(170px, 46vw, 270px);
   aspect-ratio: 3 / 4;
   margin: 0;
   padding: clamp(.28rem, 1.1vw, .5rem) clamp(.3rem, 1.2vw, .55rem)
