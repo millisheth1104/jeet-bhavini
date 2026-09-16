@@ -1850,3 +1850,42 @@ stopping before every photo has had its turn.
 Verified: no console errors and no horizontal overflow after simulating a
 touch tap (`pointerenter`/`pointerdown`/`pointerup` with `pointerType:
 "touch"`) on the stage.
+
+## Event cards: closed the gap, fixed the Lagna schedule, and dropped the boxed time list
+
+Three asks from one set of screenshots.
+
+**1. Too much empty space above the illustration.** `.inv__ill` sits with
+`margin: auto auto 0`, which means it always claims the bottom of the card
+and pushes ALL the leftover vertical space into the gap directly above it -
+the emptier the text content, the bigger that gap. Rather than shrinking the
+gap directly (there's nothing to set it *to* - it's whatever's left over),
+closed it from the other end: bumped the size and top margin on every text
+element in the content block (`.inv__day`, `.inv__md`, `.inv__times`,
+`.inv__tagline`, `.inv__venue`, and the `.inv__when` row that holds the
+date). A taller content block leaves the auto-margin less to eat. Matched
+the same increases in the `@media (max-width: 39.99rem)` block, which
+overrides several of these with fixed values for phones and would otherwise
+have silently undone the fix there.
+
+**2. The Lagna card's baraat schedule.** Two fixes:
+- The compact time shown under "DECEMBER" (`4:00 PM`) was `times[0].value` -
+  correct for a card with one time, but Lagna has three, and showing just
+  the first implied it was *the* time when the full breakdown sits right
+  below it. Now falls back to the year instead, exactly like a card with no
+  time at all does - `times.length === 1 ? times[0].value : "2026"`.
+- `Bharat Prastan` / `Bharat Aagman` → `Baraat Prastan` / `Baraat Aagman`.
+  Bharat is the country; baraat is the groom's wedding procession, which is
+  what these actually are. The Gujarati (`બરાત`) already had it right - only
+  the English label was wrong.
+
+**3. The boxed time list.** Each row was its own white, rounded, backdrop-
+blurred pill with a coloured left border - a UI-component look, not
+stationery, and nothing else on any card is styled that way. Replaced with
+plain rows separated by a thin hairline (no fill, no border-radius, no
+backdrop-filter), matching how `.inv__venue`/`.inv__tagline` just sit on the
+card's own paper.
+
+Verified in both languages, 375px and desktop: 0px overflow on all four
+cards (`.inv` clips overflow silently rather than erroring, so this was
+checked by measurement, not assumed), no failed loads.

@@ -155,8 +155,8 @@ window.WEDDING = {
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [
-        { label: { en: "Bharat Prastan", gu: "બરાત પ્રસ્થાન" }, value: "4:00 PM" },
-        { label: { en: "Bharat Aagman",  gu: "બરાત આગમન" },     value: "5:00 PM" },
+        { label: { en: "Baraat Prastan", gu: "બરાત પ્રસ્થાન" }, value: "4:00 PM" },
+        { label: { en: "Baraat Aagman",  gu: "બરાત આગમન" },     value: "5:00 PM" },
         { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: "5:41 PM" },
       ],
       venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },

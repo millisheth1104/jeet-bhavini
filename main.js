@@ -289,7 +289,12 @@
         when.appendChild(el("span", "inv__day", ev.dateShort.day));
         var md = el("span", "inv__md");
         md.appendChild(el("b", null, t(ev.dateShort.month)));
-        md.appendChild(el("span", null, times.length ? times[0].value : "2026"));
+        /* Only when there's ONE time worth showing compactly next to the
+           date. With several (Lagna's baraat/hastamelap schedule), showing
+           just the first one here reads as the card's one time and
+           contradicts the full list right below it - so it falls back to
+           the year instead, same as when there's no time at all. */
+        md.appendChild(el("span", null, times.length === 1 ? times[0].value : "2026"));
         when.appendChild(md);
         card.appendChild(when);
       }
