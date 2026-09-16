@@ -264,6 +264,17 @@
       card.setAttribute("aria-label",
         ev.en + " — " + t(ev.date) + ". " + u("viewDetails") + ".");
 
+      /* A single gold corner flourish, top-left, on every card - the same
+         ornament the calendar section now carries, so the two feel like one
+         set rather than the calendar being dressed up and the cards left
+         plain beside it. Top-left only: top-right is already claimed by the
+         hanging ornament on some cards, and the bottom corners by the foot
+         illustration (two of them on the લગ્ન card). */
+      var flourish = el("img", "inv__flourish");
+      flourish.src = "assets/generated/orn_corner.png";
+      flourish.alt = ""; flourish.loading = "lazy";
+      card.appendChild(flourish);
+
       if (ev.ornament) {
         var orn = el("img", "inv__orn");
         orn.src = "assets/generated/orn_hanging.png";
@@ -585,6 +596,20 @@
         cell.title = t(W.headline.datesLabel);
       }
       grid.appendChild(cell);
+    }
+
+    // The city already lives in headline.city; no venue name is set yet, so
+    // this reads as "city, state" the way a postcard's location line does.
+    var place = $("calPlace");
+    if (place) {
+      var city = t(W.headline.city);
+      if (city) {
+        place.hidden = false;
+        place.textContent = city + ", " +
+          (LANG === "gu" ? "ગુજરાત" : "Gujarat");
+      } else {
+        place.hidden = true;
+      }
     }
   }());
 

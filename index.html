@@ -215,12 +215,23 @@
            uses for its own corner botanicals. -->
       <div class="deco deco--cal-corner-tl reveal"><img src="assets/generated/orn_corner.png" alt=""></div>
       <div class="deco deco--cal-corner-br reveal" style="--d:120ms"><img src="assets/generated/orn_corner.png" alt=""></div>
+      <!-- Three small gold medallions stacked down the left, echoing the
+           reference's own stacked corner motifs. -->
+      <div class="cal__medallions" aria-hidden="true">
+        <img src="assets/generated/gold_medallion.png" alt="">
+        <img src="assets/generated/gold_medallion.png" alt="">
+        <img src="assets/generated/gold_medallion.png" alt="">
+      </div>
       <div class="wrap--narrow">
         <figure class="cal reveal">
-          <img class="cal__border" src="assets/generated/cal_border_top.png" alt="">
           <figcaption class="cal__month" id="calMonth"></figcaption>
           <div class="cal__grid" id="calGrid"></div>
-          <img class="cal__motif" src="assets/generated/cal_peacocks.png" alt="" loading="lazy">
+          <p class="cal__place" id="calPlace" hidden></p>
+          <div class="cal__foot">
+            <img class="cal__urn" src="assets/generated/cal_foot_urn.png" alt="">
+            <img class="cal__motif" src="assets/generated/cal_peacocks.png" alt="" loading="lazy">
+            <img class="cal__urn cal__urn--r" src="assets/generated/cal_foot_urn.png" alt="">
+          </div>
         </figure>
       </div>
     </section>

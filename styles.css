@@ -760,6 +760,22 @@ body.intro-open { overflow: hidden; }
 .inv[data-paper="b"] { background-image: url("assets/generated/card_paper_b.png"); }
 .inv[data-paper="c"] { background-image: url("assets/generated/card_paper_c.png"); }
 
+/* One gold corner flourish, top-left of every card - the same touch the
+   calendar section carries, so the two read as one decorative language. */
+/* .inv > * forces position:relative on every direct child (to hold them
+   above the ::before wash); beat it on specificity, same as .inv__cornerill
+   and .inv__ill already do below. */
+.inv > .inv__flourish {
+  position: absolute;
+  top: 3%;
+  left: 2%;
+  width: clamp(38px, 20%, 64px);
+  height: auto;
+  opacity: .7;
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* Faded sepia architecture across the WHOLE card, as in the reference — a
    full-bleed wash at low opacity, not a strip at the foot. */
 .inv::before {
@@ -1345,14 +1361,6 @@ body.intro-open { overflow: hidden; }
      closing's paper, which is the only surface this half of the site has. */
   padding: 0 clamp(1.2rem, 4vw, 1.8rem);
 }
-.cal__border {
-  display: block;
-  width: 100%;
-  max-width: 20rem;
-  margin: 0 auto clamp(1rem, 4vw, 1.6rem);
-  opacity: .9;
-}
-
 /* A bolder small-caps anchor rather than a script flourish - the calendar
    reads as a printed postcard's masthead, not another card title. */
 .cal__month {
@@ -1411,11 +1419,57 @@ html[data-lang="gu"] .cal__head { letter-spacing: 0; font-size: .72rem; }
   font-weight: 500;
 }
 
+/* Three small gold medallions stepping down the left edge of the section,
+   outside the narrow calendar - the reference's own stacked corner motifs,
+   built from one small original medallion rather than three different ones. */
+.cal__medallions {
+  position: absolute;
+  top: clamp(5rem, 20vw, 9rem);
+  left: clamp(.5rem, 3vw, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.6rem, 6vw, 3rem);
+  z-index: 0;
+  pointer-events: none;
+}
+.cal__medallions img {
+  width: clamp(26px, 6vw, 40px);
+  opacity: .8;
+}
+.cal__medallions img:nth-child(2) { width: clamp(20px, 4.6vw, 30px); align-self: center; opacity: .65; }
+.cal__medallions img:nth-child(3) { width: clamp(16px, 3.6vw, 24px); align-self: center; opacity: .5; }
+@media (max-width: 26rem) { .cal__medallions { display: none; } }  /* too tight beside the calendar on a small phone */
+
+.cal__place {
+  font-family: var(--serif);
+  font-size: .82rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--dusk-accent);
+  margin: clamp(.9rem, 4vw, 1.3rem) 0 0;
+}
+html[data-lang="gu"] .cal__place { letter-spacing: .02em; text-transform: none; }
+
+.cal__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(-.5rem, -1vw, 0px);
+  margin-top: clamp(.6rem, 3vw, 1rem);
+}
+.cal__urn {
+  width: clamp(46px, 11vw, 72px);
+  height: auto;
+  opacity: .85;
+  margin-bottom: clamp(.3rem, 1.5vw, .6rem);
+}
+.cal__urn--r { scale: -1 1; }
+
 .cal__motif {
   display: block;
   width: 100%;
-  max-width: 15rem;
-  margin: clamp(.6rem, 3vw, 1rem) auto 0;
+  max-width: 13rem;
+  margin: 0;
   filter: saturate(.92) contrast(.97);
 }
 

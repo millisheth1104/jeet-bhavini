@@ -330,12 +330,37 @@ ASSETS = {
     # A thin repeating floral border band across the top of the save-the-date
     # calendar - the postcard framing the reference uses. Wide and shallow so
     # it can be repeated or stretched as a CSS background.
+    # A single small gold botanical medallion, stacked down one side of the
+    # calendar (and reused as a light corner touch on the event cards).
+    "gold_medallion": dict(
+        prompt="A single small round antique gold botanical medallion, a tiny "
+               "stylised lotus or rosette bloom with fine radiating petals, "
+               "delicate engraved linework, symmetrical, isolated, small and "
+               "neat, centred. "
+               + WC,
+        size="square_hd", cutout=True, matte="birefnet"),
+
+    # A small potted arrangement to flank the calendar's peacock motif with a
+    # touch more garden richness at the foot.
+    "cal_foot_urn": dict(
+        prompt="A small ornate antique gold urn holding a compact bunch of "
+               "dusty rose blossoms and fine sepia grasses, delicate and "
+               "narrow, isolated, single object, nothing beside it. "
+               + WC,
+        size="portrait_4_3", cutout=True, matte="birefnet"),
+
     "cal_border_top": dict(
-        prompt="A thin horizontal repeating border pattern of tiny five petal "
-               "blossoms and small leaves in a single tidy row, evenly spaced and "
-               "seamless left to right, delicate line art with soft watercolour "
-               "fill, very shallow and much wider than tall, nothing above or "
-               "below the row. "
+        # First pass read as a loose garland, not a printed trim: flowers too
+        # far apart, stems visible, colours drifting into orange and purple.
+        # Pushed harder here toward a dense, flat, printed textile band.
+        prompt="A dense flat printed textile border trim: small five petal "
+               "blossoms packed edge to edge in one tight horizontal row with "
+               "no visible stems or gaps between them, flowers touching, "
+               "strictly dusty rose and antique gold only, no orange, no "
+               "purple, no green, a solid unbroken band the same height "
+               "throughout, seamless left to right, much wider than tall, "
+               "flat decorative pattern not a loose watercolour spray, "
+               "nothing above or below the row. "
                + WC,
         size="landscape_16_9", cutout=True, matte="birefnet"),
 

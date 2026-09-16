@@ -1622,3 +1622,45 @@ for a framing request. Easy to add later once a venue is confirmed.
 
 Verified in both languages at 375px and desktop: no failed requests, no
 horizontal overflow, Gujarati renders in Rasa without tracking.
+
+## Save-the-date calendar: side medallions, foot urns, and a location line
+
+Continued the postcard framing from the earlier commit. The top floral border
+strip was tried and dropped per direct feedback - too busy for what the
+section needed. In its place:
+
+- Three small gold medallions stepped down the left edge of the section
+  (`gold_medallion.png`, one new asset reused three times at shrinking scale
+  and opacity), echoing the reference's own stacked corner motifs without
+  needing three different images.
+- A location line beneath the grid - `Gandhidham, Gujarat` - built from
+  `W.headline.city`, since no separate venue name is set yet. Bilingual, and
+  hidden entirely if the city field is ever cleared.
+- A small gold urn of dusty rose blooms (`cal_foot_urn.png`) flanking the
+  peacock motif on both sides (mirrored via CSS), for a touch of the
+  reference's garden richness at the foot.
+
+The event cards also gained a single gold corner flourish, top-left
+(`orn_corner.png`, already in the project, unused since the earlier card
+revert) - the same ornament language as the calendar, so the two don't read
+as two different decisions. Kept deliberately light: top-left only, since
+top-right is already claimed by the hanging ornament on two cards and the
+bottom corners by the foot illustration.
+
+**A real bug this caught**: the flourish rendered in the wrong place entirely
+on the first pass - center-ish, not the corner - because `.inv > *` (added
+long ago to hold every direct child above the card's `::before` wash via
+`position: relative`) has the same specificity as a bare `.inv__flourish`
+rule and comes later in the file, so it silently won and overrode the
+`position: absolute` the flourish needed. Fixed by writing `.inv > .inv__flourish`,
+which the existing `.inv__cornerill` and `.inv__ill` rules already do for
+exactly this reason - the fix was already a pattern in the file, just not one
+I'd matched.
+
+**On the reference images from Pinterest**: several were screenshots of the
+Pinterest app itself (visible status bar, Visit/Save buttons, an attribution
+line reading "Wedding Invitation Video | Modern • Arden Lane") showing a
+template for a different couple, a different venue and a different family
+name. However these were produced, they are not ours to reproduce directly,
+and I did not - the medallion, urn, and corner flourish above are original,
+generated in the site's own established palette.
