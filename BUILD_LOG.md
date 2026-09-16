@@ -1324,3 +1324,256 @@ runs 15px over at this exact viewport, which is a pre-existing characteristic
 of the `7041055` code being restored, not something this revert introduced.
 Left as-is since the ask was to match the prior state exactly, not to improve
 on it.
+## 2026-09-13 — Intro: the elephant now stands on the ground
+
+### The bug
+
+The elephant floated. Its feet were pinned at 90% of the **scene**, but the
+"ground" they were meant to land on is painted into `intro_backdrop.png`, which
+is a 576×1024 portrait cropped with `object-fit: cover`. How much of that
+painting a viewport actually shows swings wildly — a phone sees ~97% of its
+height, a 1440×900 desktop sees a ~27% band — so a point measured in the
+painting lands somewhere different at every size. With `object-position:
+center 42%` the desktop band was image 30%–58%: mid-column, no floor anywhere
+on screen. Hence an elephant hanging in mid-air.
+
+Two smaller faults in the motion:
+
+- `rotate(-2.6deg)` about the back feet rotates the **front down**, not up. The
+  trunk tip actually moved *away* from the bell (+2.3% of the elephant's height
+  down); the only thing lifting it was a flat `translateY(-10px)`, which is a
+  fixed pixel nudge on an element whose size is a viewport percentage.
+- `bellSwing` left 0° at 57% while `elephantRing` peaked at 58% — the bell
+  began moving *before* it was struck.
+
+### The fix
+
+**Ground line.** Laid the figures out against the one thing that is stable —
+the bottom edge of the scene — and picked the backdrop crop to suit, rather
+than the other way round. `object-position: center 67%` puts a floor under the
+90% line at every size: the pavilion deck on wide screens, the courtyard tiles
+on phones. Verified at 1440×697, 900×597, 390×674, 375×645 by reproducing the
+CSS geometry in Pillow and compositing the frames.
+
+**`.intro__pair` is now exactly the elephant** — `aspect-ratio: 800/742`,
+`bottom: 10%`, `height: 46%` (39% under 560px). Everything else is a percentage
+of that box, so the whole composition is viewport-independent. Added a
+radial-gradient contact shadow under the four feet (27%–95% of the width).
+
+**Bell chain.** The bell used to hang from `top: 0` of the pair box, so its
+chain ended in mid-air. `scripts/`-style one-off: tiled the straight 22px link
+pitch from the top of `intro_bell.png` to build
+`assets/generated/intro_bell_long.png` (339×2893, ratio 8.53, 218 KB), faded
+over the top 60px. The bell is now placed by its *bottom* (`bottom: 101.6%`, so
+the clapper sits just clear of the trunk) and the chain is long enough to leave
+the top of the frame at any viewport — guaranteed, since `bell top = 0.9·SH −
+2.95·He` is negative for every height the pair can take.
+
+**Sizes.** Elephant +35% (34% → 46% of scene height), bell +44%.
+
+**Motion.** Strike moved to 56%. Elephant: `rotate(2deg)` — clockwise, which is
+what lifts the front — plus `translateY(-1.2%)`, both relative so the reach
+scales; pivot moved from 70% to 78% (the back feet). Trunk now rises 3.1% of
+its own height into a 1.6% gap, so it visibly taps. Bell holds flat until 56%
+and swings *right*, the direction the trunk pushes it; max cut 12° → 2.4°,
+because the pivot is now the top of a very long chain and a few degrees is
+already a wide travel at the bell.
+
+### Files
+
+- `assets/generated/intro_bell_long.png` — new
+- `styles.css` — intro geometry, `elephantRing`, `bellSwing`
+- `index.html`, `main.js` — bell src, comments
+
+## 2026-09-13 — Intro: chain hung from the pavilion, trunk articulated
+
+### The chain ran over the roof
+
+Hanging the bell from a long fixed chain solved "the chain ends in mid-air" by
+running it off the top of the frame — but on a phone, where most of the
+backdrop is visible, it crossed the pavilion's dome on its way out. The bell
+read as hanging from the sky rather than from inside the chhatri.
+
+The cause is the same two-coordinate-system problem as the floating feet, in
+the other direction. The chain's top belongs to the **stage** (the painting as
+rendered) — there is a brass pendant painted under the eave at 49.7% × 38.3%
+of the image. Its bottom belongs to the **scene** (the trunk). The two do not
+scale together, so no single-piece bell image can span them.
+
+So the chain is no longer part of the bell. `intro_chain.png` is one 46×22 link
+pitch, tiled down `.intro__rig`, whose top is the hook converted into the pair
+box's coordinates and whose bottom is the clapper:
+
+    top = min(46cqh, 58cqw) − 23cqh − 0.287 · max(100cqh, 177.7778cqw)
+
+`container-type: size` on `.intro__scene` makes `cq*` the scene box. Both
+branches are proved non-degenerate — the chain's length bottoms out at 4.3cqh
+and can never invert. The nice property is that `top` goes negative exactly
+when the eave leaves the crop, so on wide screens the chain runs out of frame
+at the same moment the roof stops being visible. `intro_bell_long.png` is gone;
+`intro_bell_body.png` is the bell from its ring down.
+
+The bell now rocks about **its own ring** (`transform-origin: 50.3% 13%`)
+rather than about the top of the chain. That is where a lightly tapped bell
+actually articulates, and — unlike rotating the whole chain, whose length now
+varies 120px to 570px between viewports — it keeps the swing proportional to
+the bell at every size. 7°, damping out.
+
+### The trunk
+
+Cut the trunk off the elephant and gave it its own layer.
+
+- Flood-filled the trunk from its tip with a hard stop at y=214, the last row
+  where it is still a separate alpha run from the face. Above that line the
+  trunk and the head never touch, so removing it leaves clean transparency —
+  nothing to inpaint.
+- The first fill only caught `alpha > 60`, which left the trunk's soft matte
+  edge behind in the body as a pale ghost of the old pose. Dilated by 11px
+  (the head is never nearer than ~25px) and blurred.
+- Split the two layers with a **complementary** alpha ramp over the 18 rows
+  above the cut, so they always sum back to the original.
+- 11 poses in `intro_trunk_sheet.png` (240×260 each): a twirl about the joint
+  plus a lift, both weighted by the same radial profile that is 0 at the joint,
+  so the seam cannot open however far the tip travels. Frame 5 is rest, 10 the
+  reach. Tip travel 35px vertical, 17px lateral.
+- Played on `step-end` — held frames, not a rubber tween, which suits an
+  illustrated invite and reads as drawn animation.
+
+The trunk now carries most of the reach, so the body only leans: `elephantRing`
+cut from 2° to 1.2° and −1.2% to −0.6%. Contact budget, in elephant heights:
+body 1.97% + trunk 2.43% = 4.40% against a 3.54% resting gap, so the tip closes
+the gap and presses ~0.9% into the clapper. Bell moved to `bottom: 103%` to
+open that gap.
+
+The elephant is now capped at `58cqw` so aligning the trunk under the centred
+hook cannot push its rump off a narrow screen; on a phone the width, not the
+height, sets its size. The `max-width: 560px` query is gone — the cap does that
+job continuously.
+
+### Cost
+
+Shipped intro assets 1.45 MB → 1.71 MB (trunk sheet 308 KB, and the body PNG
+replaces the elephant). `intro_elephant.png` and `intro_bell.png` stay in the
+repo as the sources the crops are cut from, but are no longer referenced.
+
+### Files
+
+- `assets/generated/` — `intro_chain.png`, `intro_bell_body.png`,
+  `intro_elephant_body.png`, `intro_trunk_sheet.png` new;
+  `intro_bell_long.png` deleted
+- `styles.css` — `.intro__rig`, `.intro__bell`, `.intro__ele`, `.intro__trunk`,
+  `bellRock`, `trunkCurl`, `elephantRing`
+- `index.html` — intro markup
+
+### Bell enlarged (same day)
+
+The bell had got *smaller*, not bigger: its width is a fraction of the
+elephant's, and capping the elephant at `58cqw` to keep its rump on screen shrank
+both. Bell 21% → 27% of the elephant's width — 93×134 on a wide screen, 63×91
+on a phone.
+
+That has a cost: the bell hangs at the bottom of the chain box, so making it
+taller eats the chain. Bought the space back by dropping the ground line from
+90% to 92% of the scene (feet still land on the deck on wide screens, the tiles
+on phones — rechecked). Chain visible above the bell is now 445px at 1440×697,
+211px at 900×597, 38px at 375×645.
+
+Solving `25cqh + .287·stage − 1.4482·He ≥ 0` over all scene aspect ratios leaves
+one band, roughly 0.76–0.82, where it falls about 1cqh short and the bell would
+cover the hook. `top: min(…, -50%)` floors it; in that band the chain starts a
+hair above the hook instead. Checked at 420×530, the worst point.
+
+### Why none of that was visible
+
+`img { max-width: 100% }` (styles.css:102). The bell's width is a percentage of
+the chain strip it hangs from — 947% of a 2.85%-wide box — so the global rule
+had been clamping it to the chain's own width, about a ninth of its intended
+size, ever since the bell was moved inside `.intro__rig`. Both enlargements
+were correct in the stylesheet and neither could render. `max-width: none` on
+`.intro__bell`.
+
+## 2026-09-13 — Two bells, and a trunk that swings
+
+### There were two bells
+
+The backdrop has a small bell painted into the pavilion ceiling — the thing
+earlier entries call "the hook" and pin the chain to. It is about 17x38px in a
+576x1024 image and far too soft to enlarge, so it was never a candidate for the
+bell; but it is not fully hidden behind the chain either, so on any viewport
+where the eave is in frame it showed as a second, tiny bell right above the
+real one.
+
+Painted it out. The ceiling band is a row of brackets; copied one pitch across
+(22px), corrected each row by a linear ramp so its ends meet the neighbours
+exactly, and feathered the boundary. The chain now starts on a clean ceiling —
+and since the chain runs down that exact column, what little is imperfect about
+the patch is covered anyway.
+
+### The trunk swings instead of lifting
+
+The previous sheet was a monotone slider — one parameter, rest to reach, mostly
+vertical. It read as the trunk extending, not striking. The 11 poses are now a
+designed sequence:
+
+    0 rest   1 idle L   2 idle R   3 rise   4 wound left   5 swing
+    6 strike   7 follow through   8-9 return   10 settle
+
+The tip covers 62.5px between 4 and 7 — 7.8% of the elephant's width, 27px on a
+wide screen — which is what makes it read as a swing rather than a stretch. It
+crosses the bell's axis at frame 6 moving right, so the bell is pushed the way
+the trunk is travelling. Contact budget unchanged: trunk 2.29% of the
+elephant's height plus body 1.97% against a 3.54% gap.
+
+Canvas grew to 270x276 per frame (from 240x260) to hold the wider swing; the
+generator now asserts nothing clips. `bellRock` up from 7° to 9° so the swing
+reads at the same weight as the trunk that caused it.
+
+### Files
+
+- `assets/generated/intro_backdrop.png` — painted bell removed
+- `assets/generated/intro_trunk_sheet.png` — regenerated, 11 designed poses
+- `styles.css` — `.intro__trunk` geometry, `trunkCurl`, `bellRock`
+
+### "Can't see the changes"
+
+Two causes, neither in the intro code — which was verified correct on disk:
+CSS braces balance, one rule per class with no leftovers, the sheet is 11
+frames of 270x276 exactly matching `.intro__trunk`'s 33.75% x 37.197%, and
+`background-size: 1100%` maps one frame to the element.
+
+1. **Stale assets.** The site is edited in place with no build step, so a
+   browser holds on to `styles.css` and the PNGs. Added `?v=20260913a` to the
+   stylesheet link and to every `intro_*` URL in both `index.html` and
+   `styles.css`. Bump it whenever one of them changes.
+2. **`sessionStorage["wedding-langswitch"]`.** main.js:177 removes the intro
+   outright when that key is set, by design — a language switch returns
+   mid-page and should not replay the intro. But it is *session* storage, so
+   once the language has been toggled, every reload **in that tab** skips the
+   intro entirely. A fresh tab is needed, or `?hold` with the key cleared.
+
+Also noted: `intro_backdrop.png` went 560 KB -> 865 KB, entirely Pillow's
+encoder (re-saving the untouched original through Pillow gives the same 865 KB)
+rather than the patch. The asset pipeline's original encoder did better; worth
+a pass with oxipng if the weight matters.
+
+### Verified against the running server
+
+Stopped simulating and checked the real thing. The dev server on 5179 is
+`python scripts/devserver.py 5179`; `curl -D -` against it returns
+`Cache-Control: no-store` and a `styles.css` containing the new rules, and the
+served `index.html` has the new intro markup.
+
+Chrome is installed (`C:\Program Files\Google\Chrome\Application\chrome.exe`)
+and screenshots the page headlessly, which is a far better check than the
+Pillow composites used up to now — those verify arithmetic but not the cascade,
+and cannot show whether an animation runs:
+
+    chrome.exe --headless=new --disable-gpu --hide-scrollbars \
+      --virtual-time-budget=2320 --window-size=420,760 \
+      --screenshot=out.png "http://localhost:5179/"
+
+`--virtual-time-budget` doubles as a clock — 500ms, 2320ms and 2600ms give
+rest, strike and follow-through. All three render correctly at 420x760 and
+1440x900: big bell on a chain from the pavilion ceiling, no duplicate painted
+bell, elephant's feet on the floor, trunk swinging up to the clapper, bell
+rocking after. The changes are live and correct on the server.
