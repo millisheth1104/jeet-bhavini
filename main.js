@@ -96,6 +96,7 @@
       if (alsoTitle) e.title = u(key);
     }
     label("heroEyebrow",     "heroEyebrow");
+    label("scrollCue",       "scrollCue");
     label("eventsEyebrow",   "eventsEyebrow");
     label("eventsTitle",     "eventsTitle");
     label("familiesEyebrow", "familiesEyebrow");
@@ -224,6 +225,8 @@
     halt.className = LANG === "gu" ? "hero__gu reveal" : "gu hero__gu reveal";
     halt.style.setProperty("--d", "160ms");
     put("heroGu", first[OTHER] + "  ·  " + second[OTHER]);
+
+    put("heroWelcome", t(W.headline.welcomeLine));
 
     var meta = $("heroMeta");
     [W.headline.datesLabel, W.headline.venue, W.headline.city]

@@ -32,6 +32,12 @@ window.WEDDING = {
 
   // Shown under the names in the hero.
   headline: {
+    // The line that leads into the date - "Welcomes you to their wedding on
+    // [date]" reads as one sentence split across two lines.
+    welcomeLine: {
+      en: "Welcomes you to their wedding on",
+      gu: "તમારું તેમના લગ્નમાં હૃદયપૂર્વક સ્વાગત છે",
+    },
     datesLabel: { en: "1 – 2 December 2026", gu: "1 – 2 ડિસેમ્બર 2026" },
     venue: { en: "Oleander Farms", gu: "ઓલિએન્ડર ફાર્મ્સ" },
     city: { en: "Karjat, Maharashtra", gu: "કર્જત, મહારાષ્ટ્ર" },
@@ -256,6 +262,7 @@ window.WEDDING = {
 
     introEyebrow:      { en: "The wedding of", gu: "શુભ લગ્ન" },
     introSkip:         { en: "Skip", gu: "છોડો" },
+    scrollCue:         { en: "Scroll", gu: "નીચે જુઓ" },
 
     heroEyebrow:       { en: "Together with their families", gu: "પરિવારજનો સહિત" },
 

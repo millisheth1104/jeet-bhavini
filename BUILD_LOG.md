@@ -1917,3 +1917,39 @@ Verified at 375px and desktop, both languages: switching works in both
 directions, the correct segment is marked `is-active`/`aria-pressed`, no
 horizontal overflow, no failed loads, scroll cue confirmed absent from the
 DOM.
+
+## Hero: Ganesha at the top, a welcome line into the date, scroll cue back
+
+User marked up a screenshot with three annotations.
+
+**Ganesha (red box).** Added `ganesha_motif.png` - the same illustration
+already used in the formal invitation panel below - centred above the
+"TOGETHER WITH THEIR FAMILIES" eyebrow, small (blessing, not the hero's
+subject). Reused rather than generated: a printed kankotri repeats its
+Ganesha across panels as a matter of convention, not an accident, and the
+asset already exists.
+
+**Welcome line (green scribble).** New `headline.welcomeLine` in
+content.js, rendered between the Gujarati names and the date rule so
+"Welcomes you to their wedding on / 1 – 2 December 2026" reads as one
+sentence split across two lines, in the serif italic rather than the tracked
+caps the date/venue rows use - it's a sentence, not a label.
+
+**Scroll cue (blue scribble).** Re-added - it had been removed two commits
+ago on a different, narrower request that turned out not to mean this. Built
+it back rather than reverting, since content.js/index.html/main.js have all
+moved on since.
+
+It's back in normal document flow this time, not pinned to the hero's bottom
+edge like before. The Ganesha and welcome line are two more lines of content
+than the original spacing was tuned for, and a fixed-position cue doesn't
+know that - on a short viewport it ran 14-38px into the venue/city text
+depending on exactly how short. Flow doesn't have that failure mode: the cue
+just settles under however tall the content actually is, on any screen, and
+physically cannot overlap it. The trade-off is it can sit below the first
+fold on a very short viewport - a minor cost against a cue that used to
+collide with real text.
+
+Verified in both languages, 375px and desktop: no horizontal overflow, no
+failed loads, zero gap turned negative between the venue text and the cue
+at a deliberately short 699px test viewport (11px clear, was -38px pinned).

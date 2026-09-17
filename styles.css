@@ -488,6 +488,14 @@ body.intro-open { overflow: hidden; }
   margin: .9rem 0 0;
   letter-spacing: .04em;
 }
+/* An auspicious opening, as a printed kankotri has - Ganesha before anything
+   else on the page. Small: this is a blessing, not the hero's subject. */
+.hero__ganesha {
+  display: block;
+  width: clamp(40px, 8vw, 60px);
+  margin: 0 auto clamp(.5rem, 2vw, .9rem);
+}
+
 .hero__meta {
   margin: 1.9rem 0 0;
   font-size: clamp(.78rem, 2.2vw, .9rem);
@@ -497,6 +505,47 @@ body.intro-open { overflow: hidden; }
 }
 .hero__meta span { display: block; }
 .hero__meta span + span { margin-top: .5em; }
+
+/* The line that leads into the date - a sentence, not a label, so it reads
+   in the serif rather than the meta row's tracked caps. */
+.hero__welcome {
+  margin: .5rem 0 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(.92rem, 2.6vw, 1.05rem);
+  color: var(--ink-soft);
+}
+
+/* scroll cue --------------------------------------------------------------
+   Normal document flow, not pinned to the hero's bottom edge - two more
+   lines of content above it (the Ganesha, the welcome sentence) than this
+   spacing was first tuned for means a fixed position can run into the venue
+   text on a short viewport. In flow, it just settles under whatever height
+   the content actually needs, on any screen, and can never overlap it. */
+.scroll-cue {
+  margin: clamp(1.6rem, 5vh, 2.6rem) 0 0;
+  font-size: .6rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: grid;
+  justify-items: center;
+  gap: .55rem;
+}
+.scroll-cue::after {
+  content: "";
+  width: 1px;
+  height: 2.4rem;
+  background: linear-gradient(var(--brass), transparent);
+  animation: cue 2.4s ease-in-out infinite;
+}
+@keyframes cue {
+  0%, 100% { transform: scaleY(.35); transform-origin: top; opacity: .4; }
+  50%      { transform: scaleY(1);   transform-origin: top; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue::after { animation: none; }
+}
 
 /* --- hero furniture: garlands, palm, brass ------------------------------- */
 .deco {
@@ -1920,6 +1969,7 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
    its Gujarati segment has its own rule (`.langswitch__opt--gu`), and its
    English segment must stay in caps. */
 html[data-lang="gu"] .eyebrow,
+html[data-lang="gu"] .scroll-cue,
 html[data-lang="gu"] .intro__skip,
 html[data-lang="gu"] .hero__meta,
 html[data-lang="gu"] .invite__when,
