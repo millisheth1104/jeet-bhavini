@@ -49,6 +49,12 @@
      Great Vibes carries the English name beneath it. */
   --gu-display: "Rasa", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
   --script: "Great Vibes", "Apple Chancery", "Segoe Script", cursive;
+  /* Mileast (the display serif the client wanted for headings) isn't on
+     Google Fonts and its free copies are personal-use only, so this is a
+     free, commercial-safe lookalike: same high-contrast, sharp-serif
+     Didone character. Latin-only, like Mileast - falls back to --serif
+     (and, in Gujarati, to the Gujarati-safe stack below) for the script. */
+  --display-heading: "Abril Fatface", var(--serif);
   /* Card lettering.
 
      Gujarati: Mogra, chosen from the ONLY six decorative Gujarati faces on
@@ -79,6 +85,9 @@
 html[data-lang="gu"] {
   --serif: "Rasa", "Noto Serif Gujarati", "Shruti", "Nirmala UI", Georgia, serif;
   --sans:  "Noto Serif Gujarati", "Shruti", "Nirmala UI", "Jost", system-ui, sans-serif;
+  /* Abril Fatface carries no Gujarati glyphs at all - go straight to the
+     Gujarati-safe serif rather than let the browser guess a fallback. */
+  --display-heading: var(--serif);
 }
 /* Gujarati carries matras above and below the line and needs the headroom. */
 html[data-lang="gu"] body { line-height: 1.65; }
@@ -125,7 +134,7 @@ img { max-width: 100%; display: block; }
 }
 
 .display {
-  font-family: var(--serif);
+  font-family: var(--display-heading);
   font-weight: 300;
   line-height: 1.02;
   letter-spacing: -.005em;
@@ -139,7 +148,7 @@ img { max-width: 100%; display: block; }
 }
 
 .section-title {
-  font-family: var(--serif);
+  font-family: var(--display-heading);
   font-weight: 300;
   font-size: clamp(2rem, 6vw, 3.1rem);
   line-height: 1.1;
@@ -1799,7 +1808,7 @@ html[data-lang="gu"] .cal__head { letter-spacing: 0; font-size: .72rem; }
 /* countdown ------------------------------------------------------------- */
 .countdown { text-align: center; padding-bottom: clamp(4rem, 10vw, 7rem); }
 .countdown__title {
-  font-family: var(--serif);
+  font-family: var(--display-heading);
   font-weight: 300;
   font-size: clamp(1.8rem, 7vw, 3rem);
   margin: 0;

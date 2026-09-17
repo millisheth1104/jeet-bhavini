@@ -2065,3 +2065,31 @@ document (checked via scrollWidth vs clientWidth on the full page, not just
 the viewport), spot-checked the invite card, event cards, gallery, calendar,
 hosts list and footer for clipping or cramped wrapping - all still readable
 and contained within their cards.
+
+## Headings: display font changed to Abril Fatface (Mileast lookalike)
+
+User sent a screenshot of "Mileast" - a bold, high-contrast display serif -
+and asked for headings to use it.
+
+Checked first: Mileast is not on Google Fonts. It's a paid font from
+sronstudio.com; the free copies on 1001Fonts/Befonts/CDNFonts are personal-
+use only, not licensed for a public site. Flagged this and asked - user
+chose a free commercial-safe lookalike over buying the license.
+
+Added Abril Fatface (Google Fonts, OFL) as a new `--display-heading`
+variable layered in front of `--serif`, applied only to `h1, h2, .display`
+(hero names, all section titles, the countdown title) - not the shared
+`--serif`/`--sans` used everywhere else, so body copy, captions and card
+text are untouched.
+
+Abril Fatface has zero Gujarati glyphs, so `html[data-lang="gu"]` re-points
+`--display-heading` straight at `var(--serif)` (the existing Rasa/Noto
+Gujarati stack), the same pattern already used for `--serif`/`--sans` in
+that block - Gujarati headings render exactly as before, no fallback-chain
+guessing.
+
+Verified both languages at 375px: English headings render in Abril Fatface
+(confirmed via computed `font-family`, and that document.fonts actually
+loaded it - font-display:swap meant the first screenshot briefly caught the
+fallback face mid-fetch, not a real bug), Gujarati headings correctly stay
+on the Rasa stack, no overflow, no console errors.
