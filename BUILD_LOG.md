@@ -1960,3 +1960,25 @@ at a deliberately short 699px test viewport (11px clear, was -38px pinned).
 - Fixed invitation card corner botanical flourishes (`corner_botanical.png`):
   - Bottom-right corner lifted up (`bottom: -1.5%`, `right: -7%`, `scale: -1 1`) to sit flush against the card's double gold border.
   - Top-left corner flipped and raised (`top: -1.5%`, `left: -7%`, `scale: 1 -1`) so the rose cluster sits directly in the corner with sprigs framing the top and left borders symmetrically with the bottom-right corner.
+
+## Merge: intro3 temple-bell rebuild with hero Ganesha/welcome/scroll-cue
+
+Concurrent session pushed `08a8fd4` (interactive temple-bell intro rebuild,
+new `intro3_*` assets, corner-botanical alignment) while this session had
+`39a9aab` (hero Ganesha/welcome-line/scroll-cue) on top of the same base.
+
+Two conflicts, both from unrelated content landing at the same line:
+- `content.js`: kept `scrollCue` (this session) alongside `introCueTitle`/
+  `introCueSub` (other session) - different features, no overlap.
+- `BUILD_LOG.md`: kept both sessions' appended entries.
+
+`index.html`/`main.js`/`styles.css` auto-merged without conflict. Re-verified
+by hand anyway, since the other session's stated focus ("align invitation
+corner botanicals") directly overlaps `.invite`'s corner-garland fix from
+`219cc7a`: confirmed `.deco--corner-tl`/`.deco--corner-br` are still children
+of `.invite__card` (not `.invite`), so their negative-percentage insets
+resolve against the card's own box, not the section - the fix survived.
+
+Verified in-browser post-merge: no console errors, no horizontal overflow,
+EN/GU toggle switches both directions, Ganesha + welcome line + scroll cue
+render without overlapping the temple-bell intro. Pushed as `7e388ee`.
