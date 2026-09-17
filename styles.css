@@ -853,15 +853,42 @@ body.intro-open { overflow: hidden; }
 
 .events { background: linear-gradient(180deg, transparent, rgba(237,233,224,.5) 42%, transparent); }
 
-/* Per-card ink matching inspiration image (image copy 9.png):
-   Sage Emerald Green for Mameru, Royal Persian Indigo for Sangeet,
-   Turmeric Gold for Mandap Ropan, Royal Rani Pink for Lagna.
-   All English script in warm terracotta copper (#944D2C). */
-.inv[data-ink="sage"]       { --ink-c: #2D583F; --ink-en: #944D2C; }
-.inv[data-ink="indigo"]     { --ink-c: #313768; --ink-en: #944D2C; }
-.inv[data-ink="gold"]       { --ink-c: #9E7425; --ink-en: #944D2C; }
-.inv[data-ink="rose"]       { --ink-c: #C72562; --ink-en: #944D2C; }
-.inv[data-ink="terracotta"] { --ink-c: #9A5B43; --ink-en: #944D2C; }
+/* Distinctive coordinating royal festive mat colors for each event card:
+   Mameru: Heritage Sage Green
+   Sangeet: Dusty Rose Mauve (from user reference photo)
+   Mandap Ropan: Auspicious Turmeric Gold
+   Wedding / Lagna: Royal Rani Crimson Rose */
+.inv {
+  --mat-c: #B68494;
+  --ink-c: #174541; /* Deep antique teal calligraphy */
+  --ink-accent: #1E482C; /* Rich forest green date & year */
+  --ink-venue: #743E1A; /* Warm cinnamon bronze time & venue */
+  --script-font: "Alex Brush", "Great Vibes", cursive;
+}
+
+/* 1. Mameru - Heritage Sage Green */
+.inv[data-key="mameru"],
+.inv[data-ink="sage"] {
+  --mat-c: #7D9A86;
+}
+
+/* 2. Sangeet - Dusty Mauve / Vintage Rose (from user reference photo) */
+.inv[data-key="sangeet"],
+.inv[data-ink="indigo"] {
+  --mat-c: #B68494;
+}
+
+/* 3. Mandap Ropan - Auspicious Turmeric Gold */
+.inv[data-key="mandap"],
+.inv[data-ink="gold"] {
+  --mat-c: #C09A5B;
+}
+
+/* 4. Wedding / Lagna - Royal Rani Crimson Rose */
+.inv[data-key="lagna"],
+.inv[data-ink="rose"] {
+  --mat-c: #B86777;
+}
 
 .events__list {
   display: grid;
@@ -871,326 +898,316 @@ body.intro-open { overflow: hidden; }
   margin-top: clamp(2.5rem, 6vw, 3.5rem);
 }
 
-/* ---- the card ---------------------------------------------------------- */
+/* ---- the card container ------------------------------------------------ */
 .inv {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
-  max-width: 22rem;
-  aspect-ratio: 1 / 1.58;
-  padding: clamp(1.3rem, 4.5cqw, 1.7rem) clamp(1.1rem, 4cqw, 1.4rem) clamp(.5rem, 2cqw, .9rem);
-  text-align: center;
+  max-width: 22.5rem;
+  aspect-ratio: 1 / 1.56;
+  border-radius: 12px;
   overflow: hidden;
   isolation: isolate;
   cursor: pointer;
-  border: 1px solid rgba(206, 178, 126, 0.45);
-  border-radius: 6px;
+  border: none;
   font: inherit;
   color: var(--ink);
-  background-color: #FAF5EA;
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  box-shadow: 0 4px 10px rgba(61,52,40,.06),
-              0 16px 32px -12px rgba(61,52,40,.22),
-              inset 0 0 0 1px rgba(255,255,255,.7);
+  background-color: var(--mat-c);
+  box-shadow: 0 4px 14px rgba(45,28,34,.12),
+              0 18px 38px -10px rgba(45,28,34,.30),
+              inset 0 0 0 1px rgba(255,255,255,.2);
   transition: transform .45s cubic-bezier(.22,.61,.36,1),
-              box-shadow .45s cubic-bezier(.22,.61,.36,1),
-              border-color .45s ease;
-}
-.inv[data-paper="a"] { background-image: url("assets/generated/card_paper_a.png"); }
-.inv[data-paper="b"] { background-image: url("assets/generated/card_paper_b.png"); }
-.inv[data-paper="c"] { background-image: url("assets/generated/card_paper_c.png"); }
-
-.inv > .inv__flourish {
-  display: none;
+              box-shadow .45s cubic-bezier(.22,.61,.36,1);
+  padding: 0;
+  text-align: center;
+  container-type: inline-size;
 }
 
-/* Faded sepia architecture across the WHOLE card, as in the reference */
+/* Subtle parchment grain over the card mat */
 .inv::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--wash) center / cover no-repeat;
-  opacity: .105;
-  mix-blend-mode: multiply;
-  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.28) 42%, rgba(0,0,0,.92) 74%, rgba(0,0,0,.45) 100%);
-          mask-image: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.28) 42%, rgba(0,0,0,.92) 74%, rgba(0,0,0,.45) 100%);
-  z-index: -1;
+  background-image: url("assets/generated/card_paper_a.png");
+  background-size: cover;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
   pointer-events: none;
+  z-index: 1;
 }
-.inv[data-paper="a"] { --wash: url("assets/generated/card_wash_a.png"); }
-.inv[data-paper="b"] { --wash: url("assets/generated/card_wash_b.png"); }
-.inv[data-paper="c"] { --wash: url("assets/generated/card_wash_c.png"); }
 
-.inv > * { position: relative; z-index: 1; }
+/* User-provided Authentic Mughal arch border frame */
+.inv__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 2;
+}
 
+/* Hover & focus lift */
 .inv:hover, .inv:focus-visible {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 6px 16px rgba(61,52,40,.1),
-              0 24px 44px -14px rgba(61,52,40,.32),
-              0 0 0 1px rgba(206, 178, 126, 0.6);
+  box-shadow: 0 8px 24px rgba(45,28,34,.16),
+              0 28px 52px -12px rgba(45,28,34,.38),
+              0 0 0 1px rgba(214, 182, 126, 0.65);
+  z-index: 5;
 }
-.inv:focus-visible { outline: 1px solid var(--ink-c); outline-offset: 3px; }
+.inv:focus-visible { outline: 2px solid var(--ink-c); outline-offset: 3px; }
 
-/* ---- hanging ornament (authentic brass lamps / gold tassels) ---------- */
-.inv__orn {
-  position: absolute;
-  top: 0;
-  right: 5%;
-  height: clamp(96px, 35%, 145px);
-  width: auto;
-  z-index: 2;
-  opacity: .95;
-  filter: drop-shadow(0 2px 5px rgba(45,35,25,0.14));
-  transform-origin: top center;
-  transition: transform .7s cubic-bezier(.22,.61,.36,1);
-  pointer-events: none;
+/* ---- Inner Card Body (sits neatly inside the arch) ---------------------- */
+.inv__body {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: clamp(2rem, 9.5cqw, 2.8rem) clamp(1.8rem, 8.5cqw, 2.6rem) clamp(2.4rem, 11cqw, 3.4rem);
+  box-sizing: border-box;
 }
-.inv:hover .inv__orn { transform: rotate(2.5deg); }
 
-/* ---- titles ------------------------------------------------------------ */
-.inv__title {
-  align-self: flex-start;
-  width: fit-content;
-  max-width: 82%;
-  margin-left: -.04em;
-  z-index: 2;
+/* Top Header */
+.inv__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 0;
 }
-.inv__gu {
-  text-align: left;
-  font-family: var(--gu-card);
-  font-weight: 600;
-  font-size: calc(clamp(2.3rem, 13cqw, 3.2rem) * var(--tscale, 1));
-  line-height: 1.08;
+
+.inv__script {
+  font-family: var(--script-font);
+  font-size: clamp(2.7rem, 12.8cqw, 3.7rem);
+  font-weight: 400;
+  line-height: 1.05;
   color: var(--ink-c);
   margin: 0;
-  letter-spacing: -.01em;
-  white-space: nowrap;
-}
-.inv__en {
-  text-align: right;
-  font-family: var(--card-en);
-  font-weight: 400;
-  font-size: calc(clamp(1.7rem, 9.5cqw, 2.3rem) * (1 + (var(--tscale, 1) - 1) * .35));
-  translate: var(--en-shift, 0) 0;
-  line-height: .95;
-  color: var(--ink-en);
-  margin: -.18em 0 0;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.85);
 }
 
-/* ---- date -------------------------------------------------------------- */
-.inv__when {
+.inv__script--gu {
+  font-family: var(--gu-card), "Anek Gujarati", sans-serif;
+  font-size: clamp(1.85rem, 8.5cqw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--ink-c);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+/* Center Artwork */
+.inv__ill-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .85rem;
-  margin: clamp(1.3rem, 6cqw, 2rem) 0 0;
-  z-index: 2;
-}
-.inv__day {
-  font-family: var(--serif);
-  font-weight: 600;
-  font-size: clamp(2.8rem, 15cqw, 3.8rem);
-  line-height: .88;
-  color: var(--ink-c);
-  font-variant-numeric: lining-nums tabular-nums;
-  font-feature-settings: "lnum" 1, "tnum" 1;
-}
-.inv__md {
-  text-align: left;
-  border-left: 2px solid color-mix(in srgb, var(--ink-c) 75%, transparent);
-  padding-left: .75rem;
-  font-family: var(--serif);
-  font-size: clamp(1rem, 5.2cqw, 1.25rem);
-  line-height: 1.3;
-  color: #2E2820;
-}
-.inv__md b {
-  display: block;
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  font-size: .88em;
-  color: #554A3E;
+  width: 100%;
+  max-width: clamp(140px, 58cqw, 195px);
+  height: clamp(75px, 19cqw, 100px);
+  margin: clamp(0.2rem, 1cqw, 0.45rem) 0;
 }
 
-.inv__times {
-  list-style: none;
-  margin: clamp(.85rem, 3.6cqw, 1.15rem) 0 0;
-  padding: 0;
+.inv__ill {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 8px rgba(45,35,25,0.14));
+  transition: transform .6s cubic-bezier(.22,.61,.36,1);
+}
+
+.inv:hover .inv__ill {
+  transform: translateY(-3px) scale(1.03);
+}
+
+/* Bottom Ceremony Details */
+.inv__meta {
   display: flex;
   flex-direction: column;
+  align-items: center;
   width: 100%;
-  max-width: 17rem;
-  font-family: var(--serif);
-  font-size: clamp(.9rem, 4.4cqw, 1.02rem);
-  color: #4A4238;
-  z-index: 2;
+  max-width: 84%;
+  margin-top: clamp(0.15rem, 0.8cqw, 0.35rem);
+  margin-bottom: 0;
 }
-.inv__times li {
+
+/* Date line: DAY | DATE | MONTH */
+.inv__dateline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.2rem, 1cqw, 0.4rem);
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(0.78rem, 3.2cqw, 0.96rem);
+  letter-spacing: 0.09em;
+  color: var(--ink-accent);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.inv__date-sep {
+  opacity: 0.45;
+  font-weight: 400;
+  margin: 0 0.04rem;
+}
+
+.inv__date-part--num {
+  font-weight: 700;
+}
+
+/* Year */
+.inv__year {
+  font-family: var(--serif);
+  font-size: clamp(1.02rem, 4cqw, 1.28rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-accent);
+  margin: 0.08rem 0 0.32rem;
+}
+
+/* Time */
+.inv__time {
+  font-family: var(--serif);
+  font-size: clamp(0.96rem, 3.9cqw, 1.22rem);
+  font-weight: 700;
+  color: var(--ink-venue);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.28rem;
+}
+
+/* Multi-schedule for Lagna (Key Ceremony Timings) */
+.inv__schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  margin-bottom: 0.32rem;
+  width: 100%;
+  max-width: 15.5rem;
+}
+
+.inv__schedule-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: .32rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--ink-c) 22%, transparent);
-}
-.inv__times li:last-child { border-bottom: none; }
-.inv__times-lbl { font-style: italic; font-size: .92em; color: #554C40; }
-.inv__times b { font-weight: 600; font-variant-numeric: tabular-nums; color: #2A241C; margin-left: .5rem; }
-
-.inv__tagline {
   font-family: var(--serif);
-  font-style: italic;
-  font-size: clamp(.95rem, 4.6cqw, 1.15rem);
-  line-height: 1.4;
-  color: var(--ink-en);
-  margin: clamp(.7rem, 3.2cqw, 1.1rem) 0 0;
-  letter-spacing: .02em;
-  opacity: .95;
-  z-index: 2;
+  font-size: clamp(0.92rem, 3.8cqw, 1.14rem); /* Enlarged & bold for high readability */
+  font-weight: 600;
+  color: var(--ink-venue);
+  border-bottom: 1px dotted rgba(160, 100, 50, 0.45);
+  padding: 0.16rem 0.2rem;
 }
 
+.inv__sched-lbl {
+  font-style: italic;
+  color: #552F15;
+  font-weight: 600;
+  font-size: 1em;
+}
+
+.inv__sched-val {
+  font-weight: 700;
+  color: var(--ink-venue);
+  letter-spacing: 0.03em;
+  font-size: 1.02em;
+}
+
+/* Venue */
 .inv__venue {
   font-family: var(--serif);
-  margin: clamp(.7rem, 3.2cqw, 1.1rem) 0 0;
-  font-size: clamp(1rem, 4.6cqw, 1.2rem);
+  font-size: clamp(0.78rem, 3.1cqw, 0.95rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-venue);
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* ---- Gujarati Version Typography Enhancements (Large, Bold, Crisp) ---- */
+.inv--gu .inv__script--gu,
+html[lang="gu"] .inv__script--gu {
+  font-family: var(--gu-card), "Anek Gujarati", "Noto Serif Gujarati", serif;
+  font-size: clamp(2.35rem, 10.8cqw, 3.3rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+
+.inv--gu .inv__dateline,
+html[lang="gu"] .inv__dateline {
+  font-family: var(--gu-card), "Noto Serif Gujarati", serif;
+  font-size: clamp(0.9rem, 3.8cqw, 1.14rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  gap: 0.35rem;
+}
+
+.inv--gu .inv__year,
+html[lang="gu"] .inv__year {
+  font-family: var(--gu-card), "Noto Serif Gujarati", serif;
+  font-size: clamp(1.18rem, 4.8cqw, 1.5rem);
+  font-weight: 700;
+  margin: 0.08rem 0 0.35rem;
+}
+
+.inv--gu .inv__time,
+html[lang="gu"] .inv__time {
+  font-family: var(--gu-card), "Noto Serif Gujarati", serif;
+  font-size: clamp(1.08rem, 4.5cqw, 1.38rem);
+  font-weight: 700;
+  margin-bottom: 0.32rem;
+}
+
+.inv--gu .inv__venue,
+html[lang="gu"] .inv__venue {
+  font-family: var(--gu-card), "Noto Serif Gujarati", serif;
+  font-size: clamp(0.9rem, 3.8cqw, 1.12rem);
+  font-weight: 700;
   line-height: 1.45;
-  color: #443B30;
-  font-weight: 500;
-  letter-spacing: .02em;
-  white-space: pre-line;
-  z-index: 2;
+  letter-spacing: 0.02em;
 }
 
-.inv[data-ill-corners] .inv__venue {
-  margin-top: clamp(.4rem, 2cqw, .6rem);
-  margin-bottom: clamp(1.2rem, 6cqw, 2.4rem);
+.inv--gu .inv__schedule,
+html[lang="gu"] .inv__schedule {
+  max-width: 16rem;
+  gap: 0.24rem;
 }
 
-/* ---- illustration across the foot -------------------------------------- */
-.inv__ill {
-  margin: auto auto 0;
-  padding-top: 0;
-  width: auto;
-  height: auto;
-  max-width: clamp(200px, 88%, 280px);
-  max-height: clamp(155px, 44cqw, 215px);
-  object-fit: contain;
-  filter: drop-shadow(0 4px 10px rgba(45,35,25,0.1));
-  transition: transform .6s cubic-bezier(.22,.61,.36,1);
-  z-index: 1;
+.inv--gu .inv__schedule-row,
+html[lang="gu"] .inv__schedule-row {
+  font-family: var(--gu-card), "Noto Serif Gujarati", serif;
+  font-size: clamp(0.96rem, 4.1cqw, 1.22rem);
+  font-weight: 700;
+  padding: 0.18rem 0.2rem;
 }
-.inv[data-wide="true"] .inv__ill {
-  max-width: clamp(225px, 92%, 295px);
-  max-height: clamp(155px, 44cqw, 215px);
-}
-.inv[data-key="lagna"] {
-  padding-bottom: clamp(0.7rem, 2.5cqw, 1.1rem);
-}
-.inv[data-key="lagna"] .inv__times {
-  margin-top: 0.25rem;
-  gap: 0.12rem;
-}
-.inv[data-key="lagna"] .inv__times li {
-  padding: 0.12rem 0.5rem;
-  font-size: 0.76rem;
-  line-height: 1.25;
-}
-.inv[data-key="lagna"] .inv__tagline {
-  margin-top: 0.18rem;
-  font-size: 0.8rem;
-}
-.inv[data-key="lagna"] .inv__venue {
-  margin-top: 0.12rem;
-  margin-bottom: 0.2rem;
-  font-size: 0.82rem;
-}
-.inv[data-key="lagna"] .inv__ill {
-  max-width: clamp(215px, 94%, 295px);
-  max-height: clamp(160px, 45cqw, 205px);
-  margin-top: auto;
-  margin-bottom: 0.45rem;
-  flex-shrink: 0;
-}
-.inv:hover .inv__ill { transform: translateY(-3px); }
 
-/* The લગ્ન card only: TWO engravings, one per bottom corner */
-.inv__cornerill {
-  position: absolute;
-  bottom: -1%;
-  width: auto;
-  height: clamp(110px, 36cqw, 155px);
-  max-width: 48%;
-  object-fit: contain;
-  z-index: 1;
-  filter: drop-shadow(0 3px 8px rgba(45,35,25,0.12));
-  transition: transform .6s cubic-bezier(.22,.61,.36,1);
-  pointer-events: none;
+.inv--gu .inv__sched-lbl,
+html[lang="gu"] .inv__sched-lbl {
+  font-style: normal;
+  font-weight: 700;
 }
-.inv__cornerill--l { left: 1%; }
-.inv__cornerill--r { right: 1%; }
-.inv:hover .inv__cornerill { transform: translateY(-4px); }
 
-.inv__more {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+.inv--gu .inv__sched-val,
+html[lang="gu"] .inv__sched-val {
+  font-weight: 700;
 }
-/* type inside the cards scales with the CARD, not the viewport */
-.inv { container-type: inline-size; }
 
 /* ---- mobile / phone view: balanced proportions without empty space ---- */
 @media (max-width: 39.99rem) {
   .events__list {
-    gap: 2.2rem;
-    padding-inline: 0.5rem;
+    gap: 2.4rem;
+    padding-inline: 0.75rem;
   }
   .inv {
-    max-width: 20rem;
-    aspect-ratio: 1 / 1.44;
-    padding: 1.3rem 1.1rem 0.5rem;
-  }
-  .inv__orn {
-    height: clamp(90px, 32%, 130px);
-    right: 4%;
-  }
-  .inv__when {
-    margin: 1.05rem 0 0;
-  }
-  .inv__day {
-    font-size: 2.85rem;
-  }
-  .inv__tagline {
-    margin: 0.6rem 0 0;
-    font-size: 0.95rem;
-  }
-  .inv__venue {
-    margin: 0.6rem 0 0;
-    font-size: 1rem;
-  }
-  .inv__ill {
-    max-height: clamp(155px, 48cqw, 195px);
-    max-width: 90%;
-  }
-  .inv[data-wide="true"] .inv__ill {
-    max-width: 96%;
-    max-height: clamp(155px, 48cqw, 195px);
-  }
-  .inv[data-key="lagna"] {
-    aspect-ratio: auto;
-    min-height: 33rem;
-    padding-bottom: 0.95rem;
-  }
-  .inv[data-key="lagna"] .inv__ill {
-    max-width: 95%;
-    max-height: clamp(170px, 52cqw, 210px);
-    margin-top: auto;
-    margin-bottom: 0.45rem;
-    flex-shrink: 0;
+    max-width: 21.5rem;
+    aspect-ratio: 1 / 1.56;
   }
 }
 
@@ -1198,18 +1215,13 @@ body.intro-open { overflow: hidden; }
 @media (min-width: 40rem) {
   .events__list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(1.4rem, 3.5vw, 2.2rem);
+    gap: clamp(1.6rem, 3.8vw, 2.4rem);
     max-width: 52rem;
     margin-inline: auto;
   }
   .inv {
     max-width: none;
-    aspect-ratio: 1 / 1.70;
-    min-height: 30rem;
-  }
-  .inv[data-key="lagna"] {
-    aspect-ratio: auto;
-    min-height: 33rem;
+    aspect-ratio: 1 / 1.72;
   }
 }
 
@@ -1228,25 +1240,14 @@ body.intro-open { overflow: hidden; }
   .inv {
     width: 100%;
     max-width: none;
-    aspect-ratio: 1 / 1.78;
-    min-height: 32.5rem;
-    padding-bottom: 0.95rem;
+    aspect-ratio: 1 / 1.72;
     transform: none;
   }
-
-  .inv:nth-child(1),
-  .inv:nth-child(2),
-  .inv:nth-child(3),
-  .inv:nth-child(4),
-  .inv:nth-child(5) {
-    transform: none;
-  }
-
   .inv:hover, .inv:focus-visible {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 8px 22px rgba(61,52,40,.12),
-                0 28px 48px -14px rgba(61,52,40,.35),
-                0 0 0 1px rgba(206, 178, 126, 0.65);
+    box-shadow: 0 8px 24px rgba(45,28,34,.16),
+                0 28px 52px -12px rgba(45,28,34,.38),
+                0 0 0 1px rgba(214, 182, 126, 0.65);
     z-index: 5;
   }
 }

@@ -283,73 +283,103 @@
       card.setAttribute("data-ink", ev.ink);
       card.setAttribute("data-paper", ev.paper);
       card.setAttribute("data-key", ev.key);
+      if (LANG === "gu") card.classList.add("inv--gu");
       if (ev.wideIllustration) card.setAttribute("data-wide", "true");
       card.style.setProperty("--d", i * 90 + "ms");
       card.setAttribute("aria-label",
         ev.en + " — " + t(ev.date) + ". " + u("viewDetails") + ".");
 
-      var ornSrc = ev.hangingOrnament || (ev.ornament ? "assets/generated/orn_hanging.png" : null);
-      if (ornSrc) {
-        var orn = el("img", "inv__orn");
-        orn.src = ornSrc;
-        orn.alt = ""; orn.loading = "lazy";
-        card.appendChild(orn);
+      // 1. Authentic Royal Mughal Arch Border provided by user
+      var frame = el("img", "inv__frame");
+      frame.src = "assets/generated/card_frame_user.png";
+      frame.alt = "";
+      frame.setAttribute("aria-hidden", "true");
+      card.appendChild(frame);
+
+      // 2. Card Content Body (centered within the arch)
+      var body = el("div", "inv__body");
+
+      // 2a. Header: strictly show active language only (English only when EN, Gujarati only when GU)
+      var header = el("div", "inv__header");
+      if (LANG === "gu") {
+        header.appendChild(el("h3", "inv__script inv__script--gu", ev.gu));
+      } else {
+        header.appendChild(el("h3", "inv__script", ev.en));
       }
+      body.appendChild(header);
 
-      /* Title and English form ONE group sized to the wider of the two, so the
-         English anchors to the title's right edge rather than the card's. */
-      var title = el("div", "inv__title");
-      title.appendChild(el("h3", "inv__gu", ev.gu));
-      if (ev.en) title.appendChild(el("p", "inv__en", ev.en));
-      if (ev.enShift) title.style.setProperty("--en-shift", ev.enShift);
-      card.appendChild(title);
-
-      var times = (ev.times || []).filter(function (t) { return t.value; });
-
-      if (ev.dateShort) {
-        var when = el("div", "inv__when");
-        when.appendChild(el("span", "inv__day", ev.dateShort.day));
-        var md = el("span", "inv__md");
-        md.appendChild(el("b", null, t(ev.dateShort.month)));
-        /* Only when there's ONE time worth showing compactly next to the
-           date. With several (Lagna's baraat/hastamelap schedule), showing
-           just the first one here reads as the card's one time and
-           contradicts the full list right below it - so it falls back to
-           the year instead, same as when there's no time at all. */
-        md.appendChild(el("span", null, times.length === 1 ? times[0].value : "2026"));
-        when.appendChild(md);
-        card.appendChild(when);
-      }
-
-      // Multiple schedule timings (e.g. for Lagna)
-      if (times.length > 1) {
-        var ul = el("ul", "inv__times");
-        times.forEach(function (tm) {
-          var li = el("li");
-          var lbl = t(tm.label);
-          if (lbl) li.appendChild(el("span", guIf("inv__times-lbl"), lbl));
-          li.appendChild(el("b", null, tm.value));
-          ul.appendChild(li);
-        });
-        card.appendChild(ul);
-      }
-
-      if (ev.tagline) card.appendChild(el("p", guIf("inv__tagline"), t(ev.tagline)));
-      if (ev.venue) card.appendChild(el("p", guIf("inv__venue"), t(ev.venue)));
-
-      /* Bottom illustration: two corner engravings on Lagna, one centered on others */
-      if (ev.cornerIllustrations && ev.cornerIllustrations.length) {
-        card.setAttribute("data-ill-corners", "true");
-        ev.cornerIllustrations.slice(0, 2).forEach(function (src, n) {
-          var ci = el("img", "inv__cornerill inv__cornerill--" + (n ? "r" : "l"));
-          ci.src = src; ci.alt = ""; ci.loading = "lazy";
-          card.appendChild(ci);
-        });
-      } else if (ev.illustration) {
+      // 2b. Center Artwork
+      var illWrap = el("div", "inv__ill-wrap");
+      if (ev.illustration) {
         var ill = el("img", "inv__ill");
-        ill.src = ev.illustration; ill.alt = ""; ill.loading = "lazy";
-        card.appendChild(ill);
+        ill.src = ev.illustration;
+        ill.alt = "";
+        ill.loading = "lazy";
+        illWrap.appendChild(ill);
       }
+      body.appendChild(illWrap);
+
+      // 2c. Ceremony Details (Bottom)
+      var meta = el("div", "inv__meta");
+
+      // Date Line: DAY | DATE | MONTH
+      var isGu = (LANG === "gu");
+      var dayName = "";
+      var dayNum = "";
+      var monthName = isGu ? "ડિસેમ્બર" : "DECEMBER";
+
+      if (ev.dateShort && ev.dateShort.month) {
+        monthName = t(ev.dateShort.month);
+      }
+
+      if (ev.key === "mameru" || ev.key === "sangeet") {
+        dayName = isGu ? "મંગળવાર" : "TUESDAY";
+        dayNum = isGu ? "૧" : "1ST";
+      } else {
+        dayName = isGu ? "બુધવાર" : "WEDNESDAY";
+        dayNum = isGu ? "૨" : "2ND";
+      }
+
+      var dateLine = el("div", "inv__dateline");
+      dateLine.appendChild(el("span", "inv__date-part", dayName));
+      dateLine.appendChild(el("span", "inv__date-sep", "|"));
+      dateLine.appendChild(el("span", "inv__date-part inv__date-part--num", dayNum));
+      dateLine.appendChild(el("span", "inv__date-sep", "|"));
+      dateLine.appendChild(el("span", "inv__date-part", (monthName || "").toUpperCase()));
+      meta.appendChild(dateLine);
+
+      // Year Line: 2026
+      meta.appendChild(el("div", "inv__year", isGu ? "૨૦૨૬" : "2026"));
+
+      // Schedule / Timings
+      var times = (ev.times || []).filter(function (tm) { return tm.value; });
+      if (times.length > 1) {
+        var sched = el("div", "inv__schedule");
+        times.forEach(function (tm) {
+          var row = el("div", "inv__schedule-row");
+          var lbl = t(tm.label);
+          if (lbl) row.appendChild(el("span", "inv__sched-lbl", lbl));
+          row.appendChild(el("span", "inv__sched-val", tm.value));
+          sched.appendChild(row);
+        });
+        meta.appendChild(sched);
+      } else if (times.length === 1) {
+        meta.appendChild(el("div", "inv__time", times[0].value));
+      }
+
+      // Venue
+      if (ev.venue) {
+        var venLines = t(ev.venue).split("\n");
+        var venDiv = el("div", "inv__venue");
+        venLines.forEach(function (line, idx) {
+          if (idx > 0) venDiv.appendChild(el("br"));
+          venDiv.appendChild(document.createTextNode(line.toUpperCase()));
+        });
+        meta.appendChild(venDiv);
+      }
+
+      body.appendChild(meta);
+      card.appendChild(body);
 
       card.addEventListener("click", function () { openDialog(ev); });
       return card;

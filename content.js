@@ -94,7 +94,7 @@ window.WEDDING = {
       times: [{ label: "", value: "9:00 AM" }],
       venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
-      dress: "",
+      dress: { en: "Traditional Festive", gu: "પરંપરાગત ઉત્સવ પરિધાન" },
       note: {
         en: "The maternal blessing, offered before the wedding days begin.",
         gu: "લગ્નના દિવસો શરૂ થાય તે પહેલાં મામા તરફથી અપાતા આશીર્વાદ.",
@@ -117,7 +117,7 @@ window.WEDDING = {
       times: [{ label: "", value: "7:00 PM" }],
       venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
-      dress: "",
+      dress: { en: "Blooming Glamour", gu: "બ્લૂમિંગ ગ્લેમર" },
       note: {
         en: "An evening of dhol, song and dancing.",
         gu: "ઢોલ, ગીત અને નૃત્યની એક સંધ્યા.",
@@ -140,7 +140,7 @@ window.WEDDING = {
       times: [{ label: "", value: "8:00 AM" }],
       venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
-      dress: "",
+      dress: { en: "Yellow / Festive Ethnic", gu: "પીળા / શુભ પરિધાન" },
       note: {
         en: "The raising of the mandap, where the vows will be taken.",
         gu: "મંડપની સ્થાપના, જ્યાં લગ્નવિધિ સંપન્ન થશે.",
@@ -167,7 +167,7 @@ window.WEDDING = {
       ],
       venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
-      dress: "",
+      dress: { en: "Royal Ethnic / Traditional", gu: "શાહી પારંપરિક પરિધાન" },
       note: {
         en: "Hastamelap, the joining of hands, falls at 5:41 in the evening.",
         gu: "હસ્તમેળાપનું શુભ મુહૂર્ત સાંજે 5:41 વાગ્યે.",
