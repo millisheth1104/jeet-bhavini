@@ -49,12 +49,13 @@
      Great Vibes carries the English name beneath it. */
   --gu-display: "Rasa", "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
   --script: "Great Vibes", "Apple Chancery", "Segoe Script", cursive;
-  /* Mileast (the display serif the client wanted for headings) isn't on
-     Google Fonts and its free copies are personal-use only, so this is a
-     free, commercial-safe lookalike: same high-contrast, sharp-serif
-     Didone character. Latin-only, like Mileast - falls back to --serif
-     (and, in Gujarati, to the Gujarati-safe stack below) for the script. */
-  --display-heading: "Abril Fatface", var(--serif);
+  /* First pass was Abril Fatface (a free lookalike for Mileast, the paid
+     display serif the client first pointed at) - client saw it live and
+     didn't want it, picked DM Serif Display (italic) from a set of
+     alternatives instead. Latin-only - falls back to --serif (and, in
+     Gujarati, to the Gujarati-safe stack below) for the script. The italic
+     is applied separately, scoped to English only - see below. */
+  --display-heading: "DM Serif Display", var(--serif);
   /* Card lettering.
 
      Gujarati: Mogra, chosen from the ONLY six decorative Gujarati faces on
@@ -85,9 +86,17 @@
 html[data-lang="gu"] {
   --serif: "Rasa", "Noto Serif Gujarati", "Shruti", "Nirmala UI", Georgia, serif;
   --sans:  "Noto Serif Gujarati", "Shruti", "Nirmala UI", "Jost", system-ui, sans-serif;
-  /* Abril Fatface carries no Gujarati glyphs at all - go straight to the
+  /* DM Serif Display carries no Gujarati glyphs at all - go straight to the
      Gujarati-safe serif rather than let the browser guess a fallback. */
   --display-heading: var(--serif);
+}
+/* DM Serif Display's chosen look is its italic - but Rasa (the Gujarati
+   fallback above) has no italic face of its own, and a synthetic slant on
+   Indic glyphs distorts the matras. Scoped to English only. */
+html[data-lang="en"] .display,
+html[data-lang="en"] .section-title,
+html[data-lang="en"] .countdown__title {
+  font-style: italic;
 }
 /* Gujarati carries matras above and below the line and needs the headroom. */
 html[data-lang="gu"] body { line-height: 1.65; }

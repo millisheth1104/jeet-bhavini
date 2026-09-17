@@ -2093,3 +2093,23 @@ Verified both languages at 375px: English headings render in Abril Fatface
 loaded it - font-display:swap meant the first screenshot briefly caught the
 fallback face mid-fetch, not a real bug), Gujarati headings correctly stay
 on the Rasa stack, no overflow, no console errors.
+
+## Headings: switched to DM Serif Display (italic), replacing Abril Fatface
+
+User didn't like Abril Fatface once they saw it live. Published a
+comparison page with seven free, commercial-safe alternatives (Bodoni
+Moda, Playfair Display, Fraunces, Marcellus, DM Serif Display, Yeseva One,
+Italiana), each set in the site's actual hero-names and section-title text.
+User picked DM Serif Display, italic.
+
+Swapped the Google Fonts request and `--display-heading` from Abril
+Fatface to DM Serif Display. The chosen look is specifically the italic
+cut, applied as its own rule scoped to `html[data-lang="en"]` rather than
+baked into `font-style` on `.display`/`.section-title`/`.countdown__title`
+directly - Rasa (the Gujarati fallback in `--display-heading`) has no
+italic face, and a synthetic slant distorts Indic matras. Gujarati headings
+stay upright, unaffected.
+
+Verified both languages: English headings render in italic DM Serif
+Display (font-family and font-style confirmed via computed style), Gujarati
+stays on Rasa with font-style normal, no overflow, no console errors.
