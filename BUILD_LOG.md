@@ -1953,3 +1953,10 @@ collide with real text.
 Verified in both languages, 375px and desktop: no horizontal overflow, no
 failed loads, zero gap turned negative between the venue text and the cue
 at a deliberately short 699px test viewport (11px clear, was -38px pinned).
+
+## Interactive temple bell intro screen and corner flourishes alignment
+
+- Retained interactive intro scene (temple bell and elephant with strike animation and bilingual ring cue).
+- Fixed invitation card corner botanical flourishes (`corner_botanical.png`):
+  - Bottom-right corner lifted up (`bottom: -1.5%`, `right: -7%`, `scale: -1 1`) to sit flush against the card's double gold border.
+  - Top-left corner flipped and raised (`top: -1.5%`, `left: -7%`, `scale: 1 -1`) so the rose cluster sits directly in the corner with sprigs framing the top and left borders symmetrically with the bottom-right corner.

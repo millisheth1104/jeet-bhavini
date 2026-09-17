@@ -174,17 +174,33 @@ img { max-width: 100%; display: block; }
 
 /* --------------------------------------------------------------------------
    Intro screen
-   The strike lands at 56% of a 3.6s timeline; the elephant and the bell share
-   that duration so the swing reads as a consequence of the reach.
+
+   A painted chhatri with a brass bell and an elephant reaching for it. The
+   scene holds until the visitor rings the bell, so nothing here runs on a
+   timer - `.is-ringing` on .intro is what starts the strike.
+
+   ONE coordinate system. .intro__stage is the painting's own frame
+   (832 x 1472), and every part laid over it - chain, bell, elephant, trunk -
+   is a percentage of that frame, measured off the artwork. The stage is sized
+   from the scene's HEIGHT alone, so:
+
+     phone    the frame is taller than it is wide, so matching the height
+              overflows the width a little and the painting fills the screen
+     desktop  matching the height leaves the frame narrower than the viewport,
+              so it sits centred as a plate on warm paper - which is the
+              stationery the rest of the site is printed on anyway
+
+   That one rule is deliberately the whole responsive story. An earlier intro
+   anchored figures to the scene while the art was anchored to a cropped
+   backdrop, and the two drifted apart at every viewport.
    -------------------------------------------------------------------------- */
 
 .intro {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: var(--paper);
-  display: grid;
-  grid-template-rows: 1fr auto;
+  --plate: #F3E7DE;               /* the painting's own sky, for the mat */
+  background: var(--plate);
   overflow: hidden;
   transition: opacity .9s ease, visibility .9s;
 }
@@ -197,227 +213,263 @@ body.intro-open { overflow: hidden; }
 }
 
 .intro__scene {
-  position: relative;
-  overflow: hidden;
-  min-height: 0;
-  container-type: size;           /* 100cqh/100cqw = the scene box */
+  position: absolute;
+  inset: 0;
+  container-type: size;           /* 100cqh = the scene box */
+  display: grid;
+  place-items: center;
+  cursor: pointer;
 }
 
-.intro__backdrop {
+.intro__stage {
+  position: relative;
+  height: 100cqh;
+  aspect-ratio: 832 / 1472;       /* width follows the painting's frame */
+  animation: introFade 1.1s ease both;
+}
+/* the plate's edge, only visible once the mat shows (wide screens) */
+.intro__stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: 0 0 0 1px rgba(120, 80, 60, .10), 0 18px 60px rgba(120, 80, 60, .16);
+  pointer-events: none;
+}
+
+.intro__bg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 67%;  /* puts a floor at the scene's bottom edge */
-  animation: introFade 1.2s ease both;
+  object-fit: fill;               /* the stage IS the painting's aspect */
+  display: block;
 }
 
-/* Bell + elephant.
+/* ---- the bell, on a chain that tiles to whatever length is needed -------- */
 
-   The backdrop is a 576x1024 painting cropped with `cover`, so how much of it
-   a viewport shows varies enormously - a phone sees almost all of it, a wide
-   desktop sees a ~27% tall band. Two coordinate systems therefore exist and
-   they do not scale together:
-
-     scene   the visible box. The elephant lives here: its feet sit on a
-             ground line at 92% of the scene, and `object-position: center 67%`
-             is chosen so the painting puts a floor under that line at every
-             size - the pavilion deck on wide screens, the courtyard tiles on
-             phones.
-     stage   the painting as actually rendered, `max(100cqh, 177.78cqw)` tall
-             and offset by the object-position. The bell's hook lives here: it
-             is the little brass pendant painted under the pavilion's eave, at
-             49.7% across and 38.3% down the image.
-
-   The chain has one end in each, so it is not part of the bell image - it is a
-   tiled strip whose length is whatever the two ends ask for. When the eave is
-   off the top of the crop the hook goes with it and the chain simply runs out
-   of frame, which is the same moment the roof stops being visible, so it never
-   reads as hanging from nothing.
-
-   Measured off the trimmed elephant PNG:
-
-     trunk tip   24.6% across (mean of its rest and contact poses), ~0% down
-     back feet   78% across, 100% down   (the strike pivots here)
-
-   The elephant is capped at 58cqw so its rump cannot run off a narrow screen;
-   on a phone that, not the height, is what sets its size. */
-.intro__pair {
+.intro__chain {
   position: absolute;
-  left: 50%;
-  bottom: 8%;                     /* the ground line */
-  height: 40%;                    /* fallback: no container query units */
-  height: min(46cqh, 58cqw);      /* = the elephant's height */
-  aspect-ratio: 800 / 742;
-  translate: -24.6% 0;            /* puts the trunk tip under the hook */
+  left: 49.48%;
+  /* Starts inside the carved ceiling band, not at the mouth of the opening.
+     On this column the arch's navy recess runs y 618-654 of 1472, so anchoring
+     at the opening (676) left the chain hanging in mid-air below the ceiling.
+     614 tucks the first link behind the carving. Tiles upward from the bell,
+     so the height is just however far that is. */
+  top: 41.71%;
+  width: 1.05%;
+  height: 8.70%;
+  background: url(assets/generated/intro3_chain.png?v=11) repeat-y 50% 100% / 100% auto;
 }
 
-/* contact shadow, spanning the four feet (27%-95% of the elephant's width) */
-.intro__pair::before {
-  content: "";
-  position: absolute;
-  left: 22%;
-  width: 78%;
-  bottom: -2.5%;
-  height: 9%;
-  background: radial-gradient(50% 50% at 50% 50%,
-              rgba(78,62,48,.30), rgba(78,62,48,.11) 55%, rgba(78,62,48,0) 76%);
-  animation: introFade 1.1s ease .5s both;
-}
-
-/* The chain. Its top is the painted hook, converted from stage to scene and
-   then to this box:  hook - pairTop  =  (67cqh - .287*stage) - (92cqh - He).
-   Its bottom is the clapper, just clear of the trunk.
-
-   The bell is 41.8% of the elephant's height tall and hangs at the bottom of
-   this box, so the box has to be longer than that or the bell swallows the
-   hook. It always is, except in a narrow band of scene aspect ratios around
-   0.76-0.82 where it falls short by about 1cqh - the `min()` is the floor that
-   covers it, at the cost of the chain starting a hair above the hook there. */
-.intro__rig {
-  position: absolute;
-  left: 24.6%;
-  width: 2.85%;
-  margin-left: -1.425%;
-  top: -55%;                      /* fallback: no container query units */
-  top: min(calc(min(46cqh, 58cqw) - 25cqh - .287 * max(100cqh, 177.7778cqw)), -50%);
-  bottom: 103%;
-  background: url(assets/generated/intro_chain.png?v=20260913a) repeat-y 50% 100% / 100% auto;
-  animation: introFade .8s ease .3s both;
-}
-
-/* The bell hangs off the bottom of the chain and rocks about the ring it hangs
-   by, which is where a tapped bell actually articulates - the chain barely
-   moves. Rocking about its own ring also keeps the swing proportional to the
-   bell at every viewport, which rotating the whole chain would not. */
 .intro__bell {
   position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: 947%;                    /* 27% of the elephant's width */
-  max-width: none;                /* the global img rule would clamp it to the
-                                     chain's width, which is 1/9th of this */
+  left: 42.67%;
+  /* Raised to meet the reared trunk: tilting back 7deg on the hind legs lifts
+     the tip ~35px in frame space by itself, so the bell has to come up by
+     about that much or the trunk swings past underneath it. */
+  top: 50.41%;
+  width: 14.66%;
+  max-width: none;                /* the global img rule would clamp this */
   height: auto;
-  translate: -50.3% 0;            /* the ring, not the rim, sits on the chain */
-  transform-origin: 50.3% 13%;    /* the ring */
-  animation: bellRock 3.6s cubic-bezier(.33,.7,.4,1) .3s both;
+  transform-origin: 49.9% 4%;     /* the ring it hangs by */
 }
+/* before it is struck, a slow breath so it reads as the thing to tap */
+.intro:not(.is-ringing) .intro__bell { animation: bellWait 3.4s ease-in-out 1.2s infinite; }
+.intro.is-ringing  .intro__bell { animation: bellRock 2.4s cubic-bezier(.33,.7,.4,1) .57s both; }
 
+/* ---- the elephant. Body and trunk share this box, so the trunk pivots in
+        place and the joint at the mouth cannot open. ---------------------- */
+
+/* The whole elephant tilts back on its hind legs. Everything inside is a
+   child, so the legs and trunk inherit this and add their own movement on
+   top - which is what makes the legs read as attached rather than swinging
+   off a body that is standing still. */
 .intro__ele {
   position: absolute;
-  inset: 0;
-  transform-origin: 78% 100%;     /* pivots on its back feet */
-  animation: introRise 1s cubic-bezier(.22,.61,.36,1) .2s both,
-             elephantRing 3.6s cubic-bezier(.33,.7,.4,1) .3s both;
+  left: 4.09%;
+  top: 55.37%;
+  width: 51.68%;
+  aspect-ratio: 889 / 931;
+  transform-origin: 19.69% 99.03%;   /* the hind feet - see bake_intro3.py */
 }
-.intro__elebody { width: 100%; height: 100%; display: block; }
+.intro.is-ringing .intro__ele { animation: eleRear 2.2s cubic-bezier(.34,.07,.2,1) both; }
 
-/* The trunk is lifted off the elephant into its own layer and replaced by 11
-   warped poses on a sprite sheet - a twirl about the joint plus a lift, both
-   weighted to nothing at the joint so the seam never opens. The poses are a
-   designed sequence, not a slider: frame 0 rest, 4 wound left, 6 the strike,
-   7 the follow-through right. The tip covers 7.8% of the elephant's width
-   between 4 and 7, which is what makes the swing read as a swing. Held on
-   step-end, so it looks drawn rather than tweened. */
+/* Colour and alpha arrive separately (see bake_intro3.py) and are put back
+   together here. -webkit- first, for Safari. */
+.intro__eleBody {
+  position: absolute;
+  inset: 0;
+  background: url(assets/generated/intro3_ele_body.jpg?v=11) no-repeat 50% 50% / 100% 100%;
+  -webkit-mask: url(assets/generated/intro3_ele_mask.png?v=11) no-repeat 50% 50% / 100% 100%;
+          mask: url(assets/generated/intro3_ele_mask.png?v=11) no-repeat 50% 50% / 100% 100%;
+}
+
+/* The front legs, on TOP of the body's tilt. As the elephant comes up they
+   tuck: a rotation that folds them back under the chest, plus a vertical
+   squash standing in for the knee bending, both about the shoulder so the top
+   of each leg stays with the body.
+
+   The far leg (drawn behind) tucks harder than the near one. That difference
+   is what stops the pair reading as one flat shape. */
+.intro__leg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+.intro__leg--far  { transform-origin: 51.29% 75.19%; }   /* shoulders, per bake_intro3.py */
+.intro__leg--near { transform-origin: 58.49% 74.11%; }
+.intro.is-ringing .intro__leg--far  { animation: legFar  2.2s cubic-bezier(.34,.07,.2,1) both; }
+.intro.is-ringing .intro__leg--near { animation: legNear 2.2s cubic-bezier(.34,.07,.2,1) both; }
+/* The trunk does not swing like a hinge - it is a muscular hydrostat, so the
+   bend has to increase along its length and the tip has to lag behind the
+   base and overshoot when it stops. A single rotation cannot do that, so the
+   shape comes from 11 warped poses on a sprite sheet (a curl about the joint
+   weighted by distance, a lift, and a whip confined to the outer half - all
+   zero at the joint, so the seam with the head never opens). The rotation
+   below is still a real CSS transform, so the gross swing stays smooth; only
+   the deformation is stepped. See scripts/bake_intro3.py. */
 .intro__trunk {
   position: absolute;
-  left: 1.25%;
-  top: -7.547%;
-  width: 33.75%;
-  height: 37.197%;
-  background: url(assets/generated/intro_trunk_sheet.png?v=20260913a) no-repeat 50% 0 / 1100% 100%;
-  animation: trunkCurl 3.6s step-end .3s both;
+  left: 80.427%;
+  top: 24.168%;
+  width: 18.560%;
+  height: 24.705%;
+  background: url(assets/generated/intro3_trunk_sheet.png?v=12) no-repeat 0 0 / 1100% 100%;
+  transform-origin: 66.061% 95.652%;   /* the joint, where it leaves the mouth */
+  transform: rotate(-9deg);            /* at rest, held clear of the bell */
+}
+.intro.is-ringing .intro__trunk {
+  animation: trunkStrike 2.2s cubic-bezier(.4,0,.35,1) both,
+             trunkCurl   2.2s step-end both;
 }
 
-.intro__copy {
-  text-align: center;
-  padding: clamp(1.2rem, 4vh, 2.4rem) var(--gutter) clamp(2rem, 6vh, 3.4rem);
-  background: var(--paper);
-  position: relative;
-  z-index: 2;
-}
-.intro__copy .eyebrow { animation: introFade .9s ease 1.9s both; margin-bottom: .7em; }
-.intro__names {
-  font-size: clamp(2.2rem, 9vw, 3.6rem);
-  animation: introFade 1s ease 2.1s both;
-}
-.intro__names em { font-style: italic; color: var(--rose); font-size: .58em; }
-.intro__gu {
-  font-size: clamp(.9rem, 3vw, 1.1rem);
-  color: var(--ink-soft);
-  margin: .5rem 0 0;
-  animation: introFade 1s ease 2.3s both;
-}
+/* ---- the cue ------------------------------------------------------------ */
 
-.intro__skip {
+.intro__cue {
   position: absolute;
-  /* clears the language toggle, which is pinned to the same corner */
-  top: clamp(.8rem, 2vh, 1.4rem);
-  left: clamp(.9rem, 3vw, 1.6rem);
-  z-index: 3;
-  border: 1px solid var(--hairline);
-  background: rgba(255,255,255,.7);
-  backdrop-filter: blur(4px);
-  color: var(--ink-soft);
-  font: inherit;
-  font-size: .64rem;
-  letter-spacing: .24em;
-  text-transform: uppercase;
-  padding: .55rem 1.1rem;
-  cursor: pointer;
-  animation: introFade .6s ease 1.2s both;
+  /* a centred box, not full-bleed: its scrim would otherwise draw a band
+     right across the mat on a wide screen */
+  left: 50%;
+  translate: -50% 0;
+  width: min(30rem, 92vw);
+  bottom: 6%;
+  margin: 0;
+  padding: 1rem 1.2rem 1.15rem;
+  text-align: center;
+  color: #FFF9F4;
+  /* the courtyard marble under this is pale, so the type needs its own ground */
+  background: radial-gradient(75% 130% at 50% 55%,
+              rgba(72, 38, 34, .5) 0%, rgba(72, 38, 34, .28) 52%, rgba(72, 38, 34, 0) 100%);
+  text-shadow: 0 1px 10px rgba(72, 38, 34, .7), 0 0 3px rgba(72, 38, 34, .5);
+  animation: cueIn 1s ease 1.1s both;
 }
-.intro__skip:hover { color: var(--ink); border-color: var(--brass); }
+.intro.is-ringing .intro__cue { animation: cueOut .45s ease both; }
+.intro__cueTitle,
+.intro__cueSub { display: block; }
+.intro__cueTitle {
+  font-size: clamp(.82rem, 3.6vw, 1.25rem);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  text-indent: .3em;              /* letter-spacing pads the right; re-centre */
+  font-weight: 500;
+}
+.intro__cueSub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(.95rem, 4vw, 1.35rem);
+  color: #FBE9CE;
+  margin-top: .3em;
+}
 
 @keyframes introFade { from { opacity: 0 } to { opacity: 1 } }
-@keyframes introRise {
-  from { opacity: 0; translate: 0 5%; }
-  to   { opacity: 1; translate: 0 0; }
+@keyframes cueIn  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes cueOut { to { opacity: 0; transform: translateY(-6px); } }
+
+/* barely there - just enough to say "this is the thing to touch" */
+@keyframes bellWait {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(1.1deg); }
 }
 
-/* The reach. Rotating clockwise about the back feet is what lifts the front
-   of the elephant, so the trunk rises; the translate adds the rest. Both are
-   relative, so the reach scales with the elephant. Contact is at 56%, which
-   is exactly where the bell starts to move - the bell must never lead. */
-@keyframes elephantRing {
-  0%, 44%   { transform: translateY(0) rotate(0deg); }
-  56%       { transform: translateY(-.6%) rotate(1.2deg); }
-  68%       { transform: translateY(0) rotate(0deg); }
-  76%       { transform: translateY(0) rotate(.5deg); }
-  86%, 100% { transform: translateY(0) rotate(0deg); }
+/* The rear. Up onto the hind legs, held while the blow lands, then down and
+   settled. Kept to 7deg: a flat cut-out pushed much past that stops reading as
+   an elephant rearing and starts reading as a picture being tilted. */
+@keyframes eleRear {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(-5.5deg); }
+  32%  { transform: rotate(-7deg); }    /* highest, held through the strike */
+  56%  { transform: rotate(-6deg); }
+  76%  { transform: rotate(0deg); }     /* front feet back down */
+  86%  { transform: rotate(-1deg); }    /* the weight settling */
+  100% { transform: rotate(0deg); }
 }
 
-/* Frame index x 10%. Idle sway, wind left, sweep right through the bell at
-   56%, follow through, settle. */
+/* The legs tucking, relative to that tilt. */
+@keyframes legFar {
+  0%   { transform: rotate(0deg)   scaleY(1); }
+  20%  { transform: rotate(-8deg)  scaleY(.92); }
+  32%  { transform: rotate(-12deg) scaleY(.87); }
+  56%  { transform: rotate(-10deg) scaleY(.89); }
+  76%  { transform: rotate(0deg)   scaleY(1); }
+  86%  { transform: rotate(-2deg)  scaleY(.985); }
+  100% { transform: rotate(0deg)   scaleY(1); }
+}
+@keyframes legNear {
+  0%   { transform: rotate(0deg)  scaleY(1); }
+  20%  { transform: rotate(-4deg) scaleY(.96); }
+  32%  { transform: rotate(-6deg) scaleY(.93); }
+  56%  { transform: rotate(-5deg) scaleY(.94); }
+  76%  { transform: rotate(0deg)  scaleY(1); }
+  86%  { transform: rotate(-1deg) scaleY(.99); }
+  100% { transform: rotate(0deg)  scaleY(1); }
+}
+
+/* The trunk's gross swing. Contact is at 26% (about 570ms), which is where
+   bellRock's delay is set, so the bell moves as the trunk arrives. */
+@keyframes trunkStrike {
+  0%   { transform: rotate(-9deg); }
+  26%  { transform: rotate(6deg); }     /* contact */
+  32%  { transform: rotate(5.2deg); }   /* held, so the press against the bell reads */
+  42%  { transform: rotate(-4deg); }
+  56%  { transform: rotate(1deg); }
+  70%  { transform: rotate(-4deg); }
+  100% { transform: rotate(-9deg); }    /* back to its resting curl */
+}
+
+/* The trunk's shape, frame index x 10%: gather, uncurl, reach, touch, press
+   against the bell, then the tip whips back and settles. */
 @keyframes trunkCurl {
-  0%   { background-position-x: 0%; }    /* rest */
-  9%   { background-position-x: 10%; }
-  18%  { background-position-x: 20%; }
-  26%  { background-position-x: 0%; }
-  34%  { background-position-x: 30%; }
-  44%  { background-position-x: 40%; }   /* wound left */
-  50%  { background-position-x: 50%; }
-  56%  { background-position-x: 60%; }   /* the strike */
-  61%  { background-position-x: 70%; }   /* follow through, right of the bell */
-  66%  { background-position-x: 80%; }
-  71%  { background-position-x: 90%; }
-  77%  { background-position-x: 100%; }
-  84%  { background-position-x: 10%; }
-  91%  { background-position-x: 20%; }
-  100% { background-position-x: 0%; }
+  0%   { background-position-x: 0%; }
+  10%  { background-position-x: 10%; }   /* gather */
+  16%  { background-position-x: 20%; }
+  20%  { background-position-x: 30%; }
+  23%  { background-position-x: 40%; }
+  26%  { background-position-x: 50%; }   /* touches */
+  31%  { background-position-x: 60%; }   /* presses against it */
+  40%  { background-position-x: 70%; }   /* the tip whips back */
+  52%  { background-position-x: 80%; }
+  64%  { background-position-x: 90%; }
+  78%  { background-position-x: 100%; }
+  100% { background-position-x: 100%; }
 }
 
-/* Struck at 56% and pushed to its right, then damping out. */
+/* struck, then damping out */
 @keyframes bellRock {
-  0%, 56%  { transform: rotate(0deg); }
-  61%      { transform: rotate(9deg); }
-  67%      { transform: rotate(-6.5deg); }
-  73%      { transform: rotate(4.4deg); }
-  79%      { transform: rotate(-2.8deg); }
-  85%      { transform: rotate(1.7deg); }
-  91%      { transform: rotate(-.9deg); }
-  100%     { transform: rotate(0deg); }
+  0%   { transform: rotate(0deg); }
+  10%  { transform: rotate(9deg); }
+  25%  { transform: rotate(-6.5deg); }
+  40%  { transform: rotate(4.4deg); }
+  55%  { transform: rotate(-2.8deg); }
+  70%  { transform: rotate(1.7deg); }
+  85%  { transform: rotate(-.9deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro__stage, .intro__cue { animation: none; }
+  .intro:not(.is-ringing) .intro__bell { animation: none; }
 }
 
 /* --------------------------------------------------------------------------
@@ -726,15 +778,15 @@ body.intro-open { overflow: hidden; }
   z-index: 0;
   pointer-events: none;
 }
-.invite .deco--corner-tl { top: -7%;  left: -7%; }
-.invite .deco--corner-br { bottom: -7%; right: -7%; scale: -1 1; }
+.invite .deco--corner-tl { top: -1.5%; left: -7%; scale: 1 -1; }
+.invite .deco--corner-br { bottom: -1.5%; right: -7%; scale: -1 1; }
 @media (max-width: 26rem) {
   /* the card has little enough width of its own on a phone that a 17vw
      flourish plus a 7% overhang starts crowding the blessing text */
   .invite .deco--corner-tl,
   .invite .deco--corner-br { width: clamp(56px, 13vw, 90px); }
-  .invite .deco--corner-tl { top: -4%; left: -4%; }
-  .invite .deco--corner-br { bottom: -4%; right: -4%; }
+  .invite .deco--corner-tl { top: 0; left: -4%; scale: 1 -1; }
+  .invite .deco--corner-br { bottom: 0; right: -4%; }
 }
 
 /* --------------------------------------------------------------------------
