@@ -2030,3 +2030,17 @@ reads as the intended depth effect rather than a bug.
 
 Verified at 375px: no overflow, no console errors, both languages render
 the new heading pair.
+
+## Gallery: pushed the card and heading sizes up further
+
+Follow-up to the previous gallery pass - user wanted the centre carousel
+image bigger still, and the heading text sized up too.
+
+`.depthcar__card` width: `clamp(225px, 61vw, 360px)` -> `clamp(255px, 72vw, 420px)`.
+`.depthcar` stage height: `clamp(400px, 85vw, 585px)` -> `clamp(460px, 96vw, 680px)`
+(kept ahead of the 3:4 card's height so it doesn't clip).
+Added `.gallery .section-title`/`.gallery .section-subtitle` overrides
+(`2.6rem-4.4rem` / `1.05rem-1.3rem`) rather than raising the shared
+`.section-title` - other sections didn't ask for this and share that class.
+
+Verified at 375px: no overflow, no console errors.
