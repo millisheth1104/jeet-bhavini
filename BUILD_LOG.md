@@ -2044,3 +2044,24 @@ Added `.gallery .section-title`/`.gallery .section-subtitle` overrides
 `.section-title` - other sections didn't ask for this and share that class.
 
 Verified at 375px: no overflow, no console errors.
+
+## Increased type size sitewide
+
+User asked for bigger text across the whole site, not just the gallery.
+
+Checked first: every `font-size` in styles.css already uses `rem` or
+`clamp(rem, vw, rem)` except body's own base rule - one raw `16px`. That
+means the entire type scale (and every spacing value declared in rem, which
+is most of them) is anchored to the root font-size, so bumping it in one
+place scales everything proportionally, rather than hand-editing scores of
+individual rules.
+
+`html { font-size: 18px }` (was the browser default, unset -> effectively
+16px), `body`'s own `font-size` changed from a hardcoded `16px` to `1rem` so
+it tracks the same root value instead of a second, independent constant.
+
+Verified at 375px in both languages: no horizontal overflow anywhere in the
+document (checked via scrollWidth vs clientWidth on the full page, not just
+the viewport), spot-checked the invite card, event cards, gallery, calendar,
+hosts list and footer for clipping or cramped wrapping - all still readable
+and contained within their cards.
