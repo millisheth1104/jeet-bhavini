@@ -96,7 +96,7 @@
       if (alsoTitle) e.title = u(key);
     }
     label("heroEyebrow",     "heroEyebrow");
-    label("scrollCue",       "scrollCue");
+    label("scrollCueLabel",  "scrollCue");
     label("eventsEyebrow",   "eventsEyebrow");
     label("eventsTitle",     "eventsTitle");
     label("familiesEyebrow", "familiesEyebrow");

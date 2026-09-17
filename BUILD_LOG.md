@@ -1982,3 +1982,30 @@ resolve against the card's own box, not the section - the fix survived.
 Verified in-browser post-merge: no console errors, no horizontal overflow,
 EN/GU toggle switches both directions, Ganesha + welcome line + scroll cue
 render without overlapping the temple-bell intro. Pushed as `7e388ee`.
+
+## Scroll cue: fixed optical centering and low visibility
+
+User flagged the hero's "SCROLL" cue as not evident and not centre-aligned
+over its line.
+
+**Centering.** `letter-spacing` pads a full tracking-width after the LAST
+character too, not just between characters - so the word's own content box
+was wider than what the eye reads as the word, with all of that extra space
+sitting on the right. Centering that box centered the invisible padding
+along with the glyphs, pushing the visible word left of true centre. Split
+the cue into an outer `.scroll-cue` (grid: label + line) and an inner
+`.scroll-cue__label` carrying the tracking, with `margin-right` cancelling
+that tracking value exactly - `-.3em` for the English label, `-.015em` for
+the Gujarati one, matching each language's own `letter-spacing` override.
+
+**Visibility.** `.hero__inner`'s paper-coloured radial scrim is sized for
+the names/date block; the cue is well past where that gradient has faded
+to transparent, and the added Ganesha/welcome-line content pushed it lower
+still, so it sat directly on the raw garden illustration with no cover.
+Rather than resize the shared scrim - it also frames the names, easy to
+throw off elsewhere - gave `.scroll-cue` its own `filter: drop-shadow`
+halo in the paper colour, legible regardless of what's behind it.
+
+Verified both languages: the Gujarati override list now targets
+`.scroll-cue__label` (was `.scroll-cue`, which no longer carries the
+tracking) with its own matching margin correction.

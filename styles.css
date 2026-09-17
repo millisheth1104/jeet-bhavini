@@ -577,12 +577,26 @@ body.intro-open { overflow: hidden; }
 .scroll-cue {
   margin: clamp(1.6rem, 5vh, 2.6rem) 0 0;
   font-size: .6rem;
-  letter-spacing: .3em;
-  text-transform: uppercase;
   color: var(--ink-faint);
   display: grid;
   justify-items: center;
   gap: .55rem;
+  /* By this point in the flow the paper scrim behind hero__inner has faded
+     out (it's a radial gradient sized to the names/date, not this far down),
+     so the cue sits on the raw garden illustration. A soft paper-coloured
+     halo keeps it legible regardless of what's behind it, rather than
+     stretching the shared scrim and risking washing out the art elsewhere. */
+  filter: drop-shadow(0 0 3px var(--paper)) drop-shadow(0 0 7px var(--paper));
+}
+/* Letter-spacing pads a full tracking-width AFTER the last glyph too, which
+   shifts the visible word's optical centre left of the box's true centre -
+   so "SCROLL" looked off-centre over the line below it, though the box
+   itself was centred correctly. Cancel that trailing space so the glyphs'
+   own centre lines up with the ::after line's centre. */
+.scroll-cue__label {
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  margin-right: -.3em;
 }
 .scroll-cue::after {
   content: "";
@@ -2021,7 +2035,7 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
    its Gujarati segment has its own rule (`.langswitch__opt--gu`), and its
    English segment must stay in caps. */
 html[data-lang="gu"] .eyebrow,
-html[data-lang="gu"] .scroll-cue,
+html[data-lang="gu"] .scroll-cue__label,
 html[data-lang="gu"] .intro__skip,
 html[data-lang="gu"] .hero__meta,
 html[data-lang="gu"] .invite__when,
@@ -2034,6 +2048,10 @@ html[data-lang="gu"] .hosts__heading {
   letter-spacing: .015em;
   text-transform: none;
 }
+/* The English label cancels its own .3em trailing tracking with a matching
+   negative margin (see .scroll-cue__label); Gujarati tracks far less, so
+   that cancellation must shrink to match or it overcorrects. */
+html[data-lang="gu"] .scroll-cue__label { margin-right: -.015em; }
 /* Those labels lean on tracking for their weight; give it back as size. */
 html[data-lang="gu"] .eyebrow,
 html[data-lang="gu"] .compliments__heading { font-size: .88rem; }
