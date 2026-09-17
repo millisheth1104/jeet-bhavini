@@ -222,7 +222,8 @@ window.WEDDING = {
   },
 
   gallery: {
-    heading: { en: "Gallery", gu: "તસવીરો" },
+    heading: { en: "Love in Focus", gu: "ફોકસમાં પ્રેમ" },
+    subheading: { en: "(Photo Gallery)", gu: "(ફોટો ગેલેરી)" },
     caption: { en: "Moments we love", gu: "અમને પ્રિય ક્ષણો" },
     photos: [
       { src: "assets/photos/couple-beach-01.jpg",  alt: { en: "Jeet and Bhavini walking the shore below a limestone cliff", gu: "દરિયાકિનારે ચાલતાં જીત અને ભાવિની" } },

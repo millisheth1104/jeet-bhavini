@@ -500,6 +500,7 @@
     if (!photos.length) { section.hidden = true; return; }
 
     put("galleryTitle", t(W.gallery.heading));
+    put("gallerySubtitle", t(W.gallery.subheading));
     put("galleryCaption", t(W.gallery.caption));
 
     /* ---- a depth carousel ---------------------------------------------

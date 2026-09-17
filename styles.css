@@ -142,6 +142,13 @@ img { max-width: 100%; display: block; }
   line-height: 1.1;
   margin: 0;
 }
+.section-subtitle {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-faint);
+  font-size: clamp(.82rem, 2vw, .95rem);
+  margin: .5rem 0 0;
+}
 
 .lede {
   max-width: var(--measure);
@@ -1418,7 +1425,7 @@ body.intro-open { overflow: hidden; }
    continuous `current` value in main.js, which this only renders. */
 .depthcar {
   position: relative;
-  height: clamp(300px, 64vw, 440px);
+  height: clamp(400px, 85vw, 585px);
   max-width: 66rem;
   margin: clamp(1.4rem, 5vw, 2.2rem) auto 0;
   overflow: hidden;               /* the edge cards crop at the stage, on purpose */
@@ -1436,7 +1443,7 @@ body.intro-open { overflow: hidden; }
   position: absolute;
   left: 50%;
   top: 50%;
-  width: clamp(170px, 46vw, 270px);
+  width: clamp(225px, 61vw, 360px);
   aspect-ratio: 3 / 4;
   margin: 0;
   padding: clamp(.28rem, 1.1vw, .5rem) clamp(.3rem, 1.2vw, .55rem)

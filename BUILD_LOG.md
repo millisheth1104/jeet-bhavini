@@ -2009,3 +2009,24 @@ halo in the paper colour, legible regardless of what's behind it.
 Verified both languages: the Gujarati override list now targets
 `.scroll-cue__label` (was `.scroll-cue`, which no longer carries the
 tracking) with its own matching margin correction.
+
+## Gallery: renamed heading, enlarged the focused carousel card
+
+User wanted the "Gallery" heading changed to "Love in Focus" with a small
+"(Photo Gallery)" line underneath, and the centre carousel card noticeably
+bigger, per an annotated screenshot marking roughly the target size.
+
+`content.js`: `gallery.heading` -> "Love in Focus" / "ફોકસમાં પ્રેમ", new
+`gallery.subheading` -> "(Photo Gallery)" / "(ફોટો ગેલેરી)". New
+`.section-subtitle` (small italic, `--ink-faint`) renders it under the h2 in
+`index.html`/`main.js`.
+
+`.depthcar__card` width raised from `clamp(170px, 46vw, 270px)` to
+`clamp(225px, 61vw, 360px)`, `.depthcar` stage height from
+`clamp(300px, 64vw, 440px)` to `clamp(400px, 85vw, 585px)` to fit the taller
+3:4 card. Left `gap`/`falloff` (main.js, tracks stage width, not card width)
+untouched - the bigger centre card now overlaps its neighbours more, which
+reads as the intended depth effect rather than a bug.
+
+Verified at 375px: no overflow, no console errors, both languages render
+the new heading pair.
