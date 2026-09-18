@@ -268,6 +268,9 @@ window.WEDDING = {
     introCueSub:       { en: "to begin the celebration", gu: "ઉજવણીનો પ્રારંભ કરવા" },
 
     heroEyebrow:       { en: "Together with their families", gu: "પરિવારજનો સહિત" },
+    // Prefixed to heroWelcome when a guest link (see admin.html) carries a
+    // name: "Dear Priya, welcomes you to..." instead of the generic line.
+    guestDear:         { en: "Dear", gu: "પ્રિય" },
 
     eventsEyebrow:     { en: "Celebration Journey", gu: "ઉત્સવની સફર" },
     eventsTitle:       { en: "Our Events", gu: "અમારા પ્રસંગો" },

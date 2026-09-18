@@ -2113,3 +2113,69 @@ stay upright, unaffected.
 Verified both languages: English headings render in italic DM Serif
 Display (font-family and font-style confirmed via computed style), Gujarati
 stays on Rasa with font-style normal, no overflow, no console errors.
+
+## Guest links: an admin page to choose which events a guest sees
+
+`admin.html` — a page for the couple, not linked from the site's own nav.
+Gated by a plain client-side passphrase (`OleanderJB2026`, in the file in
+plain text, changeable there) kept in sessionStorage. This is explicitly
+NOT real security: anyone who views source has it. It only keeps the page
+off the path a guest would ever wander down; real privacy would need
+server-side auth, which this static, no-build site does not have.
+
+**No backend, no guest database.** The four event checkboxes come straight
+from `W.events` in content.js, so a fifth event added there shows up here
+with no other change needed. Generating a link builds a token -
+`base64url(JSON.stringify({n: name, c: [event keys]}))` - and appends it to
+`index.html?for=`. The token IS the guest list entry: name and the chosen
+events travel inside the link itself, so a link works immediately on any
+device, with nothing to upload, host, or keep in sync. The trade-off, stated
+plainly: there is no shared list of who-was-sent-what visible from another
+device or browser - only a local "saved on this device" table in
+`localStorage`, for the admin's own bookkeeping.
+
+**main.js (`guestLink()`, ahead of `events()`)** decodes the same token,
+filtering `W.events` in place before anything downstream reads it - the rest
+of the site does not know a filtered visit is happening. A malformed or
+absent token is silently treated as "show everything", so a guest with no
+link, or a mistyped one, is never worse off than before this existed.
+
+**Personalization** is one line, not a separate banner: a guest name is
+stitched onto the front of the existing `heroWelcome` sentence -
+"Dear Priya & Raj Shah, welcomes you to their wedding on..." - with the
+sentence's own first letter lower-cased so the join reads as one sentence.
+Added `ui.guestDear` to content.js for the "Dear" itself, bilingual.
+
+**Verified** over CDP: gate rejects the wrong passphrase and accepts the
+right one; the four checkboxes render from content.js; the slug field
+tracks the name until hand-edited; a link generated with two events
+unchecked, opened fresh, filtered `window.WEDDING.events` and the rendered
+`#eventsList` to exactly those two keys and no others; the hero line carried
+the guest's name with correct capitalization; a plain visit with no `?for=`
+still renders all four events and the generic welcome line unchanged; no
+console errors or failed requests on either page.
+
+## admin.html: visible feedback on a wrong passphrase
+
+Reported as "typing in and entering does nothing". Tested the gate directly
+over CDP - real Enter keypress, real mouse click on the button, both over
+`http://` and opened straight from disk over `file://` - and in every case it
+unlocked correctly on the right passphrase. The gate was not broken; a wrong
+or mistyped passphrase gave no more than a border-colour change, easy to read
+as nothing having happened at all.
+
+Fixed: a visible "Incorrect passphrase - try again." line, a shake on the
+field, and focus+select so the next attempt can simply be typed over. The
+comparison now also trims the input, so a trailing space or newline picked up
+from copy-pasting the passphrase no longer fails silently. Verified: a wrong
+guess shows the error and stays locked; the correct passphrase with padding
+around it (" OleanderJB2026 ") still unlocks.
+
+## admin.html: passphrase gate removed
+
+Removed on request. `admin.html` now opens straight to the link builder, no
+password. It stays unlinked from the rest of the site and carries
+`<meta name="robots" content="noindex, nofollow">`, so the only way to reach
+it is to already have its URL - which is now the one thing keeping it
+private. Verified over CDP: the page opens directly to the form, all four
+events render, and a link still generates correctly.

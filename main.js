@@ -63,6 +63,33 @@
     sessionStorage.removeItem("wedding-langswitch");
   } catch (e) {}
 
+  /* -- guest links -----------------------------------------------------
+     admin.html builds personal links of the form ?for=<token>, where the
+     token is base64url(JSON {n: name, c: [event keys]}). There is no server
+     and no guest list on disk anywhere - the link itself IS the data, which
+     is what a static, no-build site can do without adding a backend. The
+     encode/decode here MUST match admin.html's, since they never share code.
+
+     Filtering W.events here, before events() below ever reads it, means the
+     rest of the site does not need to know a filtered visit is happening. */
+  var GUEST = null;
+  (function guestLink() {
+    var m = location.search.match(/[?&]for=([^&]+)/);
+    if (!m) return;
+    try {
+      var b64 = decodeURIComponent(m[1]).replace(/-/g, "+").replace(/_/g, "/");
+      while (b64.length % 4) b64 += "=";
+      var json = decodeURIComponent(escape(atob(b64)));
+      var data = JSON.parse(json);
+      if (data && typeof data === "object") GUEST = data;
+    } catch (e) { GUEST = null; }        // a malformed or tampered link just shows everything
+
+    if (GUEST && Array.isArray(GUEST.c) && GUEST.c.length && Array.isArray(W.events)) {
+      var keep = GUEST.c;
+      W.events = W.events.filter(function (ev) { return keep.indexOf(ev.key) !== -1; });
+    }
+  }());
+
   (function langToggle() {
     var host = $("langSwitch");
     if (!host) return;
@@ -164,13 +191,17 @@
   var first  = W.couple.firstInHero === "bride" ? bride : groom;
   var second = first === groom ? bride : groom;
 
-  /* -- intro screen --------------------------------------------------------
-     The scene holds still until the visitor rings the bell - nothing here is
-     on a timer. Ringing adds `.is-ringing`, which is what drives the rear, the
-     trunk and the bell in styles.css; the page opens as the legs come down.  */
+  /* -- intro screen & royal palace doors ---------------------------------
+     The scene holds still until the visitor rings the bell. Ringing adds
+     `.is-ringing` which drives the elephant rear, trunk strike, and bell rocking.
+     As the bell strikes, the magnificent royal palace doors appear, bearing
+     the cursive gold J & B initials in the centre.
+     Then the doors swing open in 3D, parting J to the left and B to the right,
+     revealing the garland page directly! */
 
   (function intro() {
     var box = $("intro");
+    var doors = $("royalDoorStage");
     if (!box) return;
 
     put("introCueTitle", u("introCueTitle"));
@@ -181,46 +212,111 @@
     // A language switch comes back mid-page; do not replay the intro.
     if (switchedAt !== null) {
       box.remove();
+      if (doors) doors.remove();
+      return;
+    }
+
+    // Reduced motion: skip directly to content.
+    if (reduced) {
+      box.remove();
+      if (doors) doors.remove();
+      document.body.classList.remove("intro-open");
       return;
     }
 
     document.body.classList.add("intro-open");
 
     var closed = false;
+    var doorsOpening = false;
+    var doorsActive = false;
 
-    function close() {
+    function openDoors() {
+      if (!doors || doorsOpening) return;
+      doorsOpening = true;
+      doors.classList.add("is-opening");
+
+      // As doors reach wide open (~1050ms), reveal garland page and release scroll
+      setTimeout(function () {
+        doors.classList.add("is-parted");
+        document.body.classList.remove("intro-open");
+        window.scrollTo(0, 0);
+      }, 1050);
+
+      // Once portal has fully dissolved (~2200ms), clean up overlay
+      setTimeout(function () {
+        doors.classList.add("is-gone");
+        doors.remove();
+      }, 2200);
+    }
+
+    function showDoors() {
       if (closed) return;
       closed = true;
-      box.classList.add("is-done");
-      setTimeout(function () { box.remove(); }, 800);
-      document.body.classList.remove("intro-open");
-      window.scrollTo(0, 0);
+      doorsActive = true;
+
+      if (!doors) {
+        box.classList.add("is-done");
+        setTimeout(function () { box.remove(); }, 900);
+        document.body.classList.remove("intro-open");
+        window.scrollTo(0, 0);
+        return;
+      }
+
+      doors.hidden = false;
+      // Silky-smooth crossfade into the palace door facade
+      requestAnimationFrame(function () {
+        doors.classList.add("is-visible");
+      });
+
+      // Crossfade out the elephant scene behind the palace doors
+      setTimeout(function () {
+        box.classList.add("is-done");
+        setTimeout(function () { box.remove(); }, 900);
+      }, 200);
+
+      // Auto-open doors after a smooth pause (~750ms) to admire the palace, or immediately on click
+      if (!hold) {
+        setTimeout(openDoors, 750);
+      }
+
+      doors.addEventListener("click", openDoors);
     }
 
     var hold = location.search.indexOf("hold") !== -1;
     var rung = false;
     function ring() {
-      if (rung || closed) return;
+      if (rung) return;
       rung = true;
       box.classList.add("is-ringing");
-      if (!hold) setTimeout(close, 1750);
+      // Elephant strikes bell at ~560ms; transition to royal doors at ~1150ms
+      if (!hold) {
+        setTimeout(showDoors, 1150);
+      } else {
+        // In ?hold mode, click again to progress to doors
+        box.addEventListener("click", function () { showDoors(); }, { once: true });
+      }
     }
 
     box.addEventListener("click", ring);
 
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
-        close();
+        if (doorsActive) openDoors();
+        else {
+          box.remove();
+          if (doors) doors.remove();
+          document.body.classList.remove("intro-open");
+        }
       } else if (e.key === "Enter" || e.key === " ") {
-        if (!closed) { e.preventDefault(); ring(); }
+        if (!rung) {
+          e.preventDefault();
+          ring();
+        } else if (doorsActive && !doorsOpening) {
+          e.preventDefault();
+          openDoors();
+        }
       }
     });
-
-    // Reduced motion: just let them in.
-    if (reduced) {
-      box.remove();
-      document.body.classList.remove("intro-open");
-    }
   }());
 
   (function hero() {
@@ -234,7 +330,17 @@
     halt.style.setProperty("--d", "160ms");
     put("heroGu", first[OTHER] + "  ·  " + second[OTHER]);
 
-    put("heroWelcome", t(W.headline.welcomeLine));
+    // A guest link's name is stitched onto the front of the same sentence
+    // rather than shown as a separate line, so a personal link still reads
+    // as one welcome and not as a template with a name pasted above it.
+    var welcome = t(W.headline.welcomeLine);
+    if (GUEST && GUEST.n) {
+      // The line is written to open a sentence ("Welcomes you..."); stitched
+      // onto "Dear X, " it has to continue one instead, so only here its
+      // first letter is lower-cased.
+      welcome = u("guestDear") + " " + GUEST.n + ", " + welcome.charAt(0).toLowerCase() + welcome.slice(1);
+    }
+    put("heroWelcome", welcome);
 
     var meta = $("heroMeta");
     [W.headline.datesLabel, W.headline.venue, W.headline.city]

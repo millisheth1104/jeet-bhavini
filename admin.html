@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Guest links · Jeet &amp; Bhavini</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500&display=swap">
+<style>
+  /* Utility page for the couple, not a guest-facing screen - styled plainly
+     in the site's own palette, but with none of the ornament. There is no
+     server: everything a guest link needs travels inside the link itself
+     (see main.js's guestLink()). This page only composes and remembers
+     those links for whoever is sending invitations out. */
+  :root {
+    --paper: #F2F1ED; --paper-warm: #EDE9E0; --ink: #33322E; --ink-soft: #6B6862;
+    --ink-faint: #9C988F; --hairline: #D8D4CA; --brass: #A8894F; --rose: #C08478;
+    --serif: "Cormorant Garamond", Georgia, serif; --sans: "Jost", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 var(--sans); }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: 1.9rem; margin: 0 0 .2rem; }
+  .sub { color: var(--ink-soft); margin: 0 0 2rem; font-size: .92rem; }
+  .card { background: var(--paper-warm); border: 1px solid var(--hairline); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.75rem; }
+  label { display: block; font-size: .82rem; letter-spacing: .03em; color: var(--ink-soft); margin: 1rem 0 .3rem; }
+  label:first-child { margin-top: 0; }
+  input[type=text] {
+    width: 100%; padding: .6rem .7rem; font: inherit; font-size: .95rem;
+    border: 1px solid var(--hairline); border-radius: 6px; background: #fff; color: var(--ink);
+  }
+  input[type=text]:focus { outline: 2px solid var(--brass); outline-offset: 1px; }
+  .events { display: grid; gap: .5rem; margin-top: .3rem; }
+  .events label {
+    display: flex; align-items: center; gap: .55rem; margin: 0; padding: .55rem .7rem;
+    background: #fff; border: 1px solid var(--hairline); border-radius: 6px;
+    font-size: .92rem; color: var(--ink); cursor: pointer;
+  }
+  .events input { width: 1rem; height: 1rem; accent-color: var(--brass); }
+  .events span.gu { color: var(--ink-faint); font-size: .82rem; margin-left: auto; }
+  .row { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; margin-top: 1.1rem; }
+  button {
+    font: inherit; font-size: .88rem; padding: .6rem 1.1rem; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--brass); background: var(--brass); color: #fff;
+  }
+  button.ghost { background: transparent; color: var(--ink); border-color: var(--hairline); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .out { display: none; margin-top: 1.1rem; }
+  .out.is-shown { display: block; }
+  .link-row { display: flex; gap: .5rem; }
+  .link-row input { font-family: monospace; font-size: .82rem; }
+  .hint { font-size: .78rem; color: var(--ink-faint); margin: .5rem 0 0; }
+  table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  th, td { text-align: left; padding: .55rem .5rem; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+  th { color: var(--ink-soft); font-weight: 500; font-size: .76rem; letter-spacing: .04em; text-transform: uppercase; }
+  td.cards { color: var(--ink-soft); }
+  td.actions { white-space: nowrap; }
+  td.actions button { padding: .3rem .6rem; font-size: .78rem; margin-right: .3rem; }
+  .empty { color: var(--ink-faint); font-style: italic; padding: 1rem 0; }
+  .toast {
+    position: fixed; left: 50%; bottom: 1.5rem; transform: translate(-50%, 8px);
+    background: var(--ink); color: #fff; padding: .5rem 1rem; border-radius: 20px;
+    font-size: .82rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+  }
+  .toast.is-shown { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<!-- No login: this page is not linked from anywhere on the site, and the
+     robots meta tag above keeps it out of search results. Anyone with the
+     URL can open it, so treat that URL itself as the thing to keep private. -->
+<div class="wrap" id="app">
+  <h1>Guest links</h1>
+  <p class="sub">
+    Build a personal link for a guest, choosing which of the four events they
+    should see. There is no guest database - the name and the chosen events
+    are encoded straight into the link, so it works the moment you send it,
+    on any device, with nothing to upload or keep in sync.
+  </p>
+
+  <div class="card">
+    <label for="gName">Guest or family name</label>
+    <input type="text" id="gName" placeholder="e.g. Priya &amp; Raj Shah" autocomplete="off">
+
+    <label for="gSlug">Label for your own list <span style="text-transform:none;color:var(--ink-faint)">(not sent anywhere - just so you can find it again below)</span></label>
+    <input type="text" id="gSlug" placeholder="auto-filled from the name" autocomplete="off">
+
+    <label>Which events should they see?</label>
+    <div class="events" id="gEvents"></div>
+
+    <div class="row">
+      <button id="gGenerate">Generate link</button>
+      <button class="ghost" id="gReset" type="button">Clear</button>
+    </div>
+
+    <div class="out" id="gOut">
+      <label style="margin-top:1.1rem">Link to send</label>
+      <div class="link-row">
+        <input type="text" id="gLink" readonly>
+        <button id="gCopy" type="button">Copy</button>
+      </div>
+      <p class="hint" id="gPreview"></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h1 style="font-size:1.2rem;margin-bottom:.9rem">Saved on this device</h1>
+    <div id="gList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="content.js?v=20260918a"></script>
+<script>
+(function () {
+  "use strict";
+  var W = window.WEDDING || { events: [] };
+  renderEvents();
+  renderSaved();
+
+  // ---- base64url encode, matching main.js's decode exactly ------------
+  function encodeToken(obj) {
+    var json = JSON.stringify(obj);
+    var b64 = btoa(unescape(encodeURIComponent(json)));
+    return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  function slugify(s) {
+    return (s || "").toLowerCase().trim()
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "guest";
+  }
+
+  // ---- the four event checkboxes, built from content.js ----------------
+  function renderEvents() {
+    var host = document.getElementById("gEvents");
+    host.innerHTML = "";
+    (W.events || []).forEach(function (ev) {
+      var label = document.createElement("label");
+      var cb = document.createElement("input");
+      cb.type = "checkbox"; cb.checked = true; cb.value = ev.key;
+      var name = document.createElement("span");
+      name.textContent = ev.en || ev.key;
+      var gu = document.createElement("span");
+      gu.className = "gu"; gu.textContent = ev.gu || "";
+      label.appendChild(cb); label.appendChild(name); label.appendChild(gu);
+      host.appendChild(label);
+    });
+  }
+
+  function checkedEvents() {
+    return Array.prototype.slice.call(document.querySelectorAll("#gEvents input:checked")).map(function (i) { return i.value; });
+  }
+
+  // Slug follows the name until the guest edits it by hand.
+  var slugTouched = false;
+  document.getElementById("gSlug").addEventListener("input", function () { slugTouched = true; });
+  document.getElementById("gName").addEventListener("input", function () {
+    if (!slugTouched) document.getElementById("gSlug").value = slugify(this.value);
+  });
+
+  // ---- saved list, this browser only -----------------------------------
+  function loadSaved() {
+    try { return JSON.parse(localStorage.getItem("wedding-guest-links") || "[]"); }
+    catch (e) { return []; }
+  }
+  function saveSaved(list) {
+    try { localStorage.setItem("wedding-guest-links", JSON.stringify(list)); } catch (e) {}
+  }
+  function renderSaved() {
+    var list = loadSaved();
+    var host = document.getElementById("gList");
+    if (!list.length) { host.innerHTML = '<p class="empty">Nothing generated yet.</p>'; return; }
+    var t = document.createElement("table");
+    t.innerHTML = "<thead><tr><th>Label</th><th>Name</th><th>Events</th><th></th></tr></thead>";
+    var tbody = document.createElement("tbody");
+    list.slice().reverse().forEach(function (row) {
+      var tr = document.createElement("tr");
+      var names = row.cards.map(function (k) {
+        var e = (W.events || []).filter(function (x) { return x.key === k; })[0];
+        return e ? e.en : k;
+      }).join(", ");
+      tr.innerHTML =
+        "<td>" + esc(row.slug) + "</td>" +
+        "<td>" + esc(row.name || "—") + "</td>" +
+        '<td class="cards">' + esc(names || "none") + "</td>" +
+        '<td class="actions"></td>';
+      var actions = tr.querySelector(".actions");
+      var copyBtn = document.createElement("button"); copyBtn.textContent = "Copy";
+      copyBtn.addEventListener("click", function () { copyText(row.link); });
+      var delBtn = document.createElement("button"); delBtn.className = "ghost"; delBtn.textContent = "Remove";
+      delBtn.addEventListener("click", function () {
+        saveSaved(loadSaved().filter(function (r) { return r.id !== row.id; }));
+        renderSaved();
+      });
+      actions.appendChild(copyBtn); actions.appendChild(delBtn);
+      tbody.appendChild(tr);
+    });
+    t.appendChild(tbody);
+    host.innerHTML = ""; host.appendChild(t);
+  }
+  function esc(s) {
+    var d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML;
+  }
+
+  // ---- generate ----------------------------------------------------------
+  document.getElementById("gGenerate").addEventListener("click", function () {
+    var name = document.getElementById("gName").value.trim();
+    var slug = document.getElementById("gSlug").value.trim() || slugify(name);
+    var cards = checkedEvents();
+
+    var token = encodeToken({ n: name, c: cards });
+    var link = location.origin + location.pathname.replace(/admin\.html$/, "index.html") + "?for=" + token;
+
+    document.getElementById("gLink").value = link;
+    document.getElementById("gOut").classList.add("is-shown");
+    var allNames = (W.events || []).map(function (e) { return e.key; });
+    document.getElementById("gPreview").textContent = cards.length === allNames.length
+      ? "Shows all events" + (name ? ", greets " + name + " by name." : ".")
+      : "Shows only: " + cards.join(", ") + (name ? " · greets " + name + " by name." : " · no name set.");
+
+    var list = loadSaved();
+    list.push({ id: Date.now() + "-" + Math.random().toString(36).slice(2, 7), slug: slug, name: name, cards: cards, link: link });
+    saveSaved(list);
+    renderSaved();
+  });
+
+  document.getElementById("gCopy").addEventListener("click", function () {
+    copyText(document.getElementById("gLink").value);
+  });
+
+  document.getElementById("gReset").addEventListener("click", function () {
+    document.getElementById("gName").value = "";
+    document.getElementById("gSlug").value = "";
+    slugTouched = false;
+    renderEvents();
+    document.getElementById("gOut").classList.remove("is-shown");
+  });
+
+  function copyText(text) {
+    if (!text) return;
+    (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+      .catch(function () {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta);
+      });
+    toast("Copied");
+  }
+  var toastTimer = null;
+  function toast(msg) {
+    var el = document.getElementById("toast");
+    el.textContent = msg; el.classList.add("is-shown");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove("is-shown"); }, 1400);
+  }
+}());
+</script>
+</body>
+</html>

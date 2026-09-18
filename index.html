@@ -18,7 +18,7 @@
 <!-- ?v= is bumped whenever styles.css or a generated asset changes; this
      site is edited in place with no build step, and browsers hold on to
      both the stylesheet and the PNGs otherwise. -->
-<link rel="stylesheet" href="styles.css?v=20260917q">
+<link rel="stylesheet" href="styles.css?v=20260918c">
 </head>
 <body>
 
@@ -76,7 +76,7 @@
 </noscript>
 
 <!-- ==== intro screen ===================================================
-     A painted chhatri with a brass bell, and a caparisoned elephant with its
+     The temple bell hangs from a floral arch, with the ceremonial elephant's
      trunk raised to it. The scene holds still until the visitor rings the
      bell; the trunk then strikes, the bell rocks, and the page opens.
      Art: scripts/gen_intro3.py. Geometry: styles.css. -->
@@ -113,6 +113,31 @@
       <span class="intro__cueTitle" id="introCueTitle"></span>
       <span class="intro__cueSub" id="introCueSub"></span>
     </p>
+  </div>
+</div>
+
+<!-- ==== royal palace doors with cursive J & B initials ==================
+     After the elephant rings the bell, these magnificent hand-carved royal
+     palace doors are presented, bearing cursive gold J and B initials on a
+     central seal. When triggered, the double doors swing open in 3D perspective,
+     with J swinging left and B swinging right, directly revealing the garland page! -->
+<div class="royal-door-stage" id="royalDoorStage" role="dialog" aria-label="Royal Palace Doors" hidden>
+  <div class="royal-portal" id="royalPortal">
+    <!-- Double swinging door leaves in 3D perspective -->
+    <div class="royal-leaves-box" id="royalLeavesBox">
+      <!-- Left Door Leaf -->
+      <div class="royal-leaf royal-leaf--l" id="royalLeafL">
+        <img class="royal-leaf__img" src="assets/generated/royal_door_left.png?v=5" alt="Left palace door">
+      </div>
+
+      <!-- Right Door Leaf -->
+      <div class="royal-leaf royal-leaf--r" id="royalLeafR">
+        <img class="royal-leaf__img" src="assets/generated/royal_door_right.png?v=5" alt="Right palace door">
+      </div>
+    </div>
+
+    <!-- Outer Arch & Fluted Pillars Frame -->
+    <img class="royal-portal__frame" src="assets/generated/royal_door_frame.png?v=5" alt="" aria-hidden="true">
   </div>
 </div>
 
@@ -313,6 +338,6 @@
 </div>
 
 <script src="content.js?v=20260916i"></script>
-<script src="main.js?v=20260917q"></script>
+<script src="main.js?v=20260918c"></script>
 </body>
 </html>
