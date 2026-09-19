@@ -614,7 +614,7 @@ body:not(.intro-open) #top {
   display: block;
   object-fit: fill;
   backface-visibility: hidden;
-  will-change: transform, filter;
+  will-change: transform;
 }
 
 .portal__leaf--l {
@@ -661,23 +661,13 @@ body:not(.intro-open) #top {
 }
 
 @keyframes portalLeafL {
-  0%   { transform: rotateY(0deg);   filter: brightness(1); }
-  5%   { transform: rotateY(1deg);   filter: brightness(1.02); }
-  15%  { transform: rotateY(5deg);   filter: brightness(1.04); }
-  35%  { transform: rotateY(22deg);  filter: brightness(.96); }
-  60%  { transform: rotateY(55deg);  filter: brightness(.84); }
-  80%  { transform: rotateY(74deg);  filter: brightness(.76); }
-  100% { transform: rotateY(86deg);  filter: brightness(.70); }
+  0%   { transform: rotateY(0deg); }
+  100% { transform: rotateY(86deg); }
 }
 
 @keyframes portalLeafR {
-  0%   { transform: rotateY(0deg);    filter: brightness(1); }
-  5%   { transform: rotateY(-1deg);  filter: brightness(1.02); }
-  15%  { transform: rotateY(-5deg);  filter: brightness(1.04); }
-  35%  { transform: rotateY(-22deg); filter: brightness(.96); }
-  60%  { transform: rotateY(-55deg); filter: brightness(.84); }
-  80%  { transform: rotateY(-74deg); filter: brightness(.76); }
-  100% { transform: rotateY(-86deg); filter: brightness(.70); }
+  0%   { transform: rotateY(0deg); }
+  100% { transform: rotateY(-86deg); }
 }
 
 /* The camera walks through the doorway AFTER doors have fully opened */
