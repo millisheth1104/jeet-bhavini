@@ -44,6 +44,12 @@
      label) rather than letting the OS pick. */
   --sans:   "Jost", "Noto Serif Gujarati", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --gujarati: "Noto Serif Gujarati", "Shruti", "Nirmala UI", var(--serif);
+  /* The shree line and the Ganesha shloka are Devanagari, not Gujarati. They
+     used to name only "Nirmala UI"/"Shruti", which exist on Windows and
+     nowhere else, so phones fell through to a much wider system face and the
+     text ran out over the arch frame. Noto Serif Devanagari is loaded in
+     index.html so every device measures the same. */
+  --devanagari: "Noto Serif Devanagari", "Nirmala UI", "Shruti", var(--serif);
   /* Rasa is a display Gujarati serif — heavier and more calligraphic than
      Noto, which is what the reference cards use for their event titles.
      Great Vibes carries the English name beneath it. */
@@ -933,15 +939,28 @@ body.intro-open { overflow: hidden; }
     0 4px 14px rgba(0, 0, 0, 0.04);
   overflow: hidden;
   text-align: center;
+  container-type: inline-size;
 }
 
-/* Positioned strictly within the open arch above the lake scene */
+/* The arch in palace_card_backdrop.jpg narrows sharply towards its apex.
+   Measured off the image, the open aperture spans (as a % of card width):
+     16-20% down ... 17% - 84%   (67% wide)
+     22-32% down ... 12% - 88%   (75% wide)
+     36-45% down ... 11% - 90%   (79% wide)
+   Every line below is capped inside the aperture at its own depth, in cqw so
+   the cap tracks the card and not the viewport. */
+
+/* Everything sits on the cream inside the arch - nothing on the pink frame.
+   The aperture only opens wide enough for the shree line at about 11% down
+   (24%-76% of the card there, against a line ~30% wide), so that is where the
+   block starts. Sampled off the backdrop, the cream runs clean to ~57% before
+   the garden begins, so the block can finish at 54% without touching it. */
 .invite__palace-content {
   position: absolute;
-  top: 6%;
+  top: 11.6%;
   left: 9%;
   right: 9%;
-  bottom: 48%;
+  bottom: 46%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -951,12 +970,15 @@ body.intro-open { overflow: hidden; }
 }
 
 .invite__shree {
-  font-family: "Nirmala UI", "Shruti", "Anek Gujarati", sans-serif;
-  font-size: clamp(0.85rem, 2.6vw, 1.08rem);
+  font-family: var(--devanagari);
+  font-size: clamp(0.74rem, 3.3cqw, 1.15rem);
+  line-height: 1.25;
+  max-width: 76cqw;
   color: #7b4f23;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   margin: 0;
   font-weight: 600;
+  text-wrap: balance;
 }
 
 .invite__ganesha-motif {
@@ -971,23 +993,27 @@ body.intro-open { overflow: hidden; }
 }
 
 .invite__shloka {
-  font-family: "Nirmala UI", "Shruti", "Anek Gujarati", sans-serif;
-  font-size: clamp(0.72rem, 2.1vw, 0.9rem);
-  line-height: 1.42;
+  font-family: var(--devanagari);
+  font-size: clamp(0.62rem, 2.8cqw, 1rem);
+  line-height: 1.45;
+  max-width: 62cqw;
   color: #7b4f23;
-  margin: 0 0 clamp(0.2rem, 0.7vw, 0.4rem);
-  letter-spacing: 0.02em;
+  margin: 0 0 clamp(0.2rem, 0.7cqw, 0.4rem);
+  letter-spacing: 0.01em;
   font-weight: 500;
+  text-wrap: pretty;
 }
 
 .invite__parties {
   width: 100%;
+  max-width: 74cqw;
+  margin-inline: auto;
 }
 
 .invite__name {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(1.8rem, 5.6vw, 2.6rem);
+  font-size: clamp(1.6rem, 7.2cqw, 2.6rem);
   line-height: 1.05;
   color: #321d10;
   letter-spacing: 0.02em;
@@ -999,18 +1025,19 @@ body.intro-open { overflow: hidden; }
 }
 
 .invite__parents {
-  font-size: clamp(0.72rem, 2.1vw, 0.92rem);
+  font-size: clamp(0.72rem, 2.55cqw, 0.92rem);
   color: #5f4838;
   margin: 0.2rem auto 0;
-  max-width: 24rem;
+  max-width: 100%;
   line-height: 1.42;
+  text-wrap: pretty;
 }
 
 .invite__weds {
   font-family: var(--serif);
   font-style: italic;
   color: #9d404b;
-  font-size: clamp(1.05rem, 3.1vw, 1.35rem);
+  font-size: clamp(1.05rem, 3.9cqw, 1.35rem);
   margin: clamp(0.2rem, 0.8vw, 0.45rem) 0;
   letter-spacing: 0.06em;
 }
@@ -1024,10 +1051,10 @@ body.intro-open { overflow: hidden; }
     box-shadow: 0 12px 30px -6px rgba(100, 50, 40, 0.2);
   }
   .invite__palace-content {
-    top: 5.5%;
+    top: 11.3%;
     left: 8%;
     right: 8%;
-    bottom: 48.5%;
+    bottom: 46.5%;
   }
   .invite__ganesha-motif {
     width: 36px;

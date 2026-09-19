@@ -23,7 +23,7 @@ window.WEDDING = {
   defaultLang: "en",
 
   couple: {
-    groom:   { en: "Jeet",    gu: "જીત",     family: { en: "Jabuvani", gu: "જબુઆણી" } },
+    groom:   { en: "Jeet",    gu: "જીત",     family: { en: "Jabuani", gu: "જબુઆણી" } },
     bride:   { en: "Bhavini", gu: "ભાવિની",  family: { en: "Nakrani",  gu: "નકરાણી" } },
     // Whose name reads first in the hero. "groom" or "bride".
     firstInHero: "groom",
@@ -55,8 +55,8 @@ window.WEDDING = {
     },
     groomLine: {
       en: [
-        "S/o Mr. Arvind Naran Jabuvani",
-        "& Mrs. Ranjana Arvind Jabuvani"
+        "S/o Mr. Arvind Naran Jabuani",
+        "& Mrs. Ranjana Arvind Jabuani"
       ],
       gu: [
         "સુપુત્ર: શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી",
@@ -104,7 +104,7 @@ window.WEDDING = {
       date: { en: "Tuesday, 1 December 2026", gu: "મંગળવાર, 1 ડિસેમ્બર 2026" },
       dateShort: { day: "01", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: "9:00 AM" }],
-      venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
+      venue: { en: "Oleander Ballroom,\nKarjat", gu: "ઓલિએન્ડર બોલરૂમ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Traditional Festive", gu: "પરંપરાગત ઉત્સવ પરિધાન" },
       note: {
@@ -127,7 +127,7 @@ window.WEDDING = {
       date: { en: "Tuesday, 1 December 2026", gu: "મંગળવાર, 1 ડિસેમ્બર 2026" },
       dateShort: { day: "01", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: "7:00 PM" }],
-      venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
+      venue: { en: "Oleander Lawn,\nKarjat", gu: "ઓલિએન્ડર લૉન,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Blooming Glamour", gu: "બ્લૂમિંગ ગ્લેમર" },
       note: {
@@ -150,7 +150,7 @@ window.WEDDING = {
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: "8:00 AM" }],
-      venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
+      venue: { en: "Oleander Ballroom,\nKarjat", gu: "ઓલિએન્ડર બોલરૂમ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Yellow / Festive Ethnic", gu: "પીળા / શુભ પરિધાન" },
       note: {
@@ -174,10 +174,9 @@ window.WEDDING = {
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [
         { label: { en: "Baraat Prastan", gu: "બરાત પ્રસ્થાન" }, value: "4:00 PM" },
-        { label: { en: "Baraat Aagman",  gu: "બરાત આગમન" },     value: "5:00 PM" },
         { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: "5:41 PM" },
       ],
-      venue: { en: "Oleander Farms,\nKarjat", gu: "ઓલિએન્ડર ફાર્મ્સ,\nકર્જત" },
+      venue: { en: "Oleander Lake Side,\nKarjat", gu: "ઓલિએન્ડર લેકસાઇડ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Royal Ethnic / Traditional", gu: "શાહી પારંપરિક પરિધાન" },
       note: {
@@ -191,16 +190,16 @@ window.WEDDING = {
   hostsPaired: {
     heading: { en: "With love, yours affectionately", gu: "લી. સ્નેહાધીન" },
     pairs: [
-      [{ en: "Mr. Naran Kanji Jabuvani",   gu: "શ્રી નારણભાઈ કાનજીભાઈ જબુઆણી" },
-       { en: "Mrs. Premila Naran Jabuvani", gu: "અ.સૌ. પ્રેમિલાબેન નારણભાઈ જબુઆણી" }],
-      [{ en: "Mr. Dhiraj Naran Jabuvani",  gu: "શ્રી ધીરજભાઈ નારણભાઈ જબુઆણી" },
-       { en: "Mrs. Bhavna Dhiraj Jabuvani", gu: "અ.સૌ. ભાવનાબેન ધીરજભાઈ જબુઆણી" }],
-      [{ en: "Mr. Arvind Naran Jabuvani",  gu: "શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી" },
-       { en: "Mrs. Ranjana Arvind Jabuvani", gu: "અ.સૌ. રંજનાબેન અરવિંદભાઈ જબુઆણી" }],
-      [{ en: "Mr. Bhumit Dhiraj Jabuvani", gu: "શ્રી ભૂમિતભાઈ ધીરજભાઈ જબુઆણી" },
-       { en: "Mrs. Prachi Bhumit Jabuvani", gu: "અ.સૌ. પ્રાચીબેન ભૂમિતભાઈ જબુઆણી" }],
-      [{ en: "Mr. Dhruv Dhiraj Jabuvani",  gu: "શ્રી ધ્રુવભાઈ ધીરજભાઈ જબુઆણી" },
-       { en: "Mrs. Nishita Dhruv Jabuvani", gu: "અ.સૌ. નિશિતાબેન ધ્રુવભાઈ જબુઆણી" }],
+      [{ en: "Mr. Naran Kanji Jabuani",   gu: "શ્રી નારણભાઈ કાનજીભાઈ જબુઆણી" },
+       { en: "Mrs. Premila Naran Jabuani", gu: "અ.સૌ. પ્રેમિલાબેન નારણભાઈ જબુઆણી" }],
+      [{ en: "Mr. Dhiraj Naran Jabuani",  gu: "શ્રી ધીરજભાઈ નારણભાઈ જબુઆણી" },
+       { en: "Mrs. Bhavna Dhiraj Jabuani", gu: "અ.સૌ. ભાવનાબેન ધીરજભાઈ જબુઆણી" }],
+      [{ en: "Mr. Arvind Naran Jabuani",  gu: "શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી" },
+       { en: "Mrs. Ranjana Arvind Jabuani", gu: "અ.સૌ. રંજનાબેન અરવિંદભાઈ જબુઆણી" }],
+      [{ en: "Mr. Bhumit Dhiraj Jabuani", gu: "શ્રી ભૂમિતભાઈ ધીરજભાઈ જબુઆણી" },
+       { en: "Mrs. Prachi Bhumit Jabuani", gu: "અ.સૌ. પ્રાચીબેન ભૂમિતભાઈ જબુઆણી" }],
+      [{ en: "Mr. Dhruv Dhiraj Jabuani",  gu: "શ્રી ધ્રુવભાઈ ધીરજભાઈ જબુઆણી" },
+       { en: "Mrs. Nishita Dhruv Jabuani", gu: "અ.સૌ. નિશિતાબેન ધ્રુવભાઈ જબુઆણી" }],
       [{ en: "Mr. Amrut Kanti Pokar",      gu: "શ્રી અમૃતભાઈ કાંતિભાઈ પોકાર" },
        { en: "Mrs. Sangita Amrut Pokar",   gu: "અ.સૌ. સંગીતાબેન અમૃતભાઈ પોકાર" }],
       [{ en: "Mr. Deep Vipul Velani",      gu: "શ્રી દીપભાઈ વિપુલભાઈ વેલાણી" },
@@ -214,19 +213,19 @@ window.WEDDING = {
   hostsAwaiting: {
     heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
     names: [
-      { en: "Mrs. Vimala Dayaram Kanji Jabuvani",  gu: "અ.સૌ. વિમળાબેન દયારામભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Kanta Ravji Kanji Jabuvani",     gu: "અ.સૌ. કાન્તાબેન રવજીભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Manjula Haresh Kanji Jabuvani",  gu: "અ.સૌ. મંજુલાબેન હરેશભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Aruna Kirti Kanji Jabuvani",     gu: "અ.સૌ. અરુણાબેન કીર્તિભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Taruna Pankaj Dayaram Jabuvani", gu: "અ.સૌ. તરુણાબેન પંકજભાઈ દયારામભાઈ જબુઆણી" },
-      { en: "Mrs. Nisha Sanjay Ravji Jabuvani",    gu: "અ.સૌ. નિશાબેન સંજયભાઈ રવજીભાઈ જબુઆણી" },
-      { en: "Mrs. Anasuya Mehul Dayaram Jabuvani", gu: "અ.સૌ. અનસુયાબેન મેહુલભાઈ દયારામભાઈ જબુઆણી" },
-      { en: "Mrs. Bhumika Rajesh Ravji Jabuvani",  gu: "અ.સૌ. ભુમિકાબેન રાજેશભાઈ રવજીભાઈ જબુઆણી" },
-      { en: "Mrs. Puja Sudhir Haresh Jabuvani",    gu: "અ.સૌ. પુજાબેન સુધિરભાઈ હરેશભાઈ જબુઆણી" },
-      { en: "Mrs. Mayuri Jigar Kirti Jabuvani",    gu: "અ.સૌ. મયુરીબેન જિગરભાઈ કીર્તિભાઈ જબુઆણી" },
-      { en: "Mrs. Mohini Keval Kirti Jabuvani",    gu: "અ.સૌ. મોહિનીબેન કેવલભાઈ કીર્તિભાઈ જબુઆણી" },
+      { en: "Mrs. Vimala Dayaram Kanji Jabuani",  gu: "અ.સૌ. વિમળાબેન દયારામભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Kanta Ravji Kanji Jabuani",     gu: "અ.સૌ. કાન્તાબેન રવજીભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Manjula Haresh Kanji Jabuani",  gu: "અ.સૌ. મંજુલાબેન હરેશભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Aruna Kirti Kanji Jabuani",     gu: "અ.સૌ. અરુણાબેન કીર્તિભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Taruna Pankaj Dayaram Jabuani", gu: "અ.સૌ. તરુણાબેન પંકજભાઈ દયારામભાઈ જબુઆણી" },
+      { en: "Mrs. Nisha Sanjay Ravji Jabuani",    gu: "અ.સૌ. નિશાબેન સંજયભાઈ રવજીભાઈ જબુઆણી" },
+      { en: "Mrs. Anasuya Mehul Dayaram Jabuani", gu: "અ.સૌ. અનસુયાબેન મેહુલભાઈ દયારામભાઈ જબુઆણી" },
+      { en: "Mrs. Bhumika Rajesh Ravji Jabuani",  gu: "અ.સૌ. ભુમિકાબેન રાજેશભાઈ રવજીભાઈ જબુઆણી" },
+      { en: "Mrs. Puja Sudhir Haresh Jabuani",    gu: "અ.સૌ. પુજાબેન સુધિરભાઈ હરેશભાઈ જબુઆણી" },
+      { en: "Mrs. Mayuri Jigar Kirti Jabuani",    gu: "અ.સૌ. મયુરીબેન જિગરભાઈ કીર્તિભાઈ જબુઆણી" },
+      { en: "Mrs. Mohini Keval Kirti Jabuani",    gu: "અ.સૌ. મોહિનીબેન કેવલભાઈ કીર્તિભાઈ જબુઆણી" },
     ],
-    solo: { en: "Jay Pankaj Jabuvani", gu: "જય પંકજભાઈ જબુઆણી" },
+    solo: { en: "Jay Pankaj Jabuani", gu: "જય પંકજભાઈ જબુઆણી" },
     children: {
       en: "Miti, Khushi, Vanshika, Kashyap, Yakshit, Darsh, Trisha, Bhavyansh, Jiyansh, Kiyanshi",
       gu: "મિતિ, ખુશી, વંશીકા, કશ્યપ, યક્ષીત, દર્શ, ત્રિશા, ભવ્યાંશ, જિયાંશ, કિયાંશી",

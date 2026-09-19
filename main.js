@@ -899,7 +899,7 @@
     }
     var familyEl = $("calFamily");
     if (familyEl) {
-      familyEl.textContent = LANG === "gu" ? "જાબુવાણી અને નાકરાણી પરિવાર" : "Jabuvani & Nakrani Family";
+      familyEl.textContent = LANG === "gu" ? "જબુઆણી અને નાકરાણી પરિવાર" : "Jabuani & Nakrani Family";
     }
   }());
 

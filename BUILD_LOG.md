@@ -2200,3 +2200,74 @@ Fixed in `styles.css`:
 Verified by measuring every card in both languages at 375px and 1440px:
 remaining slack is now 17-28px per card everywhere (was 111-153px), with no
 overflow past the arch aperture on the two tight cards.
+
+## Invite panel: shloka was running out over the arch frame
+
+Reported from a phone: the Ganesha shloka and the shree line crossed the
+pink arch border on both sides. It looked correct on this Windows machine,
+which is the whole story - `.invite__shree` and `.invite__shloka` named
+`"Nirmala UI", "Shruti", "Anek Gujarati", sans-serif`. Nirmala UI and Shruti
+ship with Windows and nowhere else, Anek Gujarati was never loaded (and is
+Gujarati-only anyway, no Devanagari coverage), so every phone fell through to
+a generic system Devanagari face that sets far wider. Nothing capped the
+width, so it simply spilled.
+
+Two fixes, because either alone is fragile:
+
+1. **Loaded Noto Serif Devanagari** (index.html font link) and pointed a new
+   `--devanagari` var at it. Every device now measures the same text. This is
+   a *Devanagari* stack, kept separate from `--gujarati`; the two scripts were
+   being conflated.
+2. **Capped every line inside the arch aperture.** Probed
+   `palace_card_backdrop.jpg` row by row for the cream opening: it is only
+   17%-84% of the card at 16-20% down, widening to 12%-88% by 22-32% and
+   11%-90% by 36-45%. `.invite__palace-card` is now a
+   `container-type: inline-size` container and the copy is sized in `cqw`
+   with `max-width` caps set inside those measured bounds (shloka 62cqw,
+   shree 76cqw, name/parents block 74cqw). Sizing was on `vw` before, so it
+   tracked the viewport rather than the card it has to fit in.
+
+Verified with a Range-based ink measurement (not the box, the glyphs) at 320,
+375, 560, 768, 1024 and 1440px, in both languages. Worst case is 320px: the
+shloka reaches 27%-73% against an aperture of 17%-84%. Also re-ran with the
+webfont forced off to a generic fallback - the max-width caps make it wrap
+instead of spill, so the swap-in flash cannot overflow either.
+
+## Invite panel: shree line moved off the pink frame, onto the cream
+
+Follow-up to the aperture work above. With the widths fixed, the
+`॥ श्री गणेशाय नमः ॥` line was still sitting on the pink spandrel at the top
+of the card, where it collided with the carved arch apex - and the client did
+not want it on the pink at all.
+
+Sampled the backdrop row by row for how ornate each row is (mean absolute
+deviation across the centre 64% of the width): the pink band runs ~16-26 from
+3.5% to 6.5% down, then jumps to 45-92 at 7-9% where the apex carving and its
+crest sit. There is no clean pink to put it on that is also wide enough, so
+the whole block moved down into the cream instead.
+
+`.invite__palace-content` now starts at 11.6% (11.3% on phones) rather than
+6%, which is the first depth where the aperture (24%-76%) is comfortably
+wider than the shree line (~29%). The block's bottom moved from 48% to 46%;
+the cream runs clean to ~57% before the garden starts, so there is room.
+
+Measured at 320, 375, 768 and 1440px: shree 33%-67% at 11-15% deep against a
+24%-76% aperture, and the last line (weds) bottoms out at 46% at worst
+against cream that continues to 57%. Also tightened the shree to
+`line-height: 1.25` and dropped its clamp floor to 0.74rem so the line box
+does not outgrow the band on the narrowest phones.
+
+## Copy: surname spelling, per-event venues, one schedule row removed
+
+- `Jabuvani` -> `Jabuani` throughout the English copy (25 strings in
+  content.js, plus the meta description and the calendar family line in
+  index.html). The Gujarati already read જબુઆણી and was correct.
+- Venues split out from the single "Oleander Farms" to the actual rooms:
+  Mameru and Mandap Ropan at Oleander Ballroom, Sangeet at Oleander Lawn,
+  Wedding at Oleander Lake Side. The hero still names Oleander Farms, Karjat,
+  which is the resort the rooms sit in. Gujarati set as ઓલિએન્ડર બોલરૂમ /
+  લૉન / લેકસાઇડ - worth a native check if the client has a preferred spelling.
+- Dropped the `Baraat Aagman 5:00 PM` row from the wedding card, leaving
+  Baraat Prastan and Hastamelap. The flexible illustration absorbed the freed
+  height on its own, so the card's balance is unchanged (22px slack, same as
+  the other three).
