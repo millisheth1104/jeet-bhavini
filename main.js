@@ -205,7 +205,8 @@
   var PORTAL = {
     ring:    1150,  // bell struck -> gate appears
     gate:    1200,  // gate held closed before it starts to open (let it be seen)
-    through: 2800,  // doors opening -> the doorway has filled the screen (smooth swing)
+    doors:   2800,  // doors fully swing open (matches CSS portalLeafL/R duration)
+    zoom:    2400,  // camera zooms through the open doorway (matches CSS portalWalkIn)
     settle:  1400   // held while the hero resolves behind the fading portal
   };
 
@@ -230,8 +231,9 @@
     document.body.classList.add("intro-open");
 
     var hold = location.search.indexOf("hold") !== -1;
-    var step = 0;              // 0 unrung, 1 gate closed, 2 opening, 3 invitation
+    var step = 0;              // 0 unrung, 1 gate closed, 2 opening, 3 zooming, 4 invitation
     var timer = null;
+    var timer2 = null;
 
     function at(ms, fn) {
       clearTimeout(timer);
@@ -239,9 +241,10 @@
     }
 
     function finish() {
-      if (step > 3) return;
-      step = 4;
+      if (step > 4) return;
+      step = 5;
       clearTimeout(timer);
+      clearTimeout(timer2);
       document.body.classList.remove("intro-open");
       document.body.classList.remove("page-proper");
       window.scrollTo(0, 0);
@@ -256,8 +259,8 @@
     // The camera is through the doorway: the plate has flown past, so hand
     // the page over and let the light fade off the hero rather than cutting.
     function reveal() {
-      if (step > 2) return;
-      step = 3;
+      if (step > 3) return;
+      step = 4;
       stage.classList.add("is-through");
       document.body.classList.remove("intro-open");
       document.body.classList.remove("page-proper");
@@ -265,16 +268,26 @@
       if (!hold) at(PORTAL.settle, finish);
     }
 
+    // Phase 2: doors are fully open, now zoom through
+    function zoomThrough() {
+      if (step > 2) return;
+      step = 3;
+      stage.classList.add("is-zooming");
+      // As camera zooms through, transition page behind to proper clarity
+      setTimeout(function () {
+        document.body.classList.add("page-proper");
+      }, 200);
+      if (!hold) at(PORTAL.zoom, reveal);
+    }
+
+    // Phase 1: doors swing open
     function openGate() {
       if (step > 1) return;
       step = 2;
       if (!stage) return finish();
       stage.classList.add("is-opening");
-      // As doors swing open, transition page behind from soft faded to proper clarity
-      setTimeout(function () {
-        document.body.classList.add("page-proper");
-      }, 400);
-      at(PORTAL.through, reveal);
+      // After doors fully open, start the zoom-through
+      if (!hold) timer2 = setTimeout(zoomThrough, PORTAL.doors);
     }
 
     // The gate arrives closed and holds a beat, so it is seen shut before it
@@ -309,7 +322,8 @@
       if (!rung) ring();
       else if (step === 0) showGate();
       else if (step === 1) openGate();
-      else if (step === 2) reveal();
+      else if (step === 2) zoomThrough();
+      else if (step === 3) reveal();
       else finish();
     }
 
@@ -320,8 +334,9 @@
       if (e.key === "Escape") {
         box.remove();
         if (stage) stage.remove();
-        step = 4;
+        step = 5;
         clearTimeout(timer);
+        clearTimeout(timer2);
         document.body.classList.remove("intro-open");
       } else if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
