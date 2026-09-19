@@ -216,8 +216,11 @@
 
     put("introCueTitle", u("introCueTitle"));
     put("introCueSub",   u("introCueSub"));
+    put("portalCueText", u("portalCue"));
     var cue = $("introCue");
     if (cue && LANG === "gu") cue.classList.add("gu");
+    var pCue = $("portalCue");
+    if (pCue && LANG === "gu") pCue.classList.add("gu");
 
     // A language switch comes back mid-page; do not replay any of it.
     if (switchedAt !== null || reduced) {
@@ -243,6 +246,7 @@
       step = 4;
       clearTimeout(timer);
       document.body.classList.remove("intro-open");
+      document.body.classList.remove("page-proper");
       window.scrollTo(0, 0);
       if (!stage) return;
       stage.classList.remove("is-visible");
@@ -259,6 +263,7 @@
       step = 3;
       stage.classList.add("is-through");
       document.body.classList.remove("intro-open");
+      document.body.classList.remove("page-proper");
       window.scrollTo(0, 0);
       if (!hold) at(PORTAL.settle, finish);
     }
@@ -268,6 +273,10 @@
       step = 2;
       if (!stage) return finish();
       stage.classList.add("is-opening");
+      // As doors swing open, transition page behind from soft faded to proper clarity
+      setTimeout(function () {
+        document.body.classList.add("page-proper");
+      }, 150);
       at(PORTAL.through, reveal);
     }
 

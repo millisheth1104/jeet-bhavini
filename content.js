@@ -271,6 +271,7 @@ window.WEDDING = {
     scrollCue:         { en: "Scroll", gu: "નીચે જુઓ" },
     introCueTitle:     { en: "Ring the bell", gu: "ઘંટ વગાડો" },
     introCueSub:       { en: "to begin the celebration", gu: "ઉજવણીનો પ્રારંભ કરવા" },
+    portalCue:         { en: "Tap the gates to enter", gu: "દરવાજા ખોલવા સ્પર્શ કરો" },
 
 
     /* The hero IS the invitation, and these are its lines. Read straight
