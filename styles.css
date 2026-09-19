@@ -1610,6 +1610,11 @@ html[data-lang="gu"] .hero__guest {
   opacity: clamp(0, calc((var(--roll, 0) - 0.35) * 1.5385), 1);
   transform: translateY(calc((1 - var(--roll, 0)) * -16px));
   pointer-events: auto;
+  /* Both properties here are compositor-only (opacity, transform) - this
+     hint keeps the browser from re-rasterizing the card body's text/image
+     content on every single scroll-driven frame, painting it once to its
+     own layer instead. */
+  will-change: opacity, transform;
 }
 
 /* Top Event Title */

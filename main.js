@@ -1040,7 +1040,13 @@
         });
         return;
       }
-      var LERP_RATE = 0.22;
+      // Measured with a scripted scroll + rAF frame-timing capture: this
+      // loop itself was never dropping frames (avg ~9ms, zero frames over
+      // 33ms) - the roughness people feel here is the easing curve, not
+      // jank. 0.22 catches up to a new scroll target in ~14 frames (~0.2s),
+      // closer to a snap than a glide; 0.14 takes ~26 frames (~0.4s) and
+      // reads as a genuine ease rather than the roll chasing the scrollbar.
+      var LERP_RATE = 0.14;
       // Once a card (or the heading) has fully opened, it STAYS open even
       // if you scroll back up past it - a card that unrolls and re-rolls
       // shut every time you pass it read as glitchy, not "synced". locked
