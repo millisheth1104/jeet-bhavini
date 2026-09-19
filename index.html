@@ -116,28 +116,27 @@
   </div>
 </div>
 
-<!-- ==== royal palace doors with cursive J & B initials ==================
-     After the elephant rings the bell, these magnificent hand-carved royal
-     palace doors are presented, bearing cursive gold J and B initials on a
-     central seal. When triggered, the double doors swing open in 3D perspective,
-     with J swinging left and B swinging right, directly revealing the garland page! -->
-<div class="royal-door-stage" id="royalDoorStage" role="dialog" aria-label="Royal Palace Doors" hidden>
-  <div class="royal-portal" id="royalPortal">
-    <!-- Double swinging door leaves in 3D perspective -->
-    <div class="royal-leaves-box" id="royalLeavesBox">
-      <!-- Left Door Leaf -->
-      <div class="royal-leaf royal-leaf--l" id="royalLeafL">
-        <img class="royal-leaf__img" src="assets/generated/royal_door_left.png?v=5" alt="Left palace door">
-      </div>
+<!-- ==== royal palace portal ============================================
+     After the elephant rings the bell, the palace gate stands closed. The two
+     leaves then swing inward on their hinges, warm light widens out of the
+     opening, and the camera walks through the doorway onto the invitation.
 
-      <!-- Right Door Leaf -->
-      <div class="royal-leaf royal-leaf--r" id="royalLeafR">
-        <img class="royal-leaf__img" src="assets/generated/royal_door_right.png?v=5" alt="Right palace door">
-      </div>
+     Three layers, back to front: the glow that lives behind the doors, the
+     two leaves, and the facade. The facade has the doorway cut out of it
+     (scripts/gen_portal.py), so the leaves show through the hole while the
+     carved surround around them never moves.
+
+     The gate opens onto the hero below, which carries the invitation and the
+     guest's name - there is no separate card in between. -->
+<div class="portal-stage" id="portalStage" role="dialog" aria-label="The palace gate" hidden>
+  <div class="portal" id="portal">
+    <div class="portal__glow" aria-hidden="true"></div>
+    <div class="portal__doorway" aria-hidden="true">
+      <img class="portal__leaf portal__leaf--l" src="assets/generated/portal_leaf_left.png?v=1" alt="">
+      <img class="portal__leaf portal__leaf--r" src="assets/generated/portal_leaf_right.png?v=1" alt="">
+      <span class="portal__seam"></span>
     </div>
-
-    <!-- Outer Arch & Fluted Pillars Frame -->
-    <img class="royal-portal__frame" src="assets/generated/royal_door_frame.png?v=5" alt="" aria-hidden="true">
+    <img class="portal__facade" src="assets/generated/portal_facade.png?v=1" alt="Palace gate" aria-hidden="true">
   </div>
 </div>
 
@@ -180,10 +179,16 @@
 
     <div class="hero__inner">
       <img class="hero__ganesha reveal" src="assets/generated/ganesha_motif.png" alt="Shri Ganesha">
-      <p class="eyebrow reveal" id="heroEyebrow"></p>
-      <h1 class="display hero__names reveal" style="--d:80ms" id="heroNames"></h1>
-      <p class="gu hero__gu reveal" style="--d:160ms" id="heroGu"></p>
-      <p class="hero__welcome reveal" style="--d:200ms" id="heroWelcome"></p>
+      <!-- One sentence, broken over the lines below and meant to be read
+           straight through: "<hosts> cordially invite <guest> to the wedding
+           of <Jeet & Bhavini>". With no ?for= link there is no name to place,
+           so the guest line falls back to "you" and it still reads. -->
+      <p class="eyebrow reveal" id="heroHosts"></p>
+      <p class="hero__lead reveal" style="--d:60ms" id="heroInvite"></p>
+      <p class="hero__guest reveal" style="--d:110ms" id="heroGuest"></p>
+      <p class="hero__lead reveal" style="--d:160ms" id="heroTo"></p>
+      <h1 class="display hero__names reveal" style="--d:210ms" id="heroNames"></h1>
+      <p class="gu hero__gu reveal" style="--d:280ms" id="heroGu"></p>
       <span class="rule reveal" style="--d:220ms" aria-hidden="true">
         <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
       </span>

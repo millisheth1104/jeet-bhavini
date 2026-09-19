@@ -511,157 +511,313 @@ body.intro-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .intro__stage, .intro__cue { animation: none; }
   .intro:not(.is-ringing) .intro__bell { animation: none; }
-  .curtain-stage, .royal-door-stage { display: none !important; }
+  .curtain-stage, .portal-stage { display: none !important; }
 }
 
 /* --------------------------------------------------------------------------
-   Royal Palace Double Doors & Automatic 3D Pull-to-Front & Fade Away
+   The palace portal — closed gate, doors swinging inward, walk through
+
+   Geometry comes from scripts/gen_portal.py, which cuts the doorway out of
+   the 768x1376 plate. As a percentage of the plate, the opening is
+   x 33.594%..68.490%, y 40.843%..83.721%, so its centre — the point the
+   camera walks towards — is 51.04%, 62.28%.
    -------------------------------------------------------------------------- */
 
-.royal-door-stage {
+.portal-stage {
   position: fixed;
   inset: 0;
   z-index: 130;
   overflow: hidden;
-  pointer-events: auto;
-  user-select: none;
   display: grid;
   place-items: center;
-  background: rgba(247, 244, 240, 0.98);
-  perspective: 1200px;
+  user-select: none;
+  /* Opaque, not 0.98: at 2% the page behind showed through as ghost text
+     down both margins. */
+  background: #f3ece4;
   opacity: 0;
-  transition: opacity 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+  transition: opacity .7s cubic-bezier(.33, 1, .68, 1);
 }
 
-.royal-door-stage.is-visible {
-  opacity: 1;
-}
+.portal-stage.is-visible { opacity: 1; }
+.portal-stage.is-gone    { display: none !important; }
+/* `display: grid` above beats the UA rule for [hidden], so say it again. */
+.portal-stage[hidden]    { display: none !important; }
 
-.royal-door-stage.is-opening {
-  transition: background 1.2s ease, opacity 0.9s cubic-bezier(0.33, 1, 0.68, 1) 1.0s;
-  background: rgba(247, 244, 240, 0);
-  opacity: 0;
-}
+/* The plate is sized off the viewport HEIGHT, not covered to its width: the
+   art is 0.56:1, so covering a landscape window would make it nearly three
+   screens tall and cut the arch off. At 116svh the doorway is a little under
+   half the screen high on every shape - full bleed on a phone, a tall gate on
+   cream on a desktop - and the walk-in has somewhere to travel.
 
-.royal-door-stage.is-parted {
-  pointer-events: none;
-}
-
-.royal-door-stage.is-gone {
-  display: none !important;
-}
-
-/* The Architectural Portal Frame */
-.royal-portal {
-  position: relative;
-  width: min(96vw, calc(92vh * (768 / 1376)));
+   It is hung by the doorway's centre (51.04%, 62.28% of the plate) rather
+   than by its own, and that point is parked slightly below the middle of the
+   screen, which is where a door you are about to walk through belongs. */
+.portal {
+  position: absolute;
+  left: 50%;
+  top: 56svh;
+  height: 116svh;
   aspect-ratio: 768 / 1376;
-  transform-style: preserve-3d;
-  will-change: transform, opacity;
+  transform: translate(-51.04%, -62.28%);
+  transform-origin: 51.04% 62.28%;
+  will-change: transform;
 }
 
-/* Outer Arch, Pillars, Jharokhas & Steps Frame */
-.royal-portal__frame {
+.portal__facade {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: fill;
   pointer-events: none;
-  z-index: 20;
-  filter: drop-shadow(0 14px 40px rgba(60, 20, 20, 0.35));
+  z-index: 3;
 }
 
-/* The Door Opening Stage (matching royal_palace_entrance: 236..533 x 412..1154) */
-.royal-leaves-box {
+/* ---- what is behind the doors ---------------------------------------- */
+
+/* Warm light in the courtyard beyond. It sits behind the leaves and is only
+   ever seen through the opening, so it is clipped to the doorway's arch. */
+.portal__glow {
   position: absolute;
-  left: 30.729%;
-  top: 29.942%;
-  width: 38.672%;
-  height: 53.924%;
-  perspective: 480px;
-  transform-style: preserve-3d;
-  z-index: 25;
+  left: 33.594%;
+  top: 40.843%;
+  width: 34.896%;
+  height: 42.878%;
+  z-index: 1;
+  background:
+    radial-gradient(120% 90% at 50% 88%,
+      #fff5dc 0%, #f7d9a0 26%, #d9954e 52%, #8c4a2a 78%, #3c1a16 100%);
+  opacity: 0;
+  transition: opacity 1.1s ease .25s;
 }
 
-/* The Left & Right Swinging Leaves */
-.royal-leaf {
+.portal-stage.is-opening .portal__glow { opacity: 1; }
+
+/* ---- the two leaves --------------------------------------------------- */
+
+.portal__doorway {
+  position: absolute;
+  left: 33.594%;
+  top: 40.843%;
+  width: 34.896%;
+  height: 42.878%;
+  z-index: 2;
+  /* Shallow, so the leaves foreshorten like real doors in a wall rather than
+     like cards flipping. */
+  perspective: 900px;
+  perspective-origin: 50% 55%;
+  transform-style: preserve-3d;
+}
+
+.portal__leaf {
   position: absolute;
   top: 0;
-  width: 50%;
-  height: 100%;
-  will-change: transform, filter;
-  transform-style: preserve-3d;
-}
-
-.royal-leaf--l {
-  left: 0;
-  transform-origin: left center;
-  transform: rotateY(0deg);
-}
-
-.royal-leaf--r {
-  right: 0;
-  transform-origin: right center;
-  transform: rotateY(0deg);
-}
-
-.royal-leaf__img {
-  width: 100%;
+  width: 50.4%;   /* a hair over half, so the two overlap at the meeting
+                     stile instead of leaving a hairline of glow between them
+                     when they are shut */
   height: 100%;
   display: block;
   object-fit: fill;
+  backface-visibility: hidden;
+  will-change: transform, filter;
+}
+
+.portal__leaf--l {
+  left: 0;
+  transform-origin: left center;
+}
+
+.portal__leaf--r {
+  right: 0;
+  transform-origin: right center;
+}
+
+/* A thread of light down the join before anything moves — the only hint that
+   the gate is about to give. */
+.portal__seam {
+  position: absolute;
+  left: 50%;
+  top: 6%;
+  width: 2px;
+  height: 88%;
+  margin-left: -1px;
+  background: linear-gradient(transparent, rgba(255, 228, 168, .85) 22%,
+                              rgba(255, 238, 196, .95) 50%,
+                              rgba(255, 228, 168, .85) 78%, transparent);
+  filter: blur(1.5px);
+  opacity: 0;
+  animation: portalSeam 2.6s ease-in-out infinite;
+}
+
+.portal-stage.is-opening .portal__seam { animation: none; opacity: 0; }
+
+@keyframes portalSeam {
+  0%, 100% { opacity: .18; }
+  50%      { opacity: .55; }
+}
+
+/* ---- opening ---------------------------------------------------------- */
+
+/* Inward: hinged at the outer edge, the free edge travels away from the
+   viewer. The pause at 12% is the catch of the latch giving before the weight
+   starts to move — without it the doors read as weightless. */
+.portal-stage.is-opening .portal__leaf--l {
+  animation: portalLeafL 2.1s cubic-bezier(.45, .05, .2, 1) forwards;
+}
+
+.portal-stage.is-opening .portal__leaf--r {
+  animation: portalLeafR 2.1s cubic-bezier(.45, .05, .2, 1) forwards;
+}
+
+@keyframes portalLeafL {
+  0%   { transform: rotateY(0deg);   filter: brightness(1); }
+  12%  { transform: rotateY(1.5deg); filter: brightness(1.04); }
+  100% { transform: rotateY(78deg);  filter: brightness(.52); }
+}
+
+@keyframes portalLeafR {
+  0%   { transform: rotateY(0deg);    filter: brightness(1); }
+  12%  { transform: rotateY(-1.5deg); filter: brightness(1.04); }
+  100% { transform: rotateY(-78deg);  filter: brightness(.52); }
+}
+
+/* The camera walks at the doorway. The origin is the opening's centre, so
+   scaling up is the same as stepping towards it; by the end the doorway has
+   swallowed the viewport and the facade has nothing left to show. */
+.portal-stage.is-opening .portal {
+  animation: portalWalkIn 2.6s cubic-bezier(.5, 0, .7, 1) .35s forwards;
+}
+
+@keyframes portalWalkIn {
+  0%   { transform: translate(-51.04%, -62.28%) scale(1); }
+  40%  { transform: translate(-51.04%, -62.28%) scale(1.5); }
+  100% { transform: translate(-51.04%, -62.28%) scale(7.5); }
+}
+
+/* Hold the light after the plate has flown past, so the card fades up out of
+   the glow rather than out of nothing. */
+.portal-stage.is-opening {
+  background: radial-gradient(120% 80% at 50% 50%, #fff6e4 0%, #f6e3c3 45%, #f0ddcb 100%);
+  transition: background 1.6s ease .6s;
+}
+
+.portal-stage.is-through .portal { opacity: 0; transition: opacity .7s ease; }
+
+/* ---- the invitation on the other side --------------------------------- */
+
+.portal__card {
+  grid-area: 1 / 1;
+  z-index: 6;
+  align-self: center;
+  justify-self: center;
+  width: min(30rem, 86vw);
+  text-align: center;
+  color: #4a2a1c;
+  opacity: 0;
+  transform: translateY(14px);
   pointer-events: none;
 }
 
-/* 3D Door Pull-to-Front Animations */
-.royal-door-stage.is-opening .royal-leaf--l {
-  animation: royalDoorPullL 2.0s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+.portal-stage.is-through .portal__card {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 1.1s ease, transform 1.4s cubic-bezier(.22, .61, .36, 1);
 }
 
-.royal-door-stage.is-opening .royal-leaf--r {
-  animation: royalDoorPullR 2.0s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+/* Each line arrives a beat after the one above, so the sentence is read in
+   order instead of landing all at once. */
+.portal__card > * {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
-.royal-door-stage.is-opening .royal-portal {
-  animation: portalEnter 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+.portal-stage.is-through .portal__card > * {
+  animation: portalLine .9s cubic-bezier(.22, .61, .36, 1) forwards;
 }
 
-@keyframes royalDoorPullL {
-  0% {
-    transform: rotateY(0deg);
-    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
-  }
-  15% {
-    transform: rotateY(2deg);
-  }
-  100% {
-    transform: rotateY(-54deg);
-    filter: drop-shadow(-14px 18px 24px rgba(0, 0, 0, 0.5));
-  }
+.portal-stage.is-through .portal__card > :nth-child(1) { animation-delay: .10s; }
+.portal-stage.is-through .portal__card > :nth-child(2) { animation-delay: .22s; }
+.portal-stage.is-through .portal__card > :nth-child(3) { animation-delay: .38s; }
+.portal-stage.is-through .portal__card > :nth-child(4) { animation-delay: .60s; }
+.portal-stage.is-through .portal__card > :nth-child(5) { animation-delay: .86s; }
+.portal-stage.is-through .portal__card > :nth-child(6) { animation-delay: 1.02s; }
+.portal-stage.is-through .portal__card > :nth-child(7) { animation-delay: 1.24s; }
+.portal-stage.is-through .portal__card > :nth-child(8) { animation-delay: 1.40s; }
+
+@keyframes portalLine {
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes royalDoorPullR {
-  0% {
-    transform: rotateY(0deg);
-    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
-  }
-  15% {
-    transform: rotateY(-2deg);
-  }
-  100% {
-    transform: rotateY(54deg);
-    filter: drop-shadow(14px 18px 24px rgba(0, 0, 0, 0.5));
-  }
+.portal__rule {
+  display: block;
+  width: 4.5rem;
+  height: 1px;
+  margin: 0 auto;
+  background: linear-gradient(90deg, transparent, #b98a4e, transparent);
 }
 
-@keyframes portalEnter {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(1.10);
-  }
+.portal__hosts {
+  font-family: var(--sans);
+  font-size: clamp(.68rem, 2.6vw, .82rem);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: #8a5a34;
+  margin: 1.5rem 0 0;
+}
+
+.portal__verb {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(.92rem, 3.2vw, 1.1rem);
+  color: #8a6a52;
+  margin: .55rem 0;
+}
+
+.portal__guest {
+  font-family: "Alex Brush", "Great Vibes", cursive;
+  font-size: clamp(2.5rem, 12vw, 4rem);
+  line-height: 1.05;
+  color: #7c2340;
+  margin: .1rem 0 .15rem;
+}
+
+.portal__couple {
+  font-family: var(--display-heading);
+  font-style: italic;
+  font-size: clamp(1.7rem, 7.4vw, 2.5rem);
+  line-height: 1.12;
+  color: #3f2418;
+  margin: .1rem 0 .2rem;
+}
+
+.portal__when {
+  font-family: var(--serif);
+  font-size: clamp(.82rem, 3vw, .98rem);
+  letter-spacing: .06em;
+  line-height: 1.5;
+  color: #6d4a33;
+  margin: .7rem 0 1.5rem;
+  white-space: pre-line;
+}
+
+/* Gujarati sets taller and has no italic to lean on. */
+html[data-lang="gu"] .portal__guest {
+  font-family: var(--gu-display);
+  font-size: clamp(1.9rem, 8.4vw, 2.9rem);
+  line-height: 1.3;
+}
+
+html[data-lang="gu"] .portal__verb,
+html[data-lang="gu"] .portal__couple,
+html[data-lang="gu"] .portal__when {
+  font-family: var(--gu-card), "Noto Serif Gujarati", serif;
+  font-style: normal;
+}
+
+html[data-lang="gu"] .portal__hosts {
+  font-family: var(--gu-card), "Noto Serif Gujarati", serif;
+  letter-spacing: .1em;
+  text-transform: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -714,8 +870,11 @@ body.intro-open { overflow: hidden; }
 }
 
 .hero__names {
-  font-size: clamp(3.4rem, 15vw, 7.5rem);
+  /* Smaller than they were: the hero now carries the whole invitation
+     sentence around them, and at 15vw the names alone filled the screen. */
+  font-size: clamp(2.9rem, 12.5vw, 6.2rem);
   color: var(--ink);
+  margin: .1rem 0 0;
 }
 .hero__amp {
   display: block;
@@ -752,12 +911,37 @@ body.intro-open { overflow: hidden; }
 
 /* The line that leads into the date - a sentence, not a label, so it reads
    in the serif rather than the meta row's tracked caps. */
-.hero__welcome {
-  margin: .5rem 0 0;
+/* "cordially invite" and "to the wedding of" - the joins in the sentence.
+   Deliberately quiet: they carry no information, they only keep the line
+   from reading as a list of names. */
+.hero__lead {
+  margin: .45rem 0;
   font-family: var(--serif);
   font-style: italic;
-  font-size: clamp(1.05rem, 2.8vw, 1.25rem);
+  font-size: clamp(.95rem, 3vw, 1.15rem);
+  letter-spacing: .02em;
   color: var(--ink-soft);
+}
+
+/* The guest the link was made for. Set in the script face and in rose, so on
+   a page of serif it is unmistakably the one line addressed to the reader. */
+.hero__guest {
+  margin: .1rem 0 .15rem;
+  font-family: "Alex Brush", "Great Vibes", cursive;
+  font-size: clamp(2.3rem, 10.5vw, 3.6rem);
+  line-height: 1.08;
+  color: var(--rose-deep, #8e3a5d);
+}
+
+html[data-lang="gu"] .hero__lead {
+  font-family: var(--gu-card), "Noto Serif Gujarati", serif;
+  font-style: normal;
+}
+
+html[data-lang="gu"] .hero__guest {
+  font-family: var(--gu-display);
+  font-size: clamp(1.7rem, 7.6vw, 2.7rem);
+  line-height: 1.32;
 }
 
 /* scroll cue --------------------------------------------------------------

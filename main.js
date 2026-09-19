@@ -122,7 +122,6 @@
       e.setAttribute("aria-label", u(key));
       if (alsoTitle) e.title = u(key);
     }
-    label("heroEyebrow",     "heroEyebrow");
     label("scrollCueLabel",  "scrollCue");
     label("eventsEyebrow",   "eventsEyebrow");
     label("eventsTitle",     "eventsTitle");
@@ -191,17 +190,28 @@
   var first  = W.couple.firstInHero === "bride" ? bride : groom;
   var second = first === groom ? bride : groom;
 
-  /* -- intro screen & royal palace doors ---------------------------------
-     The scene holds still until the visitor rings the bell. Ringing adds
-     `.is-ringing` which drives the elephant rear, trunk strike, and bell rocking.
-     As the bell strikes, the magnificent royal palace doors appear, bearing
-     the cursive gold J & B initials in the centre.
-     Then the doors swing open in 3D, parting J to the left and B to the right,
-     revealing the garland page directly! */
+  /* -- intro screen, palace portal, invitation ---------------------------
+     Three beats, and each one waits for the last to land:
+
+       1. the elephant scene holds still until the bell is rung
+       2. the closed palace gate crossfades in over it
+       3. the two leaves swing inward, the camera walks through the opening,
+          and what the doorway opens onto is the hero itself - which carries
+          the invitation, naming the guest the ?for= link was made for
+
+     A tap or Escape at any point jumps to the next beat rather than skipping
+     the whole thing, so an impatient visitor still sees their own name. */
+
+  var PORTAL = {
+    ring:    1150,  // bell struck -> gate appears
+    gate:     900,  // gate held closed before it starts to open
+    through: 2150,  // doors opening -> the doorway has filled the screen
+    settle:  1100   // held on the light while the hero reveals behind it
+  };
 
   (function intro() {
     var box = $("intro");
-    var doors = $("royalDoorStage");
+    var stage = $("portalStage");
     if (!box) return;
 
     put("introCueTitle", u("introCueTitle"));
@@ -209,112 +219,107 @@
     var cue = $("introCue");
     if (cue && LANG === "gu") cue.classList.add("gu");
 
-    // A language switch comes back mid-page; do not replay the intro.
-    if (switchedAt !== null) {
+    // A language switch comes back mid-page; do not replay any of it.
+    if (switchedAt !== null || reduced) {
       box.remove();
-      if (doors) doors.remove();
-      return;
-    }
-
-    // Reduced motion: skip directly to content.
-    if (reduced) {
-      box.remove();
-      if (doors) doors.remove();
+      if (stage) stage.remove();
       document.body.classList.remove("intro-open");
       return;
     }
 
     document.body.classList.add("intro-open");
 
-    var closed = false;
-    var doorsOpening = false;
-    var doorsActive = false;
-
-    function openDoors() {
-      if (!doors || doorsOpening) return;
-      doorsOpening = true;
-      doors.classList.add("is-opening");
-
-      // As doors reach wide open (~1050ms), reveal garland page and release scroll
-      setTimeout(function () {
-        doors.classList.add("is-parted");
-        document.body.classList.remove("intro-open");
-        window.scrollTo(0, 0);
-      }, 1050);
-
-      // Once portal has fully dissolved (~2200ms), clean up overlay
-      setTimeout(function () {
-        doors.classList.add("is-gone");
-        doors.remove();
-      }, 2200);
-    }
-
-    function showDoors() {
-      if (closed) return;
-      closed = true;
-      doorsActive = true;
-
-      if (!doors) {
-        box.classList.add("is-done");
-        setTimeout(function () { box.remove(); }, 900);
-        document.body.classList.remove("intro-open");
-        window.scrollTo(0, 0);
-        return;
-      }
-
-      doors.hidden = false;
-      // Silky-smooth crossfade into the palace door facade
-      requestAnimationFrame(function () {
-        doors.classList.add("is-visible");
-      });
-
-      // Crossfade out the elephant scene behind the palace doors
-      setTimeout(function () {
-        box.classList.add("is-done");
-        setTimeout(function () { box.remove(); }, 900);
-      }, 200);
-
-      // Auto-open doors after a smooth pause (~750ms) to admire the palace, or immediately on click
-      if (!hold) {
-        setTimeout(openDoors, 750);
-      }
-
-      doors.addEventListener("click", openDoors);
-    }
-
     var hold = location.search.indexOf("hold") !== -1;
+    var step = 0;              // 0 unrung, 1 gate closed, 2 opening, 3 invitation
+    var timer = null;
+
+    function at(ms, fn) {
+      clearTimeout(timer);
+      timer = setTimeout(fn, ms);
+    }
+
+    function finish() {
+      if (step > 3) return;
+      step = 4;
+      clearTimeout(timer);
+      document.body.classList.remove("intro-open");
+      window.scrollTo(0, 0);
+      if (!stage) return;
+      stage.classList.remove("is-visible");
+      setTimeout(function () {
+        stage.classList.add("is-gone");
+        stage.remove();
+      }, 800);
+    }
+
+    // The camera is through the doorway: the plate has flown past, so hand
+    // the page over and let the light fade off the hero rather than cutting.
+    function reveal() {
+      if (step > 2) return;
+      step = 3;
+      stage.classList.add("is-through");
+      document.body.classList.remove("intro-open");
+      window.scrollTo(0, 0);
+      if (!hold) at(PORTAL.settle, finish);
+    }
+
+    function openGate() {
+      if (step > 1) return;
+      step = 2;
+      if (!stage) return finish();
+      stage.classList.add("is-opening");
+      at(PORTAL.through, reveal);
+    }
+
+    // The gate arrives closed and holds a beat, so it is seen shut before it
+    // moves — without the pause the opening reads as a transition, not as a
+    // door being opened for you.
+    function showGate() {
+      if (step > 0) return;
+      step = 1;
+      if (!stage) return finish();
+
+      stage.hidden = false;
+      requestAnimationFrame(function () { stage.classList.add("is-visible"); });
+
+      setTimeout(function () {
+        box.classList.add("is-done");
+        setTimeout(function () { box.remove(); }, 900);
+      }, 220);
+
+      if (!hold) at(PORTAL.gate, openGate);
+    }
+
     var rung = false;
     function ring() {
       if (rung) return;
       rung = true;
-      box.classList.add("is-ringing");
-      // Elephant strikes bell at ~560ms; transition to royal doors at ~1150ms
-      if (!hold) {
-        setTimeout(showDoors, 1150);
-      } else {
-        // In ?hold mode, click again to progress to doors
-        box.addEventListener("click", function () { showDoors(); }, { once: true });
-      }
+      box.classList.add("is-ringing");   // elephant rears, trunk strikes at ~560ms
+      if (!hold) at(PORTAL.ring, showGate);
     }
 
-    box.addEventListener("click", ring);
+    // One handler for every beat: whatever is on screen, advance it.
+    function advance() {
+      if (!rung) ring();
+      else if (step === 0) showGate();
+      else if (step === 1) openGate();
+      else if (step === 2) reveal();
+      else finish();
+    }
+
+    box.addEventListener("click", advance);
+    if (stage) stage.addEventListener("click", advance);
 
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
-        if (doorsActive) openDoors();
-        else {
-          box.remove();
-          if (doors) doors.remove();
-          document.body.classList.remove("intro-open");
-        }
+        box.remove();
+        if (stage) stage.remove();
+        step = 4;
+        clearTimeout(timer);
+        document.body.classList.remove("intro-open");
       } else if (e.key === "Enter" || e.key === " ") {
-        if (!rung) {
-          e.preventDefault();
-          ring();
-        } else if (doorsActive && !doorsOpening) {
-          e.preventDefault();
-          openDoors();
-        }
+        e.preventDefault();
+        advance();
       }
     });
   }());
@@ -327,20 +332,21 @@
 
     var halt = $("heroGu");
     halt.className = LANG === "gu" ? "hero__gu reveal" : "gu hero__gu reveal";
-    halt.style.setProperty("--d", "160ms");
+    halt.style.setProperty("--d", "280ms");
     put("heroGu", first[OTHER] + "  ·  " + second[OTHER]);
 
-    // A guest link's name is stitched onto the front of the same sentence
-    // rather than shown as a separate line, so a personal link still reads
-    // as one welcome and not as a template with a name pasted above it.
-    var welcome = t(W.headline.welcomeLine);
-    if (GUEST && GUEST.n) {
-      // The line is written to open a sentence ("Welcomes you..."); stitched
-      // onto "Dear X, " it has to continue one instead, so only here its
-      // first letter is lower-cased.
-      welcome = u("guestDear") + " " + GUEST.n + ", " + welcome.charAt(0).toLowerCase() + welcome.slice(1);
-    }
-    put("heroWelcome", welcome);
+    /* The hero is the invitation itself, and it is one sentence laid out over
+       four lines around the names:
+
+         Jabuani & Nakrani Family / cordially invite / Mr Dhrumil Shah /
+         to the wedding of / Jeet & Bhavini
+
+       A ?for= link supplies the third line. Without one there is no name to
+       place, so it falls back to "you" and the sentence still reads. */
+    put("heroHosts",  u("inviteHosts"));
+    put("heroInvite", u("inviteVerb"));
+    put("heroGuest",  (GUEST && GUEST.n) || u("inviteYou"));
+    put("heroTo",     u("inviteOccasion"));
 
     var meta = $("heroMeta");
     [W.headline.datesLabel, W.headline.venue, W.headline.city]

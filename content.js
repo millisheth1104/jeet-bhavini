@@ -30,14 +30,8 @@ window.WEDDING = {
     hashtag: "#JeetWedsBhavini",
   },
 
-  // Shown under the names in the hero.
+  // The date and place, shown under the names in the hero.
   headline: {
-    // The line that leads into the date - "Welcomes you to their wedding on
-    // [date]" reads as one sentence split across two lines.
-    welcomeLine: {
-      en: "Welcomes you to their wedding on",
-      gu: "તમારું તેમના લગ્નમાં હૃદયપૂર્વક સ્વાગત છે",
-    },
     datesLabel: { en: "1 – 2 December 2026", gu: "1 – 2 ડિસેમ્બર 2026" },
     venue: { en: "Oleander Farms", gu: "ઓલિએન્ડર ફાર્મ્સ" },
     city: { en: "Karjat, Maharashtra", gu: "કર્જત, મહારાષ્ટ્ર" },
@@ -278,10 +272,24 @@ window.WEDDING = {
     introCueTitle:     { en: "Ring the bell", gu: "ઘંટ વગાડો" },
     introCueSub:       { en: "to begin the celebration", gu: "ઉજવણીનો પ્રારંભ કરવા" },
 
-    heroEyebrow:       { en: "Together with their families", gu: "પરિવારજનો સહિત" },
-    // Prefixed to heroWelcome when a guest link (see admin.html) carries a
-    // name: "Dear Priya, welcomes you to..." instead of the generic line.
-    guestDear:         { en: "Dear", gu: "પ્રિય" },
+
+    /* The hero IS the invitation, and these are its lines. Read straight
+       through, with the names between the last two:
+
+         Jabuani & Nakrani Family / cordially invite / Mr Dhrumil Shah /
+         to the wedding of / Jeet & Bhavini
+
+       With no ?for= link there is no name to place, so `inviteYou` stands in
+       for one and the sentence still reads.
+
+       The Gujarati is not a word-for-word match. Gujarati puts the
+       postposition after the noun, so "ના શુભ લગ્ન પ્રસંગે" cannot sit in
+       front of the names the way "to the wedding of" does; it is set as a
+       standalone occasion line instead, which is how a kankotri stacks it. */
+    inviteHosts:       { en: "Jabuani & Nakrani Family", gu: "જબુઆણી અને નકરાણી પરિવાર" },
+    inviteVerb:        { en: "cordially invite", gu: "સ્નેહપૂર્વક આમંત્રણ પાઠવે છે" },
+    inviteYou:         { en: "you", gu: "આપને" },
+    inviteOccasion:    { en: "to the wedding of", gu: "શુભ લગ્ન પ્રસંગે" },
 
     eventsEyebrow:     { en: "Celebration Journey", gu: "ઉત્સવની સફર" },
     eventsTitle:       { en: "Our Events", gu: "અમારા પ્રસંગો" },
