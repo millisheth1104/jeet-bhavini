@@ -712,7 +712,7 @@ body:not(.intro-open) #top {
   /* Content sits high, with the garden filling the space beneath it — the
      arrangement on the reel's names screen — rather than centred. */
   place-items: start center;
-  padding: clamp(3.2rem, 9vh, 5.5rem) var(--gutter) clamp(1.8rem, 5vh, 3rem);
+  padding: clamp(1.8rem, 5vh, 3.2rem) var(--gutter) clamp(1.8rem, 5vh, 3rem);
   overflow: hidden;
   isolation: isolate;
 }

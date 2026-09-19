@@ -337,9 +337,7 @@
     h.appendChild(document.createTextNode(t(second)));
 
     var halt = $("heroGu");
-    halt.className = LANG === "gu" ? "hero__gu reveal" : "gu hero__gu reveal";
-    halt.style.setProperty("--d", "280ms");
-    put("heroGu", first[OTHER] + "  ·  " + second[OTHER]);
+    if (halt) halt.hidden = true;
 
     /* The hero is the invitation itself, and it is one sentence laid out over
        four lines around the names:
