@@ -246,6 +246,13 @@ img { max-width: 100%; display: block; }
   transition: opacity .9s ease, visibility .9s;
 }
 body.intro-open { overflow: hidden; }
+html.is-scroll-locked,
+body.is-scroll-locked {
+  overflow: hidden !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+  height: 100% !important;
+}
 
 .intro.is-done {
   opacity: 0;
@@ -264,8 +271,17 @@ body.intro-open { overflow: hidden; }
 
 .intro__stage {
   position: relative;
-  height: 100cqh;
-  aspect-ratio: 832 / 1472;       /* width follows the painting's frame */
+  /* height:100cqh alone forces width = height * 0.565 (the painting's own
+     ratio), which OVERFLOWS the viewport width on any screen narrower than
+     that - most phones (~0.46) included - and .intro's overflow:hidden then
+     crops the sides off. min()/min() here is a manual "object-fit: contain"
+     for the stage itself: on a screen wider than the painting it still
+     fills the height with matting at the sides (unchanged), but on a
+     taller/narrower screen it now fills the width instead and letterboxes
+     top/bottom, so the whole painting is always on screen. */
+  width: min(100cqw, calc(100cqh * 832 / 1472));
+  height: min(100cqh, calc(100cqw * 1472 / 832));
+  aspect-ratio: 832 / 1472;
   animation: introFade 1.1s ease both;
 }
 /* the plate's edge, only visible once the mat shows (wide screens) */
@@ -335,7 +351,18 @@ body.intro-open { overflow: hidden; }
   width: 51.68%;
   aspect-ratio: 889 / 931;
   transform-origin: 19.69% 99.03%;   /* the hind feet - see bake_intro3.py */
+  /* Legs only ever need their own single <img> to be ready; the body needs
+     BOTH the JPEG and the mask PNG to arrive before it composites into
+     anything. Even with preload + fetchpriority="high" on the body's two
+     assets (index.html), "needs 2 things" reliably loses that race to
+     "needs 1 thing" - the legs would still render first on their own.
+     Hidden by default and revealed only once main.js confirms every piece
+     has actually loaded (.is-ready), so the elephant always appears whole
+     in one frame instead of legs-then-body. */
+  opacity: 0;
+  transition: opacity .25s ease;
 }
+.intro__ele.is-ready { opacity: 1; }
 .intro.is-ringing .intro__ele { animation: eleRear 2.2s cubic-bezier(.34,.07,.2,1) both; }
 
 /* Colour and alpha arrive separately (see bake_intro3.py) and are put back
@@ -544,27 +571,54 @@ body.intro-open { overflow: hidden; }
   user-select: none;
   background: var(--paper);
   opacity: 0;
-  transition: opacity .9s cubic-bezier(.22, .61, .36, 1), background 2s ease .3s;
+  transition: opacity .8s cubic-bezier(.25, 1, .5, 1), background 1.6s ease .2s;
+  /* A real 3D camera dolly for the walk-in below. perspective-origin matches
+     .portal's own transform-origin (50% 54.94%), sitting on the doorway center. */
+  perspective: 1200px;
+  perspective-origin: 50% 54.94%;
+  pointer-events: auto;
 }
 
 .portal-stage.is-visible { opacity: 1; }
+.portal-stage.is-zooming { pointer-events: none; }
 .portal-stage.is-gone    { display: none !important; }
 .portal-stage[hidden]    { display: none !important; }
 
-/* When doors open, the stage background dissolves to transparent so the real page is seen */
-.portal-stage.is-opening {
-  background: transparent;
-  transition: opacity .9s cubic-bezier(.22, .61, .36, 1), background 2.4s cubic-bezier(.22, .61, .36, 1);
+/* Radiant golden warmth blooming out through the palace arch when doors open */
+.portal-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 55%, rgba(255, 246, 215, 0.45) 0%, rgba(255, 230, 160, 0.2) 42%, transparent 74%);
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(.22, .61, .36, 1);
+  z-index: 4;
 }
 
-/* The page behind starts with a soft, dreamy atmospheric blur, then resolves to proper clarity */
+.portal-stage.is-opening::after {
+  opacity: 1;
+}
+
+.portal-stage.is-through::after {
+  opacity: 0;
+  transition: opacity .7s ease;
+}
+
+/* When doors open, the stage background dissolves to transparent so the real page is seen through doorway */
+.portal-stage.is-opening {
+  background: transparent;
+  transition: opacity .8s cubic-bezier(.25, 1, .5, 1), background 1.8s cubic-bezier(.25, 1, .5, 1);
+}
+
+/* The page behind starts with a soft, dreamy atmospheric blur, then resolves smoothly to crystal clarity */
 body.intro-open #top {
   opacity: 0.35;
-  filter: blur(5px);
-  transform: scale(0.97);
-  transition: opacity 1.8s cubic-bezier(.22, .61, .36, 1),
-              filter 1.8s cubic-bezier(.22, .61, .36, 1),
-              transform 1.8s cubic-bezier(.22, .61, .36, 1);
+  filter: blur(6px);
+  transform: scale(0.96);
+  transition: opacity 1.9s cubic-bezier(.16, 1, .3, 1),
+              filter 1.9s cubic-bezier(.16, 1, .3, 1),
+              transform 1.9s cubic-bezier(.16, 1, .3, 1);
 }
 
 body.intro-open.page-proper #top,
@@ -578,11 +632,12 @@ body:not(.intro-open) #top {
   position: absolute;
   left: 50%;
   top: 50svh;
-  height: 114svh;
+  width: max(114svw, calc(114svh * 768 / 1376));
+  height: max(114svh, calc(114svw * 1376 / 768));
   aspect-ratio: 768 / 1376;
   transform: translate(-50%, -54.94%);
   transform-origin: 50% 54.94%;
-  will-change: transform;
+  will-change: transform, opacity;
 }
 
 .portal__facade {
@@ -656,39 +711,90 @@ body:not(.intro-open) #top {
 /* ---- opening animations ----------------------------------------------- */
 
 .portal-stage.is-opening .portal__leaf--l {
-  animation: portalLeafL .9s cubic-bezier(.16, .7, .3, 1) forwards;
+  animation: portalLeafL .95s cubic-bezier(.16, .7, .3, 1) forwards;
 }
 
 .portal-stage.is-opening .portal__leaf--r {
-  animation: portalLeafR .9s cubic-bezier(.16, .7, .3, 1) forwards;
+  animation: portalLeafR .95s cubic-bezier(.16, .7, .3, 1) forwards;
 }
 
 @keyframes portalLeafL {
   0%   { transform: rotateY(0deg); }
-  100% { transform: rotateY(86deg); }
+  100% { transform: rotateY(88deg); }
 }
 
 @keyframes portalLeafR {
   0%   { transform: rotateY(0deg); }
-  100% { transform: rotateY(-86deg); }
+  100% { transform: rotateY(-88deg); }
 }
 
-/* The camera walks through the doorway AFTER doors have fully opened */
+/* As camera zooms into doorway, doors part slightly wider to welcome the guest */
+.portal-stage.is-zooming .portal__leaf--l {
+  animation: portalLeafLZoom 1.4s cubic-bezier(.2, .8, .25, 1) forwards;
+}
+
+.portal-stage.is-zooming .portal__leaf--r {
+  animation: portalLeafRZoom 1.4s cubic-bezier(.2, .8, .25, 1) forwards;
+}
+
+@keyframes portalLeafLZoom {
+  0%   { transform: rotateY(88deg); }
+  100% { transform: rotateY(97deg); }
+}
+
+@keyframes portalLeafRZoom {
+  0%   { transform: rotateY(-88deg); }
+  100% { transform: rotateY(-97deg); }
+}
+
+/* The camera glides through the doorway after doors open.
+   A continuous, cinematic 3D dolly move along translateZ toward the vanishing point.
+   The doorway expands outwards to encompass the entire screen while the doors and
+   facade dissolve in a progressive, silky golden fade, seamlessly revealing the invitation. */
 .portal-stage.is-zooming .portal {
-  animation: portalWalkIn 2.4s cubic-bezier(.22, .61, .36, 1) forwards;
+  animation: portalWalkIn 2.4s cubic-bezier(.25, 1, .4, 1) forwards;
 }
 
 @keyframes portalWalkIn {
-  0%   { transform: translate(-50%, -54.94%) scale(1);    opacity: 1; }
-  25%  { transform: translate(-50%, -54.94%) scale(1.3);  opacity: 1; }
-  55%  { transform: translate(-50%, -54.94%) scale(2.5);  opacity: 1; }
-  80%  { transform: translate(-50%, -54.94%) scale(5.0);  opacity: .9; }
-  100% { transform: translate(-50%, -54.94%) scale(8.0);  opacity: 0; }
+  0% {
+    transform: translate(-50%, -54.94%) translateZ(0px);
+    opacity: 1;
+    filter: drop-shadow(0 0 0 rgba(255, 235, 180, 0));
+  }
+  25% {
+    transform: translate(-50%, -54.94%) translateZ(280px);
+    opacity: 1;
+    filter: drop-shadow(0 0 15px rgba(255, 235, 180, 0.15));
+  }
+  52% {
+    transform: translate(-50%, -54.94%) translateZ(720px);
+    opacity: 0.94;
+    filter: drop-shadow(0 0 30px rgba(255, 235, 180, 0.3));
+  }
+  74% {
+    transform: translate(-50%, -54.94%) translateZ(990px);
+    opacity: 0.62;
+    filter: drop-shadow(0 0 45px rgba(255, 235, 180, 0.45));
+  }
+  90% {
+    transform: translate(-50%, -54.94%) translateZ(1100px);
+    opacity: 0.22;
+  }
+  100% {
+    transform: translate(-50%, -54.94%) translateZ(1150px);
+    opacity: 0;
+  }
+}
+
+.portal-stage.is-through {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .7s cubic-bezier(.25, 1, .5, 1);
 }
 
 .portal-stage.is-through .portal {
   opacity: 0;
-  transition: opacity .9s cubic-bezier(.22, .61, .36, 1);
+  pointer-events: none;
 }
 
 /* Portal cue removed by user request */
@@ -805,6 +911,86 @@ body:not(.intro-open) #top {
   font-size: clamp(2.3rem, 10.5vw, 3.6rem);
   line-height: 1.08;
   color: var(--rose-deep, #8e3a5d);
+  min-height: 1.18em;
+  display: inline-block;
+  position: relative;
+  letter-spacing: 0.01em;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Individual word in continuous cursive flow */
+.calligraphy-word {
+  display: inline-block;
+  white-space: nowrap;
+  position: relative;
+  opacity: 0;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 var(--w-prog, 0%),
+    rgba(0, 0, 0, 0.4) calc(var(--w-prog, 0%) + 4px),
+    transparent calc(var(--w-prog, 0%) + 14px)
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 var(--w-prog, 0%),
+    rgba(0, 0, 0, 0.4) calc(var(--w-prog, 0%) + 4px),
+    transparent calc(var(--w-prog, 0%) + 14px)
+  );
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  will-change: -webkit-mask-image, mask-image, opacity;
+}
+
+.calligraphy-word.is-active,
+.calligraphy-word.is-done {
+  opacity: 1;
+}
+
+.calligraphy-word.is-done {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+
+/* Inter-word spacing */
+.calligraphy-space {
+  display: inline-block;
+  white-space: pre;
+  width: 0.28em;
+}
+
+/* Artisan Luxury calligraphy fountain pen */
+.calligraphy-pen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(54px, 12vw, 68px);
+  height: clamp(77px, 17vw, 97px);
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: opacity 0.25s ease;
+  filter: drop-shadow(-3px 6px 10px rgba(35, 10, 20, 0.35));
+}
+
+.calligraphy-pen.is-writing {
+  opacity: 1;
+}
+
+.calligraphy-pen.is-hidden {
+  opacity: 0 !important;
+}
+
+.calligraphy-pen__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
 }
 
 html[data-lang="gu"] .hero__lead {
@@ -819,11 +1005,7 @@ html[data-lang="gu"] .hero__guest {
 }
 
 /* scroll cue --------------------------------------------------------------
-   Normal document flow, not pinned to the hero's bottom edge - two more
-   lines of content above it (the Ganesha, the welcome sentence) than this
-   spacing was first tuned for means a fixed position can run into the venue
-   text on a short viewport. In flow, it just settles under whatever height
-   the content actually needs, on any screen, and can never overlap it. */
+   Hidden until the guest handwriting finishes, then fades and rises in. */
 .scroll-cue {
   margin: clamp(1.2rem, 3.5vh, 2rem) 0 0;
   font-size: .8rem;
@@ -831,12 +1013,20 @@ html[data-lang="gu"] .hero__guest {
   display: grid;
   justify-items: center;
   gap: .55rem;
-  /* By this point in the flow the paper scrim behind hero__inner has faded
-     out (it's a radial gradient sized to the names/date, not this far down),
-     so the cue sits on the raw garden illustration. A soft paper-coloured
-     halo keeps it legible regardless of what's behind it, rather than
-     stretching the shared scrim and risking washing out the art elsewhere. */
   filter: drop-shadow(0 0 3px var(--paper)) drop-shadow(0 0 7px var(--paper));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(14px);
+  transition: opacity .8s cubic-bezier(.22,.61,.36,1),
+              transform .8s cubic-bezier(.22,.61,.36,1);
+}
+
+.scroll-cue.is-shown {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 /* Letter-spacing pads a full tracking-width AFTER the last glyph too, which
    shifts the visible word's optical centre left of the box's true centre -
@@ -930,7 +1120,11 @@ html[data-lang="gu"] .hero__guest {
   50%, 74.99%  { opacity: 1; }
   75%, 100%    { opacity: 0; }
 }
-/* the sheet birds face right; flip the right-hand one so they face inward */
+/* the sheet birds face right; flip both so bird A (left) mirrors bird B's
+   look and faces left too, instead of its native right-facing orientation */
+/* Both sides now show bird_b's design: its source frames face right
+   natively, which is already correct (inward) for the left slot, so only
+   the right-hand one needs the flip to face left (also inward). */
 .bird--b img { transform: scaleX(-1); }
 
 /* The birds hold their position and only beat their wings — they hover beside
@@ -939,12 +1133,14 @@ html[data-lang="gu"] .hero__guest {
    centre so they flank the names on a wide screen, and the clamp floor keeps
    them on-screen on a narrow one. */
 .bird--a {
-  top: 25%;
-  left: clamp(1.5rem, calc(50% - 19rem), 50%);
+  top: 34%;
+  left: clamp(1rem, calc(50% - 20rem), 50%);
   width: clamp(92px, 21vw, 205px);
-  aspect-ratio: 232 / 158;
+  /* bird_b's frame box (205x196), not bird_a's (232x158) - it now uses
+     bird_b's images too */
+  aspect-ratio: 205 / 196;
   --beat: .95s;
-  rotate: -6deg;
+  rotate: -4deg;
 }
 .bird--b {
   top: 44%;
@@ -956,8 +1152,8 @@ html[data-lang="gu"] .hero__guest {
 }
 
 @media (max-width: 560px) {
-  /* kept clear of the viewport edges so wing tips and tails are not clipped */
-  .bird--a { top: 24%; left: 5%;  width: 94px; }
+  /* kept clear of the guest name text and viewport edges */
+  .bird--a { top: 33%; left: 3%;  width: 90px; }
   .bird--b { top: 45%; right: 4%; width: 80px; }
 }
 
@@ -1149,6 +1345,16 @@ html[data-lang="gu"] .hero__guest {
 
 .events { background: linear-gradient(180deg, transparent, rgba(237,233,224,.5) 42%, transparent); }
 
+/* The eyebrow/title/caption/rule above the cards. Driven by --lead-roll,
+   set every scroll frame by cardRoll() in main.js using the exact same
+   progress formula as the cards themselves (not the generic one-shot
+   .reveal), so this heading fades and rises in lockstep with card 1
+   instead of popping in as soon as the section's edge appears. */
+.events__lead {
+  opacity: var(--lead-roll, 0);
+  transform: translateY(calc((1 - var(--lead-roll, 0)) * 20px));
+}
+
 /* One colour per event, carried by both the card mat and its lettering.
    The ink is a deeper tone of the same hue so it stays legible on the cream
    aperture while still reading as that event's colour:
@@ -1156,6 +1362,7 @@ html[data-lang="gu"] .hero__guest {
      Sangeet: navy blue
      Mandap Ropan: orange
      Wedding / Lagna: dark pink */
+.scroll-card,
 .inv {
   --mat-c: #26406B;
   --ink-c: #182C4F;      /* calligraphic title */
@@ -1167,6 +1374,8 @@ html[data-lang="gu"] .hero__guest {
 }
 
 /* 1. Mameru - dark green */
+.scroll-card[data-key="mameru"],
+.scroll-card[data-ink="sage"],
 .inv[data-key="mameru"],
 .inv[data-ink="sage"] {
   --mat-c: #2E5E45;
@@ -1178,6 +1387,8 @@ html[data-lang="gu"] .hero__guest {
 }
 
 /* 2. Sangeet - navy blue */
+.scroll-card[data-key="sangeet"],
+.scroll-card[data-ink="indigo"],
 .inv[data-key="sangeet"],
 .inv[data-ink="indigo"] {
   --mat-c: #26406B;
@@ -1189,6 +1400,8 @@ html[data-lang="gu"] .hero__guest {
 }
 
 /* 3. Mandap Ropan - orange */
+.scroll-card[data-key="mandap"],
+.scroll-card[data-ink="gold"],
 .inv[data-key="mandap"],
 .inv[data-ink="gold"] {
   --mat-c: #D2762A;
@@ -1200,6 +1413,8 @@ html[data-lang="gu"] .hero__guest {
 }
 
 /* 4. Wedding / Lagna - dark pink */
+.scroll-card[data-key="lagna"],
+.scroll-card[data-ink="rose"],
 .inv[data-key="lagna"],
 .inv[data-ink="rose"] {
   --mat-c: #A83A63;
@@ -1211,11 +1426,14 @@ html[data-lang="gu"] .hero__guest {
 }
 
 .events__list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(1.4rem, 3.5vw, 2.2rem);
-  justify-items: center;
-  margin-top: clamp(1.2rem, 3.2vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(3rem, 7vw, 5.5rem);
+  width: 100%;
+  max-width: 54rem;
+  margin-inline: auto;
+  margin-top: clamp(1.4rem, 3.6vw, 2.5rem);
 }
 
 #eventsAlt {
@@ -1224,6 +1442,252 @@ html[data-lang="gu"] .hero__guest {
   font-weight: 500;
   margin: 0.25rem 0 0;
   color: var(--ink-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Royal Unrolling Scroll Card Container (Farman Style)
+   -------------------------------------------------------------------------- */
+
+.scroll-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: clamp(400px, 96vw, 760px);
+  margin: 0 auto;
+  user-select: none;
+  isolation: isolate;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: center;
+  aspect-ratio: auto !important;
+  height: auto !important;
+}
+
+/* Rollers (Top & Bottom Wooden/Gold Rods with Carved Lotus Finials).
+   Static - a spinning rod was tried and scrapped: at 45-90deg mid-turn a
+   full-width rod swings out past the card's own bounds and slices across
+   whatever sits below it, which reads as broken, not mechanical. The
+   "unrolling" read now comes entirely from the paper itself (curved top
+   edge + seam shadow below) while the rods stay put as the fixed frame
+   it unrolls between. */
+.scroll-card__roller {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  filter: drop-shadow(0 6px 16px rgba(35, 18, 24, 0.24));
+}
+
+.scroll-card__roller-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+}
+
+.scroll-card__roller--bottom {
+  margin-top: -6%; /* tucks the roller rod seamlessly over the bottom of the parchment page with zero gap */
+  filter: drop-shadow(0 -4px 10px rgba(35, 18, 24, 0.22)) drop-shadow(0 6px 16px rgba(35, 18, 24, 0.24));
+}
+
+/* Unrolling Track. --roll-fr is set alongside --roll every scroll frame
+   (main.js cardRoll()) as an exact "<n>fr" string, so the track's height
+   is scrubbed frame-by-frame off the real scroll position rather than
+   played back on a fixed-duration transition - it tracks the scrollbar
+   exactly, forward and backward. */
+.scroll-card__unroll-track {
+  position: relative;
+  width: 82%; /* spans cylinder body between wooden finials */
+  margin-top: -10px; /* tucks under top roller cylinder */
+  margin-bottom: 0;
+  display: grid;
+  /* minmax(0, ...) matters: a bare fr track still floors at its content's
+     min-content size, so without this the "closed" state never reaches 0
+     and every card sits open a crack before it's scrolled to. */
+  grid-template-rows: minmax(0, var(--roll-fr, 0fr));
+  overflow: hidden;
+  contain: paint;
+  z-index: 5;
+}
+
+/* The Parchment Sheet. Flat - a 3D rotateX tilt was tried here too (hinged
+   at the top, standing up as it opened) and scrapped along with the roller
+   spin: on a tall card the whole sheet swinging down from a top hinge just
+   reads as a lid/flap opening, i.e. exactly the "sliding down" this was
+   meant to avoid. The curved top edge below plus the seam shadow carry the
+   "unrolling" read instead, on a sheet that stays flat throughout. */
+.scroll-card__sheet {
+  min-height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 50% 50% 0 0 / 16px 16px 0 0;
+  background: radial-gradient(circle at 50% 18%, #FFFDF8 0%, #FAF5EB 60%, #F4ECE0 100%);
+  border-left: 2px solid rgba(186, 61, 80, 0.32);
+  border-right: 2px solid rgba(186, 61, 80, 0.32);
+  box-shadow:
+    inset 1px 0 0 rgba(212, 175, 55, 0.45),
+    inset -1px 0 0 rgba(212, 175, 55, 0.45),
+    inset 16px 0 28px -10px rgba(90, 50, 30, 0.16),
+    inset -16px 0 28px -10px rgba(90, 50, 30, 0.16),
+    0 16px 40px -8px rgba(45, 25, 30, 0.26);
+  padding: 1.6rem 1.6rem 3.4rem;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: box-shadow 0.45s ease, filter 0.45s ease;
+}
+
+.scroll-card__sheet:hover {
+  box-shadow: 
+    inset 1px 0 0 rgba(212, 175, 55, 0.6),
+    inset -1px 0 0 rgba(212, 175, 55, 0.6),
+    inset 16px 0 28px -10px rgba(90, 50, 30, 0.2),
+    inset -16px 0 28px -10px rgba(90, 50, 30, 0.2),
+    0 22px 52px -8px rgba(45, 25, 30, 0.32);
+}
+
+/* Subtle parchment grain over the sheet */
+.scroll-card__sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("assets/generated/paper_grain.png") repeat;
+  background-size: 240px;
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Seam shadows where the parchment meets each roller - permanent, not
+   roll-dependent, since that physical seam doesn't go away once open. */
+.scroll-card__curl-shadow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.scroll-card__curl-shadow--top {
+  top: 0;
+  height: 28px;
+  background: linear-gradient(180deg, rgba(35, 18, 12, 0.36) 0%, rgba(35, 18, 12, 0.12) 14px, transparent 28px);
+}
+
+.scroll-card__curl-shadow--bottom {
+  bottom: 0;
+  height: 42px;
+  background: linear-gradient(0deg, rgba(35, 18, 12, 0.42) 0%, rgba(35, 18, 12, 0.18) 18px, rgba(35, 18, 12, 0.06) 30px, transparent 42px);
+}
+
+/* Content Body - fades and settles in lockstep with --roll, so nothing
+   pops in ahead of the paper it's printed on. */
+.scroll-card__body {
+  position: relative !important;
+  z-index: 3;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* opacity:var(--roll) directly (0->1 across the WHOLE roll) still let
+     dark, saturated title text read as basically "there" well before the
+     pale illustration below it looked like anything - same opacity value,
+     very different perceived legibility, so it read as text arriving
+     before the card. Delaying the onset to roll>=0.35 means the body
+     stays fully invisible while the card is still mostly rolled shut, and
+     only starts fading in once it's substantially open - no window left
+     where text is legible against a paper that still looks closed. */
+  opacity: clamp(0, calc((var(--roll, 0) - 0.35) * 1.5385), 1);
+  transform: translateY(calc((1 - var(--roll, 0)) * -16px));
+  pointer-events: auto;
+}
+
+/* Top Event Title */
+.scroll-card__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+}
+
+.scroll-card__title {
+  font-family: var(--script-font);
+  font-size: clamp(2.3rem, 6.2vw, 3.6rem);
+  color: var(--ink-c);
+  margin: 0.1rem 0;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.7);
+  overflow: visible;
+  text-align: center;
+  padding: 0.15rem 0.5rem;
+}
+
+.scroll-card--gu .scroll-card__title,
+html[lang="gu"] .scroll-card__title {
+  font-family: var(--gu-card), "Anek Gujarati", sans-serif;
+  font-size: clamp(1.95rem, 5.2vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.scroll-card__tagline {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(0.92rem, 2.2vw, 1.15rem);
+  color: var(--ink-accent);
+  margin: 0.15rem 0 0.2rem;
+  letter-spacing: 0.03em;
+  opacity: 0.92;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+/* Center Ceremony Artwork */
+.scroll-card__ill-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: clamp(220px, 68%, 320px);
+  min-height: clamp(130px, 32vw, 195px);
+  max-height: clamp(190px, 42vw, 260px);
+  margin: 0.4rem 0 0.55rem;
+}
+
+.scroll-card[data-key="lagna"] .scroll-card__ill-wrap {
+  max-width: clamp(180px, 50%, 250px);
+  max-height: clamp(120px, 26vw, 170px);
+  margin: 0.25rem 0 0.35rem;
+}
+
+.scroll-card__ill {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(45, 30, 20, 0.16));
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scroll-card__sheet:hover .scroll-card__ill {
+  transform: translateY(-3px) scale(1.03);
 }
 
 /* ---- the card container ------------------------------------------------ */
@@ -1543,182 +2007,47 @@ html[lang="gu"] .inv__sched-val {
   font-weight: 700;
 }
 
-/* ---- mobile / phone view: balanced proportions without empty space ---- */
+/* ---- mobile / phone view: balanced vertical flow without empty space ---- */
 @media (max-width: 39.99rem) {
   .events__list {
-    gap: 2.2rem;
-    padding-inline: 0.6rem;
-  }
-  .inv {
-    max-width: 21.5rem;
-    aspect-ratio: 1 / 1.63;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(2.6rem, 6vw, 4rem);
+    padding-inline: 0.4rem;
+    width: 100%;
   }
 }
 
-/* ---- tablet ------------------------------------------------------------ */
+/* ---- tablet view ---- */
 @media (min-width: 40rem) {
   .events__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(1.6rem, 3.8vw, 2.4rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(3.5rem, 7vw, 5.5rem);
     max-width: 52rem;
     margin-inline: auto;
-  }
-  .inv {
-    max-width: none;
-    aspect-ratio: 1 / 1.72;
+    width: 100%;
   }
 }
 
-/* ---- desktop: four cards across, beautifully presented ----------------- */
+/* ---- desktop view: elegant vertical procession of royal scrolls ---- */
 @media (min-width: 68rem) {
   .events__list {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    align-items: stretch;
-    justify-content: center;
-    gap: clamp(1.2rem, 1.8vw, 1.8rem);
-    max-width: 86rem;
-    padding-block: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(4rem, 7vw, 6rem);
+    max-width: 54rem;
+    padding-block: 2rem;
     margin-inline: auto;
-  }
-  .inv {
     width: 100%;
-    max-width: none;
-    aspect-ratio: 1 / 1.72;
-    transform: none;
-  }
-  .inv:hover, .inv:focus-visible {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 8px 24px rgba(45,28,34,.16),
-                0 28px 52px -12px rgba(45,28,34,.38),
-                0 0 0 1px rgba(214, 182, 126, 0.65);
-    z-index: 5;
   }
 }
-
-/* --------------------------------------------------------------------------
-   Event detail dialog
-   -------------------------------------------------------------------------- */
-
-.evdlg {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  display: grid;
-  place-items: center;
-  padding: clamp(1rem, 5vw, 2.5rem);
-  background: rgba(43,36,28,.55);
-  backdrop-filter: blur(3px);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity .35s ease, visibility .35s;
-}
-.evdlg.is-open { opacity: 1; visibility: visible; }
-
-.evdlg__sheet {
-  --ink-c: var(--brass);
-  position: relative;
-  width: min(30rem, 100%);
-  max-height: 86vh;
-  overflow-y: auto;
-  padding: clamp(2.2rem, 7vw, 3.2rem) clamp(1.4rem, 6vw, 2.6rem);
-  text-align: center;
-  background: #F6F0E1 url("assets/generated/card_paper_a.png") center / cover;
-  box-shadow: 0 24px 60px -28px rgba(31,24,16,.7);
-  transform: translateY(14px) scale(.985);
-  transition: transform .4s cubic-bezier(.22,.61,.36,1);
-}
-.evdlg.is-open .evdlg__sheet { transform: none; }
-.evdlg__sheet[data-ink="sage"]      { --ink-c: #2E5E45; } /* Mameru - dark green */
-.evdlg__sheet[data-ink="indigo"]    { --ink-c: #26406B; } /* Sangeet - navy blue */
-.evdlg__sheet[data-ink="gold"]      { --ink-c: #C4671E; } /* Mandap Ropan - orange */
-.evdlg__sheet[data-ink="rose"]      { --ink-c: #A83A63; } /* Wedding - dark pink */
-.evdlg__sheet[data-ink="terracotta"]{ --ink-c: #9A5B43; }
-
-.evdlg__sheet::before {
-  content: "";
-  position: absolute;
-  inset: 11px;
-  border: 1px solid color-mix(in srgb, var(--ink-c) 38%, transparent);
-  pointer-events: none;
-}
-
-.evdlg__gu {
-  font-family: var(--gu-card);
-  font-size: clamp(2.2rem, 9vw, 3rem);
-  line-height: 1.35;
-  color: var(--ink-c);
-  margin: 0;
-}
-.evdlg__en {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: clamp(1.25rem, 5vw, 1.6rem);
-  color: var(--ink-soft);
-  margin: 0 0 .3rem;
-}
-.evdlg__date {
-  font-family: var(--serif);
-  font-size: clamp(1rem, 4vw, 1.15rem);
-  color: var(--ink);
-  margin: 1.2rem 0 0;
-}
-.evdlg__times {
-  list-style: none;
-  margin: 1rem auto 0;
-  padding: 0;
-  max-width: 18rem;
-  display: grid;
-  gap: .5rem;
-}
-.evdlg__times li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  font-size: .9rem;
-  color: var(--ink-soft);
-  border-bottom: 1px dotted color-mix(in srgb, var(--ink-c) 30%, transparent);
-  padding-bottom: .4rem;
-}
-.evdlg__times li:only-child { justify-content: center; border: 0; }
-.evdlg__times b { font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
-.evdlg__note {
-  font-family: var(--serif);
-  font-style: italic;
-  color: var(--ink-soft);
-  margin: 1.3rem 0 0;
-  font-size: .95rem;
-}
-.evdlg__blank {
-  margin: 1.3rem 0 0;
-  font-size: .82rem;
-  color: var(--ink-faint);
-}
-.evdlg__ill {
-  width: clamp(110px, 42%, 160px);
-  margin: 1.6rem auto 0;
-  filter: saturate(.72) contrast(.94);
-  opacity: .9;
-}
-.evdlg__close {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid color-mix(in srgb, var(--ink-c) 35%, transparent);
-  background: transparent;
-  color: var(--ink-c);
-  font-family: var(--serif);
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  transition: background .2s;
-}
-.evdlg__close:hover { background: color-mix(in srgb, var(--ink-c) 10%, transparent); }
 
 @media (prefers-reduced-motion: reduce) {
-  .inv, .inv__ill, .inv__orn, .evdlg, .evdlg__sheet { transition: none !important; }
+  .inv, .inv__ill, .inv__orn { transition: none !important; }
   .inv:hover, .inv:focus-visible { transform: none !important; }
 }
 
@@ -2652,7 +2981,7 @@ html[data-lang="gu"] .postcard__venue-title {
   color: var(--brass);
   cursor: pointer;
   display: grid; place-items: center;
-  transition: background .2s, color .2s, border-color .2s, scale .15s;
+  transition: opacity .3s ease, background .2s, color .2s, border-color .2s, scale .15s;
 }
 .ctrl:hover { scale: 1.06; }
 .ctrl:active { scale: .96; }

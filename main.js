@@ -11,6 +11,47 @@
   var $  = function (id) { return document.getElementById(id); };
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* -- scroll locking: locked while hero handwriting animates ------------ */
+  var SCROLL_LOCK = (function () {
+    var locked = false;
+
+    function preventDefault(e) {
+      if (!locked) return;
+      if (e.type === "keydown") {
+        var blockedKeys = ["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Space", "Home", "End"];
+        if (blockedKeys.indexOf(e.key) !== -1 || e.keyCode === 32) {
+          e.preventDefault();
+        }
+      } else {
+        e.preventDefault();
+      }
+    }
+
+    function lock() {
+      if (locked) return;
+      locked = true;
+      document.documentElement.classList.add("is-scroll-locked");
+      document.body.classList.add("is-scroll-locked");
+      window.addEventListener("wheel", preventDefault, { passive: false });
+      window.addEventListener("touchmove", preventDefault, { passive: false });
+      window.addEventListener("keydown", preventDefault, { passive: false });
+    }
+
+    function unlock() {
+      if (!locked) return;
+      locked = false;
+      document.documentElement.classList.remove("is-scroll-locked");
+      document.body.classList.remove("is-scroll-locked");
+      window.removeEventListener("wheel", preventDefault);
+      window.removeEventListener("touchmove", preventDefault);
+      window.removeEventListener("keydown", preventDefault);
+    }
+
+    return { lock: lock, unlock: unlock, isLocked: function () { return locked; } };
+  }());
+
+  if (!reduced) SCROLL_LOCK.lock();
+
   /* -- language ------------------------------------------------------------
      The site reads in one language at a time. The visitor's choice is kept in
      localStorage; switching reloads, because re-rendering in place would mean
@@ -136,19 +177,28 @@
       if (OTHER === "gu") alt.classList.add("gu");
     }
 
-    aria("evdlgClose", "aClose");
     aria("musicBtn",   "aMusic", true);
     aria("topBtn",     "aTop",   true);
-    var d = $("evdlg");
-    if (d) d.setAttribute("aria-label", u("aEventDetails"));
   }());
 
   /* A language switch reloads. Put the reader back where they were. */
   (function restoreScroll() {
-    if (switchedAt === null) return;
+    // "manual" unconditionally, not just on a language switch: browsers
+    // default history.scrollRestoration to "auto" and restore the last
+    // scroll offset on every same-document reload on their own, with no JS
+    // involved - that's what kept putting a plain refresh back wherever the
+    // visitor had scrolled to instead of the top. Turning it off here always
+    // is what actually stops that; the branch below only decides where THIS
+    // script then puts the scroll position - the language switch's saved
+    // spot, or the top for every other load.
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
+    if (switchedAt === null) {
+      window.scrollTo(0, 0);
+      return;
+    }
     var y = parseInt(switchedAt, 10) || 0;
     if (!y) return;
-    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
     function go() { window.scrollTo(0, y); }
     window.addEventListener("load", function () { go(); setTimeout(go, 120); });
   }());
@@ -190,6 +240,8 @@
   var first  = W.couple.firstInHero === "bride" ? bride : groom;
   var second = first === groom ? bride : groom;
 
+  var triggerGuestHandwriting = null;
+
   /* -- intro screen, palace portal, invitation ---------------------------
      Three beats, and each one waits for the last to land:
 
@@ -205,9 +257,9 @@
   var PORTAL = {
     ring:    1150,  // bell struck -> gate appears
     gate:    1200,  // gate held closed before it starts to open (let it be seen)
-    doors:    900,  // doors fully swing open (matches CSS portalLeafL/R duration)
+    doors:    950,  // doors fully swing open (matches CSS portalLeafL/R duration)
     zoom:    2400,  // camera zooms through the open doorway (matches CSS portalWalkIn)
-    settle:  1400   // held while the hero resolves behind the fading portal
+    settle:   700   // held while the hero smoothly finishes taking over
   };
 
   /* -- audio controller ---------------------------------------------------
@@ -302,6 +354,46 @@
 
     document.body.classList.add("intro-open");
 
+    // The elephant is hidden by default (.intro__ele { opacity: 0 } in CSS)
+    // until every piece of it has actually finished loading, then revealed
+    // as one unit. Preloading (see index.html <head>) starts the fetches
+    // early, but the body still needs BOTH its JPEG and its mask PNG to
+    // arrive before it composites into anything, while each leg only needs
+    // its own single image - "needs 2" reliably loses that race to "needs
+    // 1" regardless of fetch priority, which is what let the legs render
+    // before the body. Racing arrival order was never going to fix that;
+    // gating the reveal on all four does. The setTimeout is a safety net -
+    // if some request errors, the elephant still appears rather than
+    // staying invisible forever.
+    (function revealElephantWhenReady() {
+      var ele = box.querySelector(".intro__ele");
+      if (!ele) return;
+      var urls = [
+        "assets/generated/intro3_ele_body.jpg?v=11",
+        "assets/generated/intro3_ele_mask.png?v=11",
+        "assets/generated/intro3_leg_far.png?v=11",
+        "assets/generated/intro3_leg_near.png?v=11"
+      ];
+      var remaining = urls.length;
+      var revealed = false;
+      function reveal() {
+        if (revealed) return;
+        revealed = true;
+        ele.classList.add("is-ready");
+      }
+      function done() {
+        remaining -= 1;
+        if (remaining <= 0) reveal();
+      }
+      urls.forEach(function (src) {
+        var img = new Image();
+        img.onload = done;
+        img.onerror = done;
+        img.src = src;
+      });
+      setTimeout(reveal, 2000);
+    }());
+
     var hold = location.search.indexOf("hold") !== -1;
     var step = 0;              // 0 unrung, 1 gate closed, 2 opening, 3 zooming, 4 invitation
     var timer = null;
@@ -320,12 +412,13 @@
       document.body.classList.remove("intro-open");
       document.body.classList.remove("page-proper");
       window.scrollTo(0, 0);
+      if (triggerGuestHandwriting) triggerGuestHandwriting();
       if (!stage) return;
       stage.classList.remove("is-visible");
+      stage.classList.add("is-gone");
       setTimeout(function () {
-        stage.classList.add("is-gone");
-        stage.remove();
-      }, 1200);
+        if (stage && stage.parentNode) stage.remove();
+      }, 100);
     }
 
     // The camera is through the doorway: the plate has flown past, so hand
@@ -334,21 +427,25 @@
       if (step > 3) return;
       step = 4;
       stage.classList.add("is-through");
+      stage.style.pointerEvents = "none";
       document.body.classList.remove("intro-open");
       document.body.classList.remove("page-proper");
       window.scrollTo(0, 0);
+      // Immediately start writing in sync as the garland hero starts
+      if (triggerGuestHandwriting) triggerGuestHandwriting();
       if (!hold) at(PORTAL.settle, finish);
     }
 
-    // Phase 2: doors are fully open, now zoom through
+    // Phase 2: doors are fully open, camera smoothly glides through the doorway.
     function zoomThrough() {
       if (step > 2) return;
       step = 3;
       stage.classList.add("is-zooming");
+      stage.style.pointerEvents = "none";
       // As camera zooms through, transition page behind to proper clarity
       setTimeout(function () {
         document.body.classList.add("page-proper");
-      }, 200);
+      }, 150);
       if (!hold) at(PORTAL.zoom, reveal);
     }
 
@@ -419,12 +516,284 @@
         clearTimeout(timer);
         clearTimeout(timer2);
         document.body.classList.remove("intro-open");
+        window.scrollTo(0, 0);
+        if (triggerGuestHandwriting) triggerGuestHandwriting();
       } else if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         advance();
       }
     });
   }());
+  /* -- authentic calligraphy cursive handwriting animation -------------- */
+
+  function renderGuestHandwriting() {
+    var host = $("heroGuest");
+    var cue = $("scrollCue");
+    if (!host) return;
+
+    var rawText = (GUEST && GUEST.n) || u("inviteYou") || "you";
+    rawText = String(rawText).trim();
+    if (!rawText) rawText = "you";
+
+    host.hidden = false;
+    host.setAttribute("aria-label", rawText);
+    host.title = "Click to replay calligraphy";
+    host.style.cursor = "pointer";
+
+    var words = rawText.split(/\s+/);
+    var wordElements = [];
+    host.innerHTML = "";
+
+    words.forEach(function (w, wIdx) {
+      if (wIdx > 0) {
+        var sp = el("span", "calligraphy-space", " ");
+        sp.setAttribute("aria-hidden", "true");
+        host.appendChild(sp);
+      }
+      var wSpan = el("span", "calligraphy-word", w);
+      wSpan.setAttribute("aria-hidden", "true");
+      wSpan.style.setProperty("--w-prog", "0%");
+      host.appendChild(wSpan);
+      wordElements.push(wSpan);
+    });
+
+    // Artisan luxury 24K gold & royal rosewood calligraphy fountain pen
+    var pen = el("div", "calligraphy-pen is-hidden");
+    pen.id = "calligraphyPen";
+    pen.setAttribute("aria-hidden", "true");
+    pen.innerHTML =
+      '<svg viewBox="0 0 70 100" class="calligraphy-pen__svg">' +
+        '<defs>' +
+          '<linearGradient id="nibGold" x1="0%" y1="0%" x2="100%" y2="100%">' +
+            '<stop offset="0%" stop-color="#FFFDE8"/>' +
+            '<stop offset="18%" stop-color="#FCE082"/>' +
+            '<stop offset="42%" stop-color="#E1B33B"/>' +
+            '<stop offset="72%" stop-color="#966A17"/>' +
+            '<stop offset="100%" stop-color="#523607"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="nibRhodium" x1="0%" y1="0%" x2="100%" y2="100%">' +
+            '<stop offset="0%" stop-color="#FFFFFF"/>' +
+            '<stop offset="50%" stop-color="#E2E2E2"/>' +
+            '<stop offset="100%" stop-color="#9E9E9E"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="barrelGrad" x1="0%" y1="0%" x2="100%" y2="100%">' +
+            '<stop offset="0%" stop-color="#7D2648"/>' +
+            '<stop offset="28%" stop-color="#581630"/>' +
+            '<stop offset="65%" stop-color="#360B1C"/>' +
+            '<stop offset="100%" stop-color="#18030B"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="barrelShine" x1="0%" y1="100%" x2="100%" y2="0%">' +
+            '<stop offset="0%" stop-color="transparent"/>' +
+            '<stop offset="42%" stop-color="rgba(255,255,255,0.55)"/>' +
+            '<stop offset="54%" stop-color="rgba(255,255,255,0.15)"/>' +
+            '<stop offset="100%" stop-color="transparent"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="goldTrim" x1="0%" y1="0%" x2="100%" y2="60%">' +
+            '<stop offset="0%" stop-color="#FFF8D0"/>' +
+            '<stop offset="35%" stop-color="#E5BF55"/>' +
+            '<stop offset="70%" stop-color="#A37318"/>' +
+            '<stop offset="100%" stop-color="#634208"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="gripGrad" x1="0%" y1="0%" x2="100%" y2="100%">' +
+            '<stop offset="0%" stop-color="#3D3D3D"/>' +
+            '<stop offset="40%" stop-color="#222222"/>' +
+            '<stop offset="80%" stop-color="#141414"/>' +
+            '<stop offset="100%" stop-color="#080808"/>' +
+          '</linearGradient>' +
+        '</defs>' +
+        '<g>' +
+          '<!-- Barrel body (lacquered deep royal rosewood) -->' +
+          '<path d="M56 8 C60 12, 63 17, 60 21 L38 50 L28 38 L50 9 C52 7, 54 7, 56 8 Z" fill="url(#barrelGrad)"/>' +
+          '<path d="M56 8 C60 12, 63 17, 60 21 L38 50 L28 38 L50 9 C52 7, 54 7, 56 8 Z" fill="url(#barrelShine)"/>' +
+          '<!-- Gold Barrel Center Band -->' +
+          '<path d="M38 49 L41 53 L35 58 L32 54 Z" fill="url(#goldTrim)" stroke="#5E3E08" stroke-width="0.4"/>' +
+          '<line x1="39" y1="51" x2="33" y2="56" stroke="#4A2E04" stroke-width="0.6" stroke-dasharray="1,1"/>' +
+          '<!-- Contoured Grip Section (Obsidian Resin) -->' +
+          '<path d="M32 54 L35 58 C33 63, 29 69, 25 72 L22 67 C26 64, 30 59, 32 54 Z" fill="url(#gripGrad)"/>' +
+          '<path d="M32 54 L35 58 C33 63, 29 69, 25 72 L22 67 C26 64, 30 59, 32 54 Z" fill="url(#barrelShine)"/>' +
+          '<!-- Gold Grip Collar / Nib Mount Ring -->' +
+          '<path d="M25 71 L27 74 L22 78 L20 75 Z" fill="url(#goldTrim)" stroke="#5E3E08" stroke-width="0.4"/>' +
+          '<!-- 24K Gold Nib Base -->' +
+          '<path d="M22 76 C25 75, 29 74, 27 79 C25 82, 17 89, 10 86 C13 81, 16 75, 20 75 Z" fill="url(#nibGold)" stroke="#6E4909" stroke-width="0.55"/>' +
+          '<!-- Two-tone Rhodium Inlay on Nib -->' +
+          '<path d="M21 77 C23 76, 25 76, 24 79 C22 81, 17 85, 12 85 C14 82, 17 78, 19 77 Z" fill="url(#nibRhodium)" opacity="0.75"/>' +
+          '<!-- Baroque Filigree Engraving on Nib Wings -->' +
+          '<path d="M23 78 Q22 80, 20 81 Q21 82, 23 80" fill="none" stroke="#7E540C" stroke-width="0.4"/>' +
+          '<path d="M17 82 Q18 80, 19 82" fill="none" stroke="#7E540C" stroke-width="0.4"/>' +
+          '<!-- Heart-shaped Breather Hole -->' +
+          '<path d="M17.5 81 C18.2 80.2, 19 80.5, 18.5 81.3 L17.5 82.2 L16.5 81.3 C16 80.5, 16.8 80.2, 17.5 81 Z" fill="#401222"/>' +
+          '<!-- Nib Ink Slit from Breather Hole to Writing Tip -->' +
+          '<line x1="10" y1="86" x2="17.5" y2="82.2" stroke="#3D0E1F" stroke-width="0.6"/>' +
+          '<!-- Iridium Writing Tip (Point of Contact) -->' +
+          '<circle cx="10.2" cy="85.8" r="1.1" fill="#E5E5E5" stroke="#4A4A4A" stroke-width="0.3"/>' +
+          '<!-- Fresh Wet Ink Bead at Tip -->' +
+          '<circle cx="10" cy="86" r="1.6" fill="#8E3A5D" opacity="0.95"/>' +
+          '<circle cx="9.5" cy="85.4" r="0.55" fill="#FFFFFF" opacity="0.9"/>' +
+        '</g>' +
+      '</svg>';
+    host.appendChild(pen);
+
+    var hasAnimated = false;
+    var animRaf = null;
+
+    function finishSequence() {
+      // Pen lifts up gracefully along its writing angle and fades out
+      pen.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease";
+      var curTransform = pen.style.transform || "";
+      var m = curTransform.match(/translate3d\(([^,]+)px,\s*([^,]+)px/);
+      if (m) {
+        var px = parseFloat(m[1]), py = parseFloat(m[2]);
+        pen.style.transform = "translate3d(" + (px + 22) + "px, " + (py - 32) + "px, 0)";
+      }
+      pen.classList.add("is-hidden");
+
+      setTimeout(function () {
+        var cue = $("scrollCue");
+        if (cue) cue.classList.add("is-shown");
+        SCROLL_LOCK.unlock();
+      }, 350);
+    }
+
+    function runAnimation(isReplay) {
+      if (animRaf) cancelAnimationFrame(animRaf);
+
+      var cue = $("scrollCue");
+      if (reduced) {
+        wordElements.forEach(function (w) {
+          w.classList.add("is-done");
+          w.classList.remove("is-active");
+          w.style.setProperty("--w-prog", "100%");
+        });
+        pen.classList.add("is-hidden");
+        if (cue) cue.classList.add("is-shown");
+        SCROLL_LOCK.unlock();
+        return;
+      }
+
+      if (!isReplay) {
+        SCROLL_LOCK.lock();
+        if (cue) cue.classList.remove("is-shown");
+      }
+
+      // Reset all words
+      wordElements.forEach(function (w) {
+        w.classList.remove("is-done", "is-active");
+        w.style.setProperty("--w-prog", "0%");
+      });
+      pen.classList.remove("is-hidden");
+      pen.style.transition = "none";
+
+      if (wordElements.length === 0) {
+        finishSequence();
+        return;
+      }
+
+      var hostRect = host.getBoundingClientRect();
+      var firstWordRect = wordElements[0].getBoundingClientRect();
+      var initX = firstWordRect.left - hostRect.left;
+      var initY = (firstWordRect.top - hostRect.top) + (firstWordRect.height * 0.72);
+      // Writing tip of the pen is anchored at (10, 76)
+      pen.style.transform = "translate3d(" + (initX - 10).toFixed(1) + "px, " + (initY - 76).toFixed(1) + "px, 0)";
+      pen.classList.add("is-writing");
+
+      var currentWordIdx = 0;
+
+      function startWritingWord(wIdx) {
+        if (wIdx >= wordElements.length) {
+          finishSequence();
+          return;
+        }
+
+        currentWordIdx = wIdx;
+        var currentEl = wordElements[wIdx];
+        currentEl.classList.add("is-active");
+
+        var textContent = currentEl.textContent || "";
+        // Duration tuned for cursive flow: ~85ms per character, minimum 280ms
+        var wordDuration = Math.max(280, Math.min(850, textContent.length * 85));
+        var startTime = performance.now();
+
+        function drawFrame(now) {
+          var elapsed = now - startTime;
+          var progress = Math.min(1, elapsed / wordDuration);
+
+          currentEl.style.setProperty("--w-prog", (progress * 100).toFixed(1) + "%");
+
+          // Track nib tip (10, 86) proportionally to current pen dimensions
+          var hRect = host.getBoundingClientRect();
+          var wRect = currentEl.getBoundingClientRect();
+          var targetX = (wRect.left - hRect.left) + (progress * wRect.width);
+          var baselineY = (wRect.top - hRect.top) + (wRect.height * 0.72);
+          var wobble = Math.sin(progress * Math.PI * 8) * 3.0;
+          var targetY = baselineY + wobble;
+
+          var penW = pen.offsetWidth || 56;
+          var penH = pen.offsetHeight || 80;
+          var tipOffX = penW * (10 / 70);
+          var tipOffY = penH * (86 / 100);
+
+          pen.style.transition = "none";
+          pen.style.transform = "translate3d(" + (targetX - tipOffX).toFixed(1) + "px, " + (targetY - tipOffY).toFixed(1) + "px, 0)";
+
+          if (progress < 1) {
+            animRaf = requestAnimationFrame(drawFrame);
+          } else {
+            currentEl.classList.add("is-done");
+            currentEl.classList.remove("is-active");
+
+            // Travel pen to start of next word (or finish)
+            var nextIdx = wIdx + 1;
+            if (nextIdx < wordElements.length) {
+              var nextEl = wordElements[nextIdx];
+              var nwRect = nextEl.getBoundingClientRect();
+              var nextX = nwRect.left - hRect.left;
+              var nextY = (nwRect.top - hRect.top) + (nwRect.height * 0.72);
+
+              pen.style.transition = "transform 0.14s ease-out";
+              pen.style.transform = "translate3d(" + (nextX - tipOffX).toFixed(1) + "px, " + (nextY - tipOffY).toFixed(1) + "px, 0)";
+
+              setTimeout(function () {
+                startWritingWord(nextIdx);
+              }, 140);
+            } else {
+              finishSequence();
+            }
+          }
+        }
+
+        animRaf = requestAnimationFrame(drawFrame);
+      }
+
+      // Start immediately in sync with the garland page start
+      startWritingWord(0);
+    }
+
+    triggerGuestHandwriting = function () {
+      if (hasAnimated) return;
+      hasAnimated = true;
+      runAnimation(false);
+    };
+
+    host.addEventListener("click", function () {
+      runAnimation(true);
+    });
+
+    if (reduced) {
+      wordElements.forEach(function (w) {
+        w.classList.add("is-done");
+        w.style.setProperty("--w-prog", "100%");
+      });
+      pen.classList.add("is-hidden");
+      var cue = $("scrollCue");
+      if (cue) cue.classList.add("is-shown");
+      SCROLL_LOCK.unlock();
+      hasAnimated = true;
+    } else if (!document.body.classList.contains("intro-open")) {
+      setTimeout(function () {
+        if (triggerGuestHandwriting) triggerGuestHandwriting();
+      }, 500);
+    }
+  }
 
   (function hero() {
     var h = $("heroNames");
@@ -445,7 +814,7 @@
        place, so it falls back to "you" and the sentence still reads. */
     put("heroHosts",  u("inviteHosts"));
     put("heroInvite", u("inviteVerb"));
-    put("heroGuest",  (GUEST && GUEST.n) || u("inviteYou"));
+    renderGuestHandwriting();
     put("heroTo",     u("inviteOccasion"));
   }());
 
@@ -491,45 +860,62 @@
   (function events() {
     var list = $("eventsList");
     if (!list) return;
+    var section = list.closest(".events");
 
-    /* ---- an event card ---- */
+    /* ---- royal unrolling wedding scroll card (farman style) ----
+       Cards render rolled shut (--roll: 0) and unroll open in step with
+       scroll position - see cardRoll() below, which sets --roll every
+       frame - replacing the old lateral slide-in entirely. */
     function eventCard(ev, i) {
-      // Alternate the entrance side card by card - Mameru and Mandap (even)
-      // from the left, Sangeet and Lagna (odd) from the right.
-      var card = el("button", "inv reveal " + (i % 2 ? "reveal--right" : "reveal--left"));
-      card.type = "button";
+      var card = el("article", "scroll-card");
+      card.style.setProperty("--roll", 0);
+      card.style.setProperty("--roll-fr", "0fr");
       card.setAttribute("data-ink", ev.ink);
       card.setAttribute("data-paper", ev.paper);
       card.setAttribute("data-key", ev.key);
-      if (LANG === "gu") card.classList.add("inv--gu");
-      if (ev.wideIllustration) card.setAttribute("data-wide", "true");
-      card.style.setProperty("--d", i * 90 + "ms");
-      card.setAttribute("aria-label",
-        ev.en + " — " + t(ev.date) + ". " + u("viewDetails") + ".");
+      card.id = "scroll-card-" + ev.key;
+      if (LANG === "gu") card.classList.add("scroll-card--gu");
 
-      // 1. Authentic Royal Mughal Arch Border provided by user
-      var frame = el("img", "inv__frame");
-      frame.src = "assets/generated/card_frame_user.png";
-      frame.alt = "";
-      frame.setAttribute("aria-hidden", "true");
-      card.appendChild(frame);
+      // 1. Top Roller Unit: Ornate rod with carved lotus finials & painted lotus cylinder
+      var topRoller = el("div", "scroll-card__roller scroll-card__roller--top");
+      topRoller.setAttribute("aria-hidden", "true");
+      var topImg = el("img", "scroll-card__roller-img");
+      topImg.src = "assets/generated/scroll_user_roller_top.png";
+      topImg.alt = "";
+      topRoller.appendChild(topImg);
+      card.appendChild(topRoller);
 
-      // 2. Card Content Body (centered within the arch)
-      var body = el("div", "inv__body");
+      // 2. Unrolling Parchment Body Container. Not interactive - it used to
+      // open a detail dialog on tap, but that dialog only ever repeated
+      // what's already printed on the card face, so it was removed along
+      // with the tap handler rather than kept as a redundant popup.
+      var unrollTrack = el("div", "scroll-card__unroll-track");
+      var paper = el("div", "scroll-card__sheet");
 
-      // 2a. Header: strictly show active language only (English only when EN, Gujarati only when GU)
-      var header = el("div", "inv__header");
+      // Top paper curl shadow
+      var curlTop = el("div", "scroll-card__curl-shadow scroll-card__curl-shadow--top");
+      curlTop.setAttribute("aria-hidden", "true");
+      paper.appendChild(curlTop);
+
+      // Card Content Body (in normal document flow so parchment expands to full height)
+      var body = el("div", "scroll-card__body");
+
+      // Header: strictly show active language
+      var header = el("div", "scroll-card__header inv__header");
       if (LANG === "gu") {
-        header.appendChild(el("h3", "inv__script inv__script--gu", ev.gu));
+        header.appendChild(el("h3", "scroll-card__title inv__script inv__script--gu", ev.gu));
       } else {
-        header.appendChild(el("h3", "inv__script", ev.en));
+        header.appendChild(el("h3", "scroll-card__title inv__script", ev.en));
+      }
+      if (ev.tagline) {
+        header.appendChild(el("p", "scroll-card__tagline", t(ev.tagline)));
       }
       body.appendChild(header);
 
-      // 2b. Center Artwork
-      var illWrap = el("div", "inv__ill-wrap");
+      // Center Ceremony Artwork
+      var illWrap = el("div", "scroll-card__ill-wrap inv__ill-wrap");
       if (ev.illustration) {
-        var ill = el("img", "inv__ill");
+        var ill = el("img", "scroll-card__ill inv__ill");
         ill.src = ev.illustration;
         ill.alt = "";
         ill.loading = "lazy";
@@ -537,10 +923,8 @@
       }
       body.appendChild(illWrap);
 
-      // 2c. Ceremony Details (Bottom)
-      var meta = el("div", "inv__meta");
-
-      // Date Line: DAY | DATE | MONTH
+      // Ceremony Details (Bottom)
+      var meta = el("div", "scroll-card__meta inv__meta");
       var isGu = (LANG === "gu");
       var dayName = "";
       var dayNum = "";
@@ -558,7 +942,7 @@
         dayNum = isGu ? "૨" : "2ND";
       }
 
-      var dateLine = el("div", "inv__dateline");
+      var dateLine = el("div", "scroll-card__dateline inv__dateline");
       dateLine.appendChild(el("span", "inv__date-part", dayName));
       dateLine.appendChild(el("span", "inv__date-sep", "|"));
       dateLine.appendChild(el("span", "inv__date-part inv__date-part--num", dayNum));
@@ -567,12 +951,12 @@
       meta.appendChild(dateLine);
 
       // Year Line: 2026
-      meta.appendChild(el("div", "inv__year", isGu ? "૨૦૨૬" : "2026"));
+      meta.appendChild(el("div", "scroll-card__year inv__year", isGu ? "૨૦૨૬" : "2026"));
 
       // Schedule / Timings
       var times = (ev.times || []).filter(function (tm) { return tm.value; });
       if (times.length > 1) {
-        var sched = el("div", "inv__schedule");
+        var sched = el("div", "scroll-card__schedule inv__schedule");
         times.forEach(function (tm) {
           var row = el("div", "inv__schedule-row");
           var lbl = t(tm.label);
@@ -582,13 +966,13 @@
         });
         meta.appendChild(sched);
       } else if (times.length === 1) {
-        meta.appendChild(el("div", "inv__time", times[0].value));
+        meta.appendChild(el("div", "scroll-card__time inv__time", times[0].value));
       }
 
       // Venue
       if (ev.venue) {
         var venLines = t(ev.venue).split("\n");
-        var venDiv = el("div", "inv__venue");
+        var venDiv = el("div", "scroll-card__venue inv__venue");
         venLines.forEach(function (line, idx) {
           if (idx > 0) venDiv.appendChild(el("br"));
           venDiv.appendChild(document.createTextNode(line.toUpperCase()));
@@ -597,13 +981,126 @@
       }
 
       body.appendChild(meta);
-      card.appendChild(body);
+      paper.appendChild(body);
 
-      card.addEventListener("click", function () { openDialog(ev); });
+      // Bottom paper curl shadow
+      var curlBot = el("div", "scroll-card__curl-shadow scroll-card__curl-shadow--bottom");
+      curlBot.setAttribute("aria-hidden", "true");
+      paper.appendChild(curlBot);
+
+      unrollTrack.appendChild(paper);
+      card.appendChild(unrollTrack);
+
+      // 3. Bottom Roller Unit: Matching rod with carved finials
+      var botRoller = el("div", "scroll-card__roller scroll-card__roller--bottom");
+      botRoller.setAttribute("aria-hidden", "true");
+      var botImg = el("img", "scroll-card__roller-img");
+      botImg.src = "assets/generated/scroll_user_roller_bottom.png";
+      botImg.alt = "";
+      botRoller.appendChild(botImg);
+      card.appendChild(botRoller);
+
       return card;
     }
 
     W.events.forEach(function (ev, i) { list.appendChild(eventCard(ev, i)); });
+
+    /* Roll each card open IN STEP WITH SCROLL, not on a canned transition.
+       --roll goes 0 (rolled shut) -> 1 (fully open) as the card's top
+       travels from 88% down the viewport to 38% down it, and runs back in
+       reverse if you scroll back up.
+
+       The target is recomputed from the real scroll position on every
+       scroll/resize, but --roll itself EASES toward that target a little
+       each frame (LERP_RATE below) rather than snapping straight to it.
+       A raw 1:1 tie to scroll felt like a slider being dragged - every
+       stutter in the input scroll (a trackpad tick, a janky frame) showed
+       up directly in the roll. Easing toward the target is what "smooth"
+       actually means for a scroll-linked animation: it keeps ticking via
+       rAF for a few frames after each scroll event to settle, instead of
+       only updating exactly when a scroll event fires. */
+    (function cardRoll() {
+      var cards = Array.prototype.slice.call(list.querySelectorAll(".scroll-card"));
+      // The eyebrow/title/caption/rule above the cards (.events__lead) used
+      // to fade in on the generic one-shot .reveal observer, which fired as
+      // soon as the section's edge crossed into view - well before card 1
+      // had scrolled anywhere near open. Folding it into this SAME
+      // targets/state loop, using the same top-based progress formula, is
+      // what actually makes it arrive in step with card 1 instead of early.
+      // --lead-roll is set on the section itself so every .events__lead
+      // descendant picks it up (custom properties inherit).
+      var leadRef = section && section.querySelector(".eyebrow");
+      var targets = cards.map(function (c) { return { el: c, roll: "--roll", rollFr: "--roll-fr" }; });
+      if (leadRef) targets.push({ el: leadRef, setEl: section, roll: "--lead-roll" });
+
+      if (reduced) {
+        targets.forEach(function (tgt) {
+          (tgt.setEl || tgt.el).style.setProperty(tgt.roll, 1);
+          if (tgt.rollFr) (tgt.setEl || tgt.el).style.setProperty(tgt.rollFr, "1fr");
+        });
+        return;
+      }
+      var LERP_RATE = 0.22;
+      // Once a card (or the heading) has fully opened, it STAYS open even
+      // if you scroll back up past it - a card that unrolls and re-rolls
+      // shut every time you pass it read as glitchy, not "synced". locked
+      // pins target at 1 for good the first time p reaches 1; until then,
+      // position keeps driving it normally (including closing back down if
+      // you scroll away before it ever finished opening).
+      var state = targets.map(function () { return { cur: 0, target: 0, locked: false }; });
+      var ticking = false;
+
+      function computeTargets() {
+        var vh = window.innerHeight;
+        var startY = vh * 0.90, endY = vh * 0.52;
+        targets.forEach(function (tgt, i) {
+          if (state[i].locked) { state[i].target = 1; return; }
+          var top = tgt.el.getBoundingClientRect().top;
+          var p = (startY - top) / (startY - endY);
+          if (p < 0) p = 0; else if (p > 1) p = 1;
+          state[i].target = p;
+          if (p >= 1) state[i].locked = true;
+        });
+      }
+
+      // Mobile browsers throttle/batch 'scroll' events hard during momentum
+      // flicks - they can go a third of a second between events while the
+      // page is visibly still moving. A loop that only advances when a
+      // scroll event fires (and stops once cur reaches target) goes stale
+      // in those gaps: position keeps changing, target doesn't, and the
+      // catch-up on the next event reads as a stutter/snap rather than
+      // smooth tracking. Running continuously off rAF - sampling position
+      // every single rendered frame regardless of whether a scroll event
+      // happened to fire - is what actually keeps this glued to the
+      // scrollbar. It only stops for good once every target is locked, so
+      // there is nothing left it could ever need to notice.
+      function allLocked() {
+        return state.every(function (s) { return s.locked; });
+      }
+
+      function tick() {
+        computeTargets();
+        state.forEach(function (s, i) {
+          var d = s.target - s.cur;
+          if (Math.abs(d) > 0.001) s.cur += d * LERP_RATE;
+          else s.cur = s.target;
+          var tgt = targets[i];
+          var host = tgt.setEl || tgt.el;
+          host.style.setProperty(tgt.roll, s.cur.toFixed(3));
+          if (tgt.rollFr) host.style.setProperty(tgt.rollFr, s.cur.toFixed(3) + "fr");
+        });
+        if (!allLocked()) requestAnimationFrame(tick);
+        else ticking = false;
+      }
+
+      function kick() {
+        if (!ticking) { ticking = true; requestAnimationFrame(tick); }
+      }
+
+      window.addEventListener("scroll", kick, { passive: true });
+      window.addEventListener("resize", kick, { passive: true });
+      kick();
+    }());
 
     /* Ensure titles are balanced and prominent across cards */
     function fitTitles() {
@@ -642,65 +1139,6 @@
       img.addEventListener("error", scheduleFit);
     });
 
-    /* ---- detail dialog -------------------------------------------------- */
-
-    var dlg = $("evdlg"), sheet = $("evdlgSheet"), lastFocus = null;
-
-    function openDialog(ev) {
-      lastFocus = document.activeElement;
-      sheet.setAttribute("data-ink", ev.ink);
-
-      var body = $("evdlgBody");
-      body.textContent = "";
-      body.appendChild(el("h3", "evdlg__gu", ev.gu));
-      if (ev.en) body.appendChild(el("p", "evdlg__en", ev.en));
-      body.appendChild(el("p", "evdlg__date", t(ev.date)));
-
-      var times = (ev.times || []).filter(function (x) { return x.value; });
-      if (times.length) {
-        var ul = el("ul", "evdlg__times");
-        times.forEach(function (tm) {
-          var li = el("li");
-          li.appendChild(el("span", guIf(null), t(tm.label) || u("timeBegins")));
-          li.appendChild(el("b", null, tm.value));
-          ul.appendChild(li);
-        });
-        body.appendChild(ul);
-      }
-
-      if (ev.venue) body.appendChild(el("p", guIf("evdlg__date"), t(ev.venue)));
-      if (ev.dress) body.appendChild(el("p", guIf("evdlg__note"), t(ev.dress)));
-      if (ev.note)  body.appendChild(el("p", guIf("evdlg__note"), t(ev.note)));
-
-      // venue is still to be confirmed; say so rather than showing a gap
-      if (!ev.venue) {
-        body.appendChild(el("p", "evdlg__blank", u("venueToFollow")));
-      }
-
-      if (ev.illustration) {
-        var ill = el("img", "evdlg__ill");
-        ill.src = ev.illustration; ill.alt = "";
-        body.appendChild(ill);
-      }
-
-      dlg.classList.add("is-open");
-      dlg.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-      $("evdlgClose").focus();
-    }
-
-    function closeDialog() {
-      dlg.classList.remove("is-open");
-      dlg.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-      if (lastFocus) lastFocus.focus();
-    }
-
-    $("evdlgClose").addEventListener("click", closeDialog);
-    dlg.addEventListener("click", function (e) { if (e.target === dlg) closeDialog(); });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && dlg.classList.contains("is-open")) closeDialog();
-    });
   }());
 
   /* -- families ----------------------------------------------------------- */
@@ -1154,11 +1592,15 @@
       }
 
       // flip the floating controls once the closing half is behind them
-      var r = closing.getBoundingClientRect();
-      document.body.classList.toggle("is-closing", r.top < window.innerHeight * 0.75);
+      if (closing) {
+        var r = closing.getBoundingClientRect();
+        document.body.classList.toggle("is-closing", r.top < window.innerHeight * 0.75);
+      }
 
-      topBtn.style.opacity = y > window.innerHeight * 0.8 ? "1" : "0";
-      topBtn.style.pointerEvents = y > window.innerHeight * 0.8 ? "auto" : "none";
+      if (topBtn) {
+        topBtn.style.opacity = y > window.innerHeight * 0.8 ? "1" : "0";
+        topBtn.style.pointerEvents = y > window.innerHeight * 0.8 ? "auto" : "none";
+      }
     }
 
     function onScroll() {
@@ -1169,9 +1611,11 @@
     window.addEventListener("resize", onScroll, { passive: true });
     frame();
 
-    topBtn.addEventListener("click", function () {
-      window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
-    });
+    if (topBtn) {
+      topBtn.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+      });
+    }
   }());
 
 }());

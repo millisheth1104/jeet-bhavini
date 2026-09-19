@@ -15,10 +15,42 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Noto+Serif+Gujarati:wght@400;500;600&family=Noto+Serif+Devanagari:wght@400;500;600&family=Rasa:wght@500;600;700&family=Great+Vibes&family=Mogra&family=Playfair+Display:ital,wght@1,400;1,500;1,600&family=DM+Serif+Display:ital@0;1&display=swap">
+
+<!-- The elephant's body is a JPEG + a mask PNG composited via CSS
+     background/mask (see .intro__eleBody, bake_intro3.py) - CSS-referenced
+     images are only discovered once the browser parses the stylesheet AND
+     matches the element, which is slower than the <img> tags the bell and
+     legs use. That gap is what let the legs render while the body was
+     still loading ("half elephant"). Preloading both at the top of <head>
+     starts them fetching immediately, at the same priority tier as the
+     rest of the first intro frame, so they land together. -->
+<link rel="preload" as="image" href="assets/generated/intro3_ele_body.jpg?v=11" fetchpriority="high">
+<!-- Chromium logs a harmless "preload not used" warning for mask-image
+     specifically (its mask loader uses a different internal fetch path
+     that can't match a preload's cache entry, crossorigin or not) - the
+     bytes still land in the browser's HTTP cache from this fetch, so the
+     actual mask use still resolves fast; only the preload-reuse bookkeeping
+     misses, not the caching. -->
+<link rel="preload" as="image" href="assets/generated/intro3_ele_mask.png?v=11" fetchpriority="high">
+<link rel="preload" as="image" href="assets/generated/intro3_plate.jpg?v=11" fetchpriority="high">
+<link rel="preload" as="image" href="assets/generated/intro3_bellbody.png?v=11">
+<link rel="preload" as="image" href="assets/generated/intro3_leg_far.png?v=11">
+<link rel="preload" as="image" href="assets/generated/intro3_leg_near.png?v=11">
+<!-- The palace doors: not needed for the first frame (only once the bell
+     is rung and the gate phase begins, ~2.3s in - see PORTAL timing in
+     main.js), so no fetchpriority="high" here - the intro assets above
+     should win the race for bandwidth first. Preloaded anyway so they're
+     fetching in parallel from the very start rather than only once the
+     browser reaches that far-down, initially hidden markup. These were
+     also re-encoded from PNG to WebP (2.1MB -> 172KB for the facade alone)
+     since that was the far bigger latency lever than fetch ordering. -->
+<link rel="preload" as="image" href="assets/generated/portal_facade.webp?v=1">
+<link rel="preload" as="image" href="assets/generated/portal_leaf_left.webp?v=1">
+<link rel="preload" as="image" href="assets/generated/portal_leaf_right.webp?v=1">
 <!-- ?v= is bumped whenever styles.css or a generated asset changes; this
      site is edited in place with no build step, and browsers hold on to
      both the stylesheet and the PNGs otherwise. -->
-<link rel="stylesheet" href="styles.css?v=20260919g">
+<link rel="stylesheet" href="styles.css?v=20260919o">
 </head>
 <body>
 
@@ -130,12 +162,12 @@
      guest's name - there is no separate card in between. -->
 <div class="portal-stage" id="portalStage" role="dialog" aria-label="The palace gate" hidden>
   <div class="portal" id="portal">
-    <div class="portal__doorway" aria-hidden="true">
-      <img class="portal__leaf portal__leaf--l" src="assets/generated/portal_leaf_left.png?v=3" alt="">
-      <img class="portal__leaf portal__leaf--r" src="assets/generated/portal_leaf_right.png?v=3" alt="">
+    <div class="portal__doorway" id="portalDoorway" aria-hidden="true">
+      <img class="portal__leaf portal__leaf--l" src="assets/generated/portal_leaf_left.webp?v=1" alt="">
+      <img class="portal__leaf portal__leaf--r" src="assets/generated/portal_leaf_right.webp?v=1" alt="">
       <span class="portal__seam"></span>
     </div>
-    <img class="portal__facade" src="assets/generated/portal_facade.png?v=3" alt="Palace gate" aria-hidden="true">
+    <img class="portal__facade" src="assets/generated/portal_facade.webp?v=1" alt="Palace gate" aria-hidden="true">
   </div>
 </div>
 
@@ -164,11 +196,13 @@
 
     <!-- Two birds hovering beside the names. Each is three frames sliced from
          one sprite sheet, played folded -> spread -> raised -> spread, which
-         gives a real wingbeat rather than a twitch. -->
+         gives a real wingbeat rather than a twitch. Both sides use bird_b's
+         design now (a mirrored pair of the same bird, not two species) -
+         bird_a's own frames are unused but kept on disk. -->
     <div class="bird bird--a" aria-hidden="true">
-      <img class="wf wf1" src="assets/generated/bird_a_2.png" alt="">
-      <img class="wf wf2" src="assets/generated/bird_a_3.png" alt="">
-      <img class="wf wf3" src="assets/generated/bird_a_4.png" alt="">
+      <img class="wf wf1" src="assets/generated/bird_b_2.png" alt="">
+      <img class="wf wf2" src="assets/generated/bird_b_3.png" alt="">
+      <img class="wf wf3" src="assets/generated/bird_b_4.png" alt="">
     </div>
     <div class="bird bird--b" aria-hidden="true">
       <img class="wf wf1" src="assets/generated/bird_b_2.png" alt="">
@@ -213,10 +247,17 @@
   <!-- ==== events ======================================================= -->
   <section class="section section--center events" id="events" aria-labelledby="eventsTitle">
     <div class="wrap">
-      <p class="eyebrow reveal" id="eventsEyebrow"></p>
-      <h2 class="section-title reveal" style="--d:80ms" id="eventsTitle"></h2>
-      <p class="reveal" id="eventsAlt" style="--d:140ms;color:var(--ink-soft);margin:.4rem 0 0"></p>
-      <span class="rule reveal" style="--d:200ms" aria-hidden="true">
+      <!-- No .reveal here: that fires once on a one-shot IntersectionObserver
+           threshold, which popped this heading in as soon as the section's
+           edge crossed into view - well before the first card had scrolled
+           far enough to start rolling open. events__lead below is instead
+           driven by the exact same continuous scroll progress as the cards
+           (see cardRoll() in main.js), so the heading and card 1 fade/rise
+           in lockstep rather than the heading arriving early. -->
+      <p class="eyebrow events__lead" id="eventsEyebrow"></p>
+      <h2 class="section-title events__lead" id="eventsTitle"></h2>
+      <p class="events__lead" id="eventsAlt" style="color:var(--ink-soft);margin:.4rem 0 0"></p>
+      <span class="rule events__lead" aria-hidden="true">
         <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
       </span>
       <!-- Five separate cards, each rendered from its own entry in content.js.
@@ -412,14 +453,6 @@
   </div>
 </main>
 
-<!-- ==== event detail dialog ============================================ -->
-<div class="evdlg" id="evdlg" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="evdlg__sheet" id="evdlgSheet">
-    <button class="evdlg__close" id="evdlgClose" type="button" aria-label="Close">&times;</button>
-    <div id="evdlgBody"></div>
-  </div>
-</div>
-
 <!-- ==== floating controls ============================================== -->
 <div class="controls">
   <button class="ctrl" id="musicBtn" type="button" aria-pressed="false" aria-label="Play music" title="Music">
@@ -431,6 +464,6 @@
 </div>
 
 <script src="content.js?v=20260919g"></script>
-<script src="main.js?v=20260919g"></script>
+<script src="main.js?v=20260919m"></script>
 </body>
 </html>

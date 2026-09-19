@@ -2271,3 +2271,21 @@ does not outgrow the band on the narrowest phones.
   Baraat Prastan and Hastamelap. The flexible illustration absorbed the freed
   height on its own, so the card's balance is unchanged (22px slack, same as
   the other three).
+
+## Hero guest name: luxury fountain pen UI, bird repositioning & immediate timing sync
+
+Refined the calligraphy writing experience based on visual review:
+
+- **Luxury fountain pen UI**: Upgraded the pen asset from an isolated nib to a complete
+  fountain pen with a deep-rosewood lacquered barrel, glossy reflection, polished
+  gold accent rings, ergonomic grip, and 24K gold calligraphy nib with tine slit
+  and wet ink bead.
+- **Left bird repositioned**: Moved `.bird--a` down to `top: 34%` (desktop) / `33%` (mobile)
+  to sit alongside the next line ("to the wedding of" / "Jeet"), completely clearing
+  the guest name line and eliminating visual crowding.
+- **Immediate entrance sync**: Eliminated the post-landing delay; calligraphy writing
+  now begins immediately as the palace gates open and the garland hero appears,
+  synchronized with the downward drop of the mogra garlands.
+
+
+

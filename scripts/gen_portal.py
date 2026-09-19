@@ -6,6 +6,16 @@ Generates:
   portal_leaf_right.png  the right half, with 1px overlap at center to eliminate seams
 
 Run from the repo root:  python scripts/gen_portal.py
+
+The site actually ships portal_facade.webp / portal_leaf_left.webp /
+portal_leaf_right.webp, not these PNGs - re-encoded at WEBP quality=90,
+method=6 (2.1MB -> 172KB for the facade alone, no visible quality loss).
+Re-run that conversion after regenerating here:
+
+    from PIL import Image
+    for name in ("portal_facade", "portal_leaf_left", "portal_leaf_right"):
+        Image.open(f"assets/generated/{name}.png") \\
+            .save(f"assets/generated/{name}.webp", "WEBP", quality=90, method=6)
 """
 
 import os
