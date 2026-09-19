@@ -1064,41 +1064,65 @@ body.intro-open { overflow: hidden; }
 
 .events { background: linear-gradient(180deg, transparent, rgba(237,233,224,.5) 42%, transparent); }
 
-/* Distinctive coordinating royal festive mat colors for each event card:
-   Mameru: Heritage Sage Green
-   Sangeet: Dusty Rose Mauve (from user reference photo)
-   Mandap Ropan: Auspicious Turmeric Gold
-   Wedding / Lagna: Royal Rani Crimson Rose */
+/* One colour per event, carried by both the card mat and its lettering.
+   The ink is a deeper tone of the same hue so it stays legible on the cream
+   aperture while still reading as that event's colour:
+     Mameru: dark green
+     Sangeet: navy blue
+     Mandap Ropan: orange
+     Wedding / Lagna: dark pink */
 .inv {
-  --mat-c: #B68494;
-  --ink-c: #174541; /* Deep antique teal calligraphy */
-  --ink-accent: #1E482C; /* Rich forest green date & year */
-  --ink-venue: #743E1A; /* Warm cinnamon bronze time & venue */
+  --mat-c: #26406B;
+  --ink-c: #182C4F;      /* calligraphic title */
+  --ink-accent: #1E365F; /* date & year */
+  --ink-venue: #2A4878;  /* time & venue */
+  --ink-lbl: #1A3054;    /* schedule row label */
+  --rule: rgba(24, 44, 79, .38); /* schedule row dotted rule */
   --script-font: "Alex Brush", "Great Vibes", cursive;
 }
 
-/* 1. Mameru - Heritage Sage Green */
+/* 1. Mameru - dark green */
 .inv[data-key="mameru"],
 .inv[data-ink="sage"] {
-  --mat-c: #7D9A86;
+  --mat-c: #2E5E45;
+  --ink-c: #1C4331;
+  --ink-accent: #23543D;
+  --ink-venue: #2F6449;
+  --ink-lbl: #1C4331;
+  --rule: rgba(28, 67, 49, .38);
 }
 
-/* 2. Sangeet - Dusty Mauve / Vintage Rose (from user reference photo) */
+/* 2. Sangeet - navy blue */
 .inv[data-key="sangeet"],
 .inv[data-ink="indigo"] {
-  --mat-c: #B68494;
+  --mat-c: #26406B;
+  --ink-c: #182C4F;
+  --ink-accent: #1E365F;
+  --ink-venue: #2A4878;
+  --ink-lbl: #182C4F;
+  --rule: rgba(24, 44, 79, .38);
 }
 
-/* 3. Mandap Ropan - Auspicious Turmeric Gold */
+/* 3. Mandap Ropan - orange */
 .inv[data-key="mandap"],
 .inv[data-ink="gold"] {
-  --mat-c: #C09A5B;
+  --mat-c: #D2762A;
+  --ink-c: #8C400C;
+  --ink-accent: #9E4B10;
+  --ink-venue: #AC5415;
+  --ink-lbl: #8C400C;
+  --rule: rgba(140, 64, 12, .38);
 }
 
-/* 4. Wedding / Lagna - Royal Rani Crimson Rose */
+/* 4. Wedding / Lagna - dark pink */
 .inv[data-key="lagna"],
 .inv[data-ink="rose"] {
-  --mat-c: #B86777;
+  --mat-c: #A83A63;
+  --ink-c: #781F43;
+  --ink-accent: #8A284F;
+  --ink-venue: #932E55;
+  --ink-lbl: #781F43;
+  --rule: rgba(120, 31, 67, .38);
 }
 
 .events__list {
@@ -1206,7 +1230,7 @@ body.intro-open { overflow: hidden; }
 /* Calligraphic English script */
 .inv__script {
   font-family: var(--script-font);
-  font-size: clamp(2.45rem, 11.2cqw, 3.6rem);
+  font-size: clamp(2.7rem, 12.4cqw, 3.95rem);
   color: var(--ink-c);
   margin: 0;
   line-height: 1.05;
@@ -1217,7 +1241,7 @@ body.intro-open { overflow: hidden; }
 
 .inv__script--gu {
   font-family: var(--gu-card), "Anek Gujarati", sans-serif;
-  font-size: clamp(1.7rem, 7.8cqw, 2.4rem);
+  font-size: clamp(1.9rem, 8.7cqw, 2.65rem);
   font-weight: 700;
   line-height: 1.15;
   color: var(--ink-c);
@@ -1231,15 +1255,18 @@ body.intro-open { overflow: hidden; }
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: clamp(165px, 66cqw, 235px);
-  height: clamp(105px, 30cqw, 145px);
-  margin: clamp(0.2rem, 1cqw, 0.45rem) 0;
+  flex: 1 1 auto;                       /* soak up whatever the card has spare */
+  max-width: clamp(195px, 76cqw, 272px);
+  min-height: clamp(132px, 40cqw, 192px);
+  max-height: clamp(215px, 62cqw, 300px);
+  margin: clamp(0.15rem, 0.8cqw, 0.4rem) 0;
 }
 
 /* Specific balanced illustration for wedding card to accommodate its 3 schedule items */
 .inv[data-key="lagna"] .inv__ill-wrap {
-  max-width: clamp(155px, 60cqw, 215px);
-  height: clamp(82px, 23.5cqw, 118px);
+  max-width: clamp(178px, 69cqw, 248px);
+  min-height: clamp(104px, 31cqw, 148px);
+  max-height: clamp(170px, 49cqw, 236px);
   margin: 0.1rem 0;
 }
 
@@ -1276,7 +1303,7 @@ body.intro-open { overflow: hidden; }
   gap: clamp(0.18rem, 0.8cqw, 0.35rem);
   font-family: var(--serif);
   font-weight: 700;
-  font-size: clamp(0.74rem, 3.1cqw, 1.05rem);
+  font-size: clamp(0.83rem, 3.5cqw, 1.16rem);
   letter-spacing: 0.04em;
   color: var(--ink-accent);
   text-transform: uppercase;
@@ -1296,31 +1323,31 @@ body.intro-open { overflow: hidden; }
 /* Year */
 .inv__year {
   font-family: var(--serif);
-  font-size: clamp(1rem, 4.2cqw, 1.35rem);
+  font-size: clamp(1.14rem, 4.8cqw, 1.52rem);
   font-weight: 700;
   letter-spacing: 0.06em;
   color: var(--ink-accent);
-  margin: 0.04rem 0 0.2rem;
+  margin: 0.12rem 0 0.3rem;
 }
 
 /* Time */
 .inv__time {
   font-family: var(--serif);
-  font-size: clamp(0.96rem, 3.8cqw, 1.28rem);
+  font-size: clamp(1.09rem, 4.4cqw, 1.45rem);
   font-weight: 700;
   color: var(--ink-venue);
   letter-spacing: 0.04em;
-  margin-bottom: 0.22rem;
+  margin-bottom: 0.34rem;
 }
 
 /* Multi-schedule for Lagna (Key Ceremony Timings) */
 .inv__schedule {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  margin-bottom: 0.22rem;
+  gap: 0.22rem;
+  margin-bottom: 0.32rem;
   width: 100%;
-  max-width: 14.5rem;
+  max-width: 15.2rem;
 }
 
 .inv__schedule-row {
@@ -1328,16 +1355,16 @@ body.intro-open { overflow: hidden; }
   justify-content: space-between;
   align-items: baseline;
   font-family: var(--serif);
-  font-size: clamp(0.84rem, 3.4cqw, 1.12rem);
+  font-size: clamp(0.92rem, 3.75cqw, 1.2rem);
   font-weight: 600;
   color: var(--ink-venue);
-  border-bottom: 1px dotted rgba(160, 100, 50, 0.45);
-  padding: 0.1rem 0.15rem;
+  border-bottom: 1px dotted var(--rule);
+  padding: 0.15rem 0.15rem;
 }
 
 .inv__sched-lbl {
   font-style: italic;
-  color: #552F15;
+  color: var(--ink-lbl);
   font-weight: 600;
   font-size: 1em;
   white-space: nowrap;
@@ -1354,19 +1381,19 @@ body.intro-open { overflow: hidden; }
 /* Venue */
 .inv__venue {
   font-family: var(--serif);
-  font-size: clamp(0.82rem, 3.3cqw, 1.05rem);
+  font-size: clamp(0.93rem, 3.8cqw, 1.2rem);
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--ink-venue);
   text-transform: uppercase;
-  line-height: 1.32;
+  line-height: 1.34;
 }
 
 /* ---- Gujarati Version Typography Enhancements (Large, Bold, Crisp) ---- */
 .inv--gu .inv__script--gu,
 html[lang="gu"] .inv__script--gu {
   font-family: var(--gu-card), "Anek Gujarati", "Noto Serif Gujarati", serif;
-  font-size: clamp(1.95rem, 8.8cqw, 2.8rem);
+  font-size: clamp(2.15rem, 9.8cqw, 3.05rem);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: 0.02em;
@@ -1375,7 +1402,7 @@ html[lang="gu"] .inv__script--gu {
 .inv--gu .inv__dateline,
 html[lang="gu"] .inv__dateline {
   font-family: var(--gu-card), "Noto Serif Gujarati", serif;
-  font-size: clamp(0.82rem, 3.4cqw, 1.12rem);
+  font-size: clamp(0.91rem, 3.8cqw, 1.22rem);
   font-weight: 700;
   letter-spacing: 0.03em;
   gap: 0.25rem;
@@ -1384,23 +1411,23 @@ html[lang="gu"] .inv__dateline {
 .inv--gu .inv__year,
 html[lang="gu"] .inv__year {
   font-family: var(--gu-card), "Noto Serif Gujarati", serif;
-  font-size: clamp(1.08rem, 4.4cqw, 1.42rem);
+  font-size: clamp(1.2rem, 5cqw, 1.58rem);
   font-weight: 700;
-  margin: 0.04rem 0 0.22rem;
+  margin: 0.12rem 0 0.3rem;
 }
 
 .inv--gu .inv__time,
 html[lang="gu"] .inv__time {
   font-family: var(--gu-card), "Noto Serif Gujarati", serif;
-  font-size: clamp(1rem, 4cqw, 1.3rem);
+  font-size: clamp(1.12rem, 4.6cqw, 1.47rem);
   font-weight: 700;
-  margin-bottom: 0.22rem;
+  margin-bottom: 0.34rem;
 }
 
 .inv--gu .inv__venue,
 html[lang="gu"] .inv__venue {
   font-family: var(--gu-card), "Noto Serif Gujarati", serif;
-  font-size: clamp(0.86rem, 3.5cqw, 1.14rem);
+  font-size: clamp(0.96rem, 3.9cqw, 1.26rem);
   font-weight: 700;
   line-height: 1.38;
   letter-spacing: 0.02em;
@@ -1415,9 +1442,9 @@ html[lang="gu"] .inv__schedule {
 .inv--gu .inv__schedule-row,
 html[lang="gu"] .inv__schedule-row {
   font-family: var(--gu-card), "Noto Serif Gujarati", serif;
-  font-size: clamp(0.86rem, 3.6cqw, 1.15rem);
+  font-size: clamp(0.94rem, 3.9cqw, 1.23rem);
   font-weight: 700;
-  padding: 0.12rem 0.16rem;
+  padding: 0.17rem 0.16rem;
 }
 
 .inv--gu .inv__sched-lbl,
@@ -1517,10 +1544,10 @@ html[lang="gu"] .inv__sched-val {
   transition: transform .4s cubic-bezier(.22,.61,.36,1);
 }
 .evdlg.is-open .evdlg__sheet { transform: none; }
-.evdlg__sheet[data-ink="sage"]      { --ink-c: #8E3A5D; }
-.evdlg__sheet[data-ink="indigo"]    { --ink-c: #A05A38; }
-.evdlg__sheet[data-ink="gold"]      { --ink-c: #9A7333; }
-.evdlg__sheet[data-ink="rose"]      { --ink-c: #C25275; }
+.evdlg__sheet[data-ink="sage"]      { --ink-c: #2E5E45; } /* Mameru - dark green */
+.evdlg__sheet[data-ink="indigo"]    { --ink-c: #26406B; } /* Sangeet - navy blue */
+.evdlg__sheet[data-ink="gold"]      { --ink-c: #C4671E; } /* Mandap Ropan - orange */
+.evdlg__sheet[data-ink="rose"]      { --ink-c: #A83A63; } /* Wedding - dark pink */
 .evdlg__sheet[data-ink="terracotta"]{ --ink-c: #9A5B43; }
 
 .evdlg__sheet::before {

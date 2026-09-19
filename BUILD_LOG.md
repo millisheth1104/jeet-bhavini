@@ -2179,3 +2179,24 @@ password. It stays unlinked from the rest of the site and carries
 it is to already have its URL - which is now the one thing keeping it
 private. Verified over CDP: the page opens directly to the form, all four
 events render, and a link still generates correctly.
+
+## Event cards: dead space removed, illustration and type scaled up
+
+The four ceremony cards were leaving ~150px of unused height inside the arch
+aperture (body 427px, content 274px) - a big gap above and below the
+illustration. `justify-content: space-between` was splitting that slack into
+two conspicuous voids.
+
+Fixed in `styles.css`:
+- `.inv__ill-wrap` is now `flex: 1 1 auto` with a min/max height band instead
+  of a fixed height, so each card's illustration soaks up whatever that card
+  has spare. Mandap (two-line title) and Lagna (three schedule rows) shrink
+  their art; Mameru and Sangeet grow theirs.
+- Illustration max-width raised 66cqw -> 76cqw (Lagna 60 -> 69cqw).
+- Title script +11%, Gujarati title +11%.
+- Dateline, year, time, venue and schedule rows all +11-13%, with slightly
+  larger vertical rhythm between them. Gujarati variants scaled to match.
+
+Verified by measuring every card in both languages at 375px and 1440px:
+remaining slack is now 17-28px per card everywhere (was 111-153px), with no
+overflow past the arch aperture on the two tight cards.
