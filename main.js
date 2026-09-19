@@ -204,9 +204,9 @@
 
   var PORTAL = {
     ring:    1150,  // bell struck -> gate appears
-    gate:     900,  // gate held closed before it starts to open
-    through: 2150,  // doors opening -> the doorway has filled the screen
-    settle:  1100   // held on the light while the hero reveals behind it
+    gate:    1200,  // gate held closed before it starts to open (let it be seen)
+    through: 2800,  // doors opening -> the doorway has filled the screen (smooth swing)
+    settle:  1400   // held while the hero resolves behind the fading portal
   };
 
   (function intro() {
@@ -216,11 +216,8 @@
 
     put("introCueTitle", u("introCueTitle"));
     put("introCueSub",   u("introCueSub"));
-    put("portalCueText", u("portalCue"));
     var cue = $("introCue");
     if (cue && LANG === "gu") cue.classList.add("gu");
-    var pCue = $("portalCue");
-    if (pCue && LANG === "gu") pCue.classList.add("gu");
 
     // A language switch comes back mid-page; do not replay any of it.
     if (switchedAt !== null || reduced) {
@@ -253,7 +250,7 @@
       setTimeout(function () {
         stage.classList.add("is-gone");
         stage.remove();
-      }, 800);
+      }, 1200);
     }
 
     // The camera is through the doorway: the plate has flown past, so hand
@@ -276,7 +273,7 @@
       // As doors swing open, transition page behind from soft faded to proper clarity
       setTimeout(function () {
         document.body.classList.add("page-proper");
-      }, 150);
+      }, 400);
       at(PORTAL.through, reveal);
     }
 
