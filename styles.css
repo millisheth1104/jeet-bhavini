@@ -313,6 +313,9 @@ body.intro-open { overflow: hidden; }
   max-width: none;                /* the global img rule would clamp this */
   height: auto;
   transform-origin: 49.9% 4%;     /* the ring it hangs by */
+  cursor: pointer;
+  touch-action: manipulation;
+  z-index: 5;
 }
 /* before it is struck, a slow breath so it reads as the thing to tap */
 .intro:not(.is-ringing) .intro__bell { animation: bellWait 3.4s ease-in-out 1.2s infinite; }
@@ -2748,12 +2751,12 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
   background: transparent;
   transition: background .25s ease, color .25s ease;
 }
-/* the Gujarati segment is a script, not a set of capitals - no tracking */
+/* the Gujarati segment uses the same clean sans font as EN for "GUJ" */
 .langswitch__opt--gu {
-  font-family: var(--gujarati);
-  font-size: .86rem;
-  letter-spacing: 0;
-  font-weight: 500;
+  font-family: var(--sans);
+  font-size: .74rem;
+  letter-spacing: .06em;
+  font-weight: 600;
 }
 .langswitch__opt.is-active {
   background: var(--dusk-accent);
@@ -2765,7 +2768,7 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
 
 @media (max-width: 480px) {
   .langswitch__opt { font-size: .68rem; padding: .38rem .65rem; }
-  .langswitch__opt--gu { font-size: .8rem; }
+  .langswitch__opt--gu { font-size: .68rem; }
 }
 
 /* ---- Gujarati typography ------------------------------------------------

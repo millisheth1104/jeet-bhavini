@@ -210,6 +210,78 @@
     settle:  1400   // held while the hero resolves behind the fading portal
   };
 
+  /* -- audio controller ---------------------------------------------------
+     Plays assets/audio/theme.mp3 ("Dhin Dhin").
+     Starts automatically when the visitor rings the temple bell,
+     or when the floating music button is tapped.                           */
+
+  var MUSIC = (function () {
+    var btn = $("musicBtn");
+    var audio = new Audio("assets/audio/theme.mp3");
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.volume = 0.25;
+
+    var missing = false;
+    var fadeTimer = null;
+
+    audio.addEventListener("error", function () {
+      missing = true;
+      if (btn) btn.hidden = true;
+    });
+
+    function play() {
+      if (missing) return;
+      if (!audio.paused && audio.volume >= 0.35) return;
+      var icon = $("musicIcon");
+      if (audio.volume < 0.2) audio.volume = 0.2;
+
+      var p = audio.play();
+      if (p && p.then) {
+        p.then(function () {
+          if (btn) {
+            btn.setAttribute("aria-pressed", "true");
+            btn.setAttribute("aria-label", "Pause music");
+          }
+          if (icon) icon.setAttribute("href", "#ic-music");
+
+          // smooth fade-in volume up to 0.50
+          clearInterval(fadeTimer);
+          var v = audio.volume;
+          fadeTimer = setInterval(function () {
+            v = Math.min(0.50, v + 0.04);
+            audio.volume = v;
+            if (v >= 0.50) clearInterval(fadeTimer);
+          }, 60);
+        }).catch(function (err) {
+          console.warn("Audio playback gesture note:", err);
+        });
+      }
+    }
+
+    function pause() {
+      clearInterval(fadeTimer);
+      audio.pause();
+      if (btn) {
+        btn.setAttribute("aria-pressed", "false");
+        btn.setAttribute("aria-label", "Play music");
+      }
+      var icon = $("musicIcon");
+      if (icon) icon.setAttribute("href", "#ic-mute");
+    }
+
+    function toggle() {
+      if (missing) return;
+      var on = btn && btn.getAttribute("aria-pressed") === "true";
+      if (on) pause();
+      else play();
+    }
+
+    if (btn) btn.addEventListener("click", toggle);
+
+    return { play: play, pause: pause, toggle: toggle };
+  }());
+
   (function intro() {
     var box = $("intro");
     var stage = $("portalStage");
@@ -313,12 +385,14 @@
     function ring() {
       if (rung) return;
       rung = true;
+      MUSIC.play();
       box.classList.add("is-ringing");   // elephant rears, trunk strikes at ~560ms
       if (!hold) at(PORTAL.ring, showGate);
     }
 
     // One handler for every beat: whatever is on screen, advance it.
     function advance() {
+      MUSIC.play();
       if (!rung) ring();
       else if (step === 0) showGate();
       else if (step === 1) openGate();
@@ -328,6 +402,13 @@
     }
 
     box.addEventListener("click", advance);
+    var bell = $("introBell");
+    if (bell) {
+      bell.addEventListener("click", function (e) {
+        e.stopPropagation();
+        advance();
+      });
+    }
     if (stage) stage.addEventListener("click", advance);
 
     document.addEventListener("keydown", function (e) {
@@ -366,12 +447,6 @@
     put("heroInvite", u("inviteVerb"));
     put("heroGuest",  (GUEST && GUEST.n) || u("inviteYou"));
     put("heroTo",     u("inviteOccasion"));
-
-    var meta = $("heroMeta");
-    [W.headline.datesLabel, W.headline.venue, W.headline.city]
-      .map(t)
-      .filter(function (x) { return x; })
-      .forEach(function (x) { meta.appendChild(el("span", null, x)); });
   }());
 
   /* -- invitation --------------------------------------------------------- */
@@ -1096,50 +1171,6 @@
 
     topBtn.addEventListener("click", function () {
       window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
-    });
-  }());
-
-  /* -- music toggle -------------------------------------------------------
-     Looks for assets/audio/theme.mp3. If it is absent the button removes
-     itself rather than sitting there doing nothing.                        */
-
-  (function music() {
-    var btn = $("musicBtn");
-    var audio = new Audio("assets/audio/theme.mp3");
-    audio.loop = true;
-    audio.preload = "none";
-    audio.volume = 0;
-
-    var missing = false;
-    audio.addEventListener("error", function () {
-      missing = true;
-      btn.hidden = true;
-    });
-
-    btn.addEventListener("click", function () {
-      if (missing) return;
-      var on = btn.getAttribute("aria-pressed") === "true";
-      var icon = $("musicIcon");
-
-      if (on) {
-        audio.pause();
-        btn.setAttribute("aria-pressed", "false");
-        btn.setAttribute("aria-label", "Play music");
-        icon.setAttribute("href", "#ic-mute");
-      } else {
-        audio.play().then(function () {
-          btn.setAttribute("aria-pressed", "true");
-          btn.setAttribute("aria-label", "Pause music");
-          icon.setAttribute("href", "#ic-music");
-          // ease the volume up so it does not startle
-          var v = 0;
-          var fade = setInterval(function () {
-            v = Math.min(0.45, v + 0.03);
-            audio.volume = v;
-            if (v >= 0.45) clearInterval(fade);
-          }, 60);
-        }).catch(function () { btn.hidden = true; });
-      }
     });
   }());
 

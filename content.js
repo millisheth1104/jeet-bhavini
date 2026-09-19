@@ -281,7 +281,7 @@ window.WEDDING = {
     /* short codes for the segmented EN | ગુ toggle - both are always shown,
        so there's no room for the full "English"/"ગુજરાતી" the single-button
        version used. */
-    langShort:         { en: "EN", gu: "ગુ" },
+    langShort:         { en: "EN", gu: "GUJ" },
     langSwitchTo:      { en: "ગુજરાતીમાં વાંચો", gu: "Read in English" },
 
     introEyebrow:      { en: "The wedding of", gu: "શુભ લગ્ન" },
@@ -306,7 +306,7 @@ window.WEDDING = {
        front of the names the way "to the wedding of" does; it is set as a
        standalone occasion line instead, which is how a kankotri stacks it. */
     inviteHosts:       { en: "Jabuani & Nakrani Family", gu: "જબુઆણી અને નકરાણી પરિવાર" },
-    inviteVerb:        { en: "cordially invite", gu: "સ્નેહપૂર્વક આમંત્રણ પાઠવે છે" },
+    inviteVerb:        { en: "cordially invites", gu: "સ્નેહપૂર્વક આમંત્રણ પાઠવે છે" },
     inviteYou:         { en: "you", gu: "આપને" },
     inviteOccasion:    { en: "to the wedding of", gu: "શુભ લગ્ન પ્રસંગે" },
 
