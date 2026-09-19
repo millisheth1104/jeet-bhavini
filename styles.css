@@ -2150,6 +2150,366 @@ html[data-lang="gu"] .cal__head { letter-spacing: 0; font-size: .88rem; }
   display: block;
 }
 
+/* ===========================================================================
+   Postcard Location & Google Maps Section
+   Vintage wedding postcard set on a soft scenic Karjat hill backdrop.
+   =========================================================================== */
+
+.postcard-sec {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(3rem, 7vw, 5.5rem) var(--gutter) clamp(3.5rem, 8vw, 6rem);
+}
+
+/* Scenic watercolor hills & sky background behind the postcard */
+.postcard-sec__scenic-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%);
+}
+
+.postcard-sec__landscape-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  opacity: 0.55;
+  filter: saturate(0.95) contrast(0.96);
+}
+
+.postcard-sec__sky-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 35%, rgba(242, 237, 226, 0.45) 0%, rgba(232, 225, 210, 0.75) 100%);
+  mix-blend-mode: soft-light;
+}
+
+.postcard-sec__wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.postcard-container {
+  perspective: 1200px;
+  padding: 0.8rem 0;
+}
+
+/* The Postcard Card */
+.postcard {
+  position: relative;
+  background: #FAF5EA url("assets/generated/card_paper_a.png") center / cover no-repeat;
+  border: 1px solid rgba(206, 178, 126, 0.5);
+  border-radius: 6px;
+  outline: 1px solid rgba(195, 160, 105, 0.25);
+  outline-offset: -7px;
+  padding: clamp(1.4rem, 4vw, 2.4rem) clamp(1.3rem, 4.5vw, 2.6rem) clamp(1.4rem, 4.5vw, 2.4rem);
+  box-shadow: 0 4px 16px rgba(45, 30, 20, 0.08),
+              0 22px 50px -12px rgba(45, 30, 20, 0.22),
+              0 12px 24px -6px rgba(45, 30, 20, 0.1);
+  transform: rotate(-2.2deg);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+  overflow: hidden;
+}
+
+.postcard:hover {
+  transform: rotate(-0.6deg) translateY(-5px);
+  box-shadow: 0 6px 20px rgba(45, 30, 20, 0.1),
+              0 30px 64px -12px rgba(45, 30, 20, 0.26),
+              0 16px 32px -6px rgba(45, 30, 20, 0.14);
+}
+
+/* Paper crease diagonal overlay */
+.postcard__crease-line {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(130deg, 
+    rgba(255, 255, 255, 0.42) 0%, 
+    rgba(255, 255, 255, 0) 46%, 
+    rgba(70, 50, 30, 0.04) 50%, 
+    rgba(255, 255, 255, 0.28) 54%, 
+    transparent 100%
+  );
+  border-radius: 6px;
+}
+
+/* Top Postal Header: Postmark + Postage Stamp */
+.postcard__postal-header {
+  position: absolute;
+  top: clamp(0.7rem, 2.5vw, 1.3rem);
+  right: clamp(0.7rem, 2.5vw, 1.4rem);
+  display: flex;
+  align-items: center;
+  gap: clamp(0.35rem, 1.5vw, 0.85rem);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.postmark {
+  display: flex;
+  align-items: center;
+}
+
+.postmark__waves {
+  width: clamp(55px, 11vw, 95px);
+  height: auto;
+  opacity: 0.85;
+}
+
+.postmark__seal {
+  width: clamp(54px, 10vw, 76px);
+  height: clamp(54px, 10vw, 76px);
+  transform: rotate(-10deg);
+  mix-blend-mode: multiply;
+}
+
+.postmark__seal-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.poststamp {
+  width: clamp(48px, 9.2vw, 72px);
+  height: auto;
+  transform: rotate(2deg);
+  filter: drop-shadow(0 2px 5px rgba(50, 32, 18, 0.18));
+}
+
+.poststamp__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 2px;
+}
+
+/* Postcard Main Body Grid */
+.postcard__content-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(1.2rem, 3.5vw, 2.6rem);
+  align-items: center;
+  margin-top: clamp(0.2rem, 1.5vw, 0.8rem);
+}
+
+.postcard__crest-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: clamp(0.2rem, 1vw, 0.8rem);
+}
+
+.postcard__crest-frame {
+  width: clamp(95px, 14vw, 135px);
+  max-width: 135px;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.postcard:hover .postcard__crest-frame {
+  transform: scale(1.04);
+}
+
+.postcard__crest-img,
+.postcard__simple-logo {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(60, 42, 22, 0.1));
+}
+
+/* Right Details Column */
+.postcard__info-col {
+  padding-right: clamp(0rem, 3vw, 1.5rem);
+}
+
+.postcard__couple-script {
+  margin: 0;
+  font-family: "Alex Brush", var(--script);
+  font-size: clamp(2.3rem, 6.5vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.08;
+  color: #7A2838;
+  text-shadow: 0 1px 1px rgba(122, 40, 56, 0.1);
+}
+
+html[data-lang="gu"] .postcard__couple-script {
+  font-family: var(--gu-display);
+  font-size: clamp(1.75rem, 5vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.postcard__dates-pill {
+  margin: 0.35rem 0 0.55rem;
+  font-family: var(--serif);
+  font-size: clamp(0.85rem, 2.4vw, 0.98rem);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8C5542;
+}
+
+html[data-lang="gu"] .postcard__dates-pill {
+  letter-spacing: 0.05em;
+}
+
+.postcard__separator {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.5rem 0 0.75rem;
+  max-width: 260px;
+}
+
+.postcard__sep-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(197, 160, 89, 0.8), rgba(197, 160, 89, 0.1));
+}
+
+.postcard__sep-dot {
+  color: #A8894F;
+  font-size: 0.65rem;
+  opacity: 0.85;
+}
+
+.postcard__venue-title {
+  margin: 0 0 0.3rem;
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 3.4vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #4A3A2F;
+}
+
+html[data-lang="gu"] .postcard__venue-title {
+  letter-spacing: 0.04em;
+}
+
+.postcard__address-block {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(0.92rem, 2.6vw, 1.05rem);
+  line-height: 1.48;
+  color: #5C4D3F;
+}
+
+.postcard__note-text {
+  margin: 0.55rem 0 1.2rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(0.88rem, 2.4vw, 0.98rem);
+  line-height: 1.45;
+  color: #7E6D5D;
+}
+
+/* Interactive Google Maps Button */
+.postcard__btn-wrapper {
+  margin-top: 0.4rem;
+}
+
+.postcard__map-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: linear-gradient(135deg, #7A2838 0%, #942D40 100%);
+  color: #FFF9F0 !important;
+  text-decoration: none;
+  border: 1px solid #D4B26F;
+  border-radius: 999px;
+  padding: 0.65rem 1.4rem;
+  font-family: var(--sans);
+  font-size: clamp(0.85rem, 2.4vw, 0.95rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  box-shadow: 0 3px 10px rgba(122, 40, 56, 0.26),
+              inset 0 1px 1px rgba(255, 255, 255, 0.32);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.postcard__map-button:hover,
+.postcard__map-button:focus-visible {
+  background: linear-gradient(135deg, #8E3043 0%, #A83348 100%);
+  border-color: #E2C78A;
+  box-shadow: 0 6px 18px rgba(122, 40, 56, 0.36),
+              0 0 12px rgba(212, 178, 111, 0.3);
+  transform: translateY(-2px);
+}
+
+.postcard__map-pin-icon {
+  font-size: 1.05em;
+  line-height: 1;
+}
+
+.postcard__map-arrow-icon {
+  transition: transform 0.25s ease;
+}
+
+.postcard__map-button:hover .postcard__map-arrow-icon {
+  transform: translate(2px, -2px);
+}
+
+/* Responsive adjustments for phones */
+@media (max-width: 640px) {
+  .postcard {
+    transform: rotate(-1deg);
+    padding: 1.3rem 1.1rem 1.4rem;
+  }
+  
+  .postcard:hover {
+    transform: rotate(0deg) translateY(-2px);
+  }
+
+  .postcard__content-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1.2rem;
+    margin-top: 2rem;
+  }
+
+  .postcard__crest-frame {
+    max-width: 105px;
+    margin: 0 auto;
+  }
+
+  .postcard__info-col {
+    padding-right: 0;
+  }
+
+  .postcard__separator {
+    margin: 0.45rem auto 0.65rem;
+  }
+
+  .postcard__postal-header {
+    top: 0.6rem;
+    right: 0.6rem;
+    gap: 0.25rem;
+  }
+
+  .postmark__waves {
+    width: 48px;
+  }
+
+  .postmark__seal {
+    width: 46px;
+    height: 46px;
+  }
+
+  .poststamp {
+    width: 42px;
+  }
+}
+
 /* countdown ------------------------------------------------------------- */
 .countdown { text-align: center; padding-bottom: clamp(1.8rem, 4.5vw, 3rem); }
 .countdown__title {

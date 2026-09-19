@@ -928,6 +928,41 @@
     }
   }());
 
+  /* -- postcard location -------------------------------------------------- */
+
+  (function postcard() {
+    var pc = W.postcard;
+    if (!pc) return;
+
+    var coupleEl = $("pcCouple");
+    if (coupleEl) coupleEl.textContent = t(pc.couple);
+
+    var datesEl = $("pcDates");
+    if (datesEl) datesEl.textContent = t(pc.dates);
+
+    var venueEl = $("pcVenue");
+    if (venueEl) venueEl.textContent = t(pc.venueName);
+
+    var addressEl = $("pcAddress");
+    if (addressEl) {
+      var addr = t(pc.address);
+      addressEl.innerHTML = addr.replace(/\n/g, "<br>");
+    }
+
+    var noteEl = $("pcNote");
+    if (noteEl) noteEl.textContent = t(pc.note);
+
+    var mapBtn = $("pcMapBtn");
+    var btnLabel = $("pcBtnLabel");
+    if (mapBtn && pc.mapsUrl) mapBtn.href = pc.mapsUrl;
+    if (btnLabel) btnLabel.textContent = t(pc.buttonText);
+
+    var postmarkText = $("postmarkPathText");
+    if (postmarkText && pc.postmarkText) {
+      postmarkText.textContent = t(pc.postmarkText);
+    }
+  }());
+
   /* -- countdown ---------------------------------------------------------- */
 
   (function countdown() {

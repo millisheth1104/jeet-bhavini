@@ -242,6 +242,24 @@ window.WEDDING = {
   },
 
   /* * With Best Compliments From * */
+  /* Postcard venue and destination section */
+  postcard: {
+    couple: { en: "Jeet & Bhavini", gu: "જીત અને ભાવિની" },
+    dates: { en: "1st – 2nd December, 2026", gu: "૧ – ૨ ડિસેમ્બર ૨૦૨૬" },
+    venueName: { en: "Oleander Farms", gu: "ઓલિએન્ડર ફાર્મ્સ" },
+    address: {
+      en: "Karjat Chowk Road, Wavarle Village, Khalapur, Karjat, Maharashtra 410201",
+      gu: "કર્જત ચોક રોડ, વાવરલે ગામ, ખાલાપુર, કર્જત, મહારાષ્ટ્ર ૪૧૦૨૦૧"
+    },
+    note: {
+      en: "Nestled in the lush hills of Karjat — join us as we celebrate our new beginning.",
+      gu: "કર્જતની રમણીય ટેકરીઓ વચ્ચે — અમારા નવા જીવનના પ્રારંભની ઉજવણીમાં સહભાગી બનો."
+    },
+    mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
+    buttonText: { en: "View on Google Maps", gu: "ગૂગલ મેપ્સ પર દિશા જુઓ" },
+    postmarkText: { en: "JEET & BHAVINI • 01.12.2026 • KARJAT •", gu: "જીત અને ભાવિની • 01.12.2026 • કર્જત •" },
+  },
+
   compliments: {
     heading: { en: "With Best Compliments From", gu: "શુભેચ્છા સહ" },
     from: [

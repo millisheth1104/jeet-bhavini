@@ -1,0 +1,17 @@
+<svg class="postcard__simple-logo" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer double hairline circular border -->
+  <circle cx="70" cy="70" r="64" stroke="#B38B4D" stroke-width="1.4"/>
+  <circle cx="70" cy="70" r="59" stroke="#D4AF37" stroke-width="0.7" opacity="0.6"/>
+  
+  <!-- Tiny cardinal diamond accents -->
+  <polygon points="70,3 73,6 70,9 67,6" fill="#B38B4D"/>
+  <polygon points="70,131 73,134 70,137 67,134" fill="#B38B4D"/>
+
+  <!-- J & B Typography -->
+  <text x="43" y="78" font-family="'Cormorant Garamond', 'Playfair Display', Georgia, serif" font-size="44" font-weight="600" fill="#9A7A40" text-anchor="middle">J</text>
+  <text x="70" y="73" font-family="'Alex Brush', 'Great Vibes', cursive" font-size="28" font-style="italic" fill="#C08478" text-anchor="middle">&amp;</text>
+  <text x="97" y="78" font-family="'Cormorant Garamond', 'Playfair Display', Georgia, serif" font-size="44" font-weight="600" fill="#9A7A40" text-anchor="middle">B</text>
+
+  <!-- Clean Subtitle -->
+  <text x="70" y="104" font-family="'Jost', sans-serif" font-size="8.5" font-weight="500" letter-spacing="2.5" fill="#8C6E38" text-anchor="middle">JEET · BHAVINI</text>
+</svg>
