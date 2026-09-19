@@ -281,7 +281,7 @@ window.WEDDING = {
     /* short codes for the segmented EN | ગુ toggle - both are always shown,
        so there's no room for the full "English"/"ગુજરાતી" the single-button
        version used. */
-    langShort:         { en: "EN", gu: "GUJ" },
+    langShort:         { en: "EN", gu: "ગુજ" },
     langSwitchTo:      { en: "ગુજરાતીમાં વાંચો", gu: "Read in English" },
 
     introEyebrow:      { en: "The wedding of", gu: "શુભ લગ્ન" },

@@ -2751,12 +2751,12 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
   background: transparent;
   transition: background .25s ease, color .25s ease;
 }
-/* the Gujarati segment uses the same clean sans font as EN for "GUJ" */
+/* the Gujarati segment uses the Gujarati font stack with zero letter-spacing for "ગુજ" */
 .langswitch__opt--gu {
-  font-family: var(--sans);
-  font-size: .74rem;
-  letter-spacing: .06em;
-  font-weight: 600;
+  font-family: var(--gujarati);
+  font-size: .84rem;
+  letter-spacing: 0;
+  font-weight: 500;
 }
 .langswitch__opt.is-active {
   background: var(--dusk-accent);
@@ -2768,7 +2768,7 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
 
 @media (max-width: 480px) {
   .langswitch__opt { font-size: .68rem; padding: .38rem .65rem; }
-  .langswitch__opt--gu { font-size: .68rem; }
+  .langswitch__opt--gu { font-size: .78rem; }
 }
 
 /* ---- Gujarati typography ------------------------------------------------
