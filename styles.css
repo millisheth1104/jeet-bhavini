@@ -653,11 +653,11 @@ body:not(.intro-open) #top {
 /* ---- opening animations ----------------------------------------------- */
 
 .portal-stage.is-opening .portal__leaf--l {
-  animation: portalLeafL 2.8s cubic-bezier(.25, .1, .25, 1) forwards;
+  animation: portalLeafL 1.8s cubic-bezier(.16, .7, .3, 1) forwards;
 }
 
 .portal-stage.is-opening .portal__leaf--r {
-  animation: portalLeafR 2.8s cubic-bezier(.25, .1, .25, 1) forwards;
+  animation: portalLeafR 1.8s cubic-bezier(.16, .7, .3, 1) forwards;
 }
 
 @keyframes portalLeafL {

@@ -205,7 +205,7 @@
   var PORTAL = {
     ring:    1150,  // bell struck -> gate appears
     gate:    1200,  // gate held closed before it starts to open (let it be seen)
-    doors:   2800,  // doors fully swing open (matches CSS portalLeafL/R duration)
+    doors:   1800,  // doors fully swing open (matches CSS portalLeafL/R duration)
     zoom:    2400,  // camera zooms through the open doorway (matches CSS portalWalkIn)
     settle:  1400   // held while the hero resolves behind the fading portal
   };
