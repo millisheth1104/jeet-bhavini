@@ -54,12 +54,24 @@ window.WEDDING = {
       gu: "ના શુભ લગ્ન પ્રસંગે આપની ઉપસ્થિતિની હાર્દિક અપેક્ષા રાખીએ છીએ",
     },
     groomLine: {
-      en: "S/o Mr. Arvind Naran Jabuvani & Mrs. Ranjana Arvind Jabuvani",
-      gu: "સુપુત્ર: શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી તથા અ.સૌ. રંજનાબેન અરવિંદભાઈ જબુઆણી",
+      en: [
+        "S/o Mr. Arvind Naran Jabuvani",
+        "& Mrs. Ranjana Arvind Jabuvani"
+      ],
+      gu: [
+        "સુપુત્ર: શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી",
+        "તથા અ.સૌ. રંજનાબેન અરવિંદભાઈ જબુઆણી"
+      ],
     },
     brideLine: {
-      en: "D/o Mr. Praveen Nakrani & Mrs. Manjula Nakrani",
-      gu: "સુપુત્રી: શ્રી પ્રવીણભાઈ નકરાણી તથા અ.સૌ. મંજુલાબેન પ્રવીણભાઈ નકરાણી",
+      en: [
+        "D/o Mr. Praveen Nakrani",
+        "& Mrs. Manjula Nakrani"
+      ],
+      gu: [
+        "સુપુત્રી: શ્રી પ્રવીણભાઈ નકરાણી",
+        "તથા અ.સૌ. મંજુલાબેન પ્રવીણભાઈ નકરાણી"
+      ],
     },
     weds: { en: "weds", gu: "સાથે" },
     closing: {

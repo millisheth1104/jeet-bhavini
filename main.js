@@ -357,19 +357,31 @@
     put("invLead", t(inv.lead));
 
     var host = $("invParties");
+    if (!host) return;
     function party(person, parents) {
       host.appendChild(el("p", "invite__name", t(person)));
-      host.appendChild(el("p", (LANG === "gu" ? "" : "gu ") + "invite__gu",
-                             person[OTHER]));
-      if (parents) host.appendChild(el("p", "invite__parents", t(parents)));
+      if (parents) {
+        var pEl = el("p", "invite__parents");
+        var val = t(parents);
+        if (Array.isArray(val)) {
+          val.forEach(function (line, idx) {
+            if (idx > 0) pEl.appendChild(document.createElement("br"));
+            pEl.appendChild(document.createTextNode(line));
+          });
+        } else if (typeof val === "string" && val.indexOf("\n") !== -1) {
+          val.split("\n").forEach(function (line, idx) {
+            if (idx > 0) pEl.appendChild(document.createElement("br"));
+            pEl.appendChild(document.createTextNode(line.trim()));
+          });
+        } else {
+          pEl.textContent = val;
+        }
+        host.appendChild(pEl);
+      }
     }
     party(groom, inv.groomLine);
-    host.appendChild(el("p", "invite__weds", t(inv.weds)));
+    host.appendChild(el("p", "invite__weds", "—   " + t(inv.weds) + "   —"));
     party(bride, inv.brideLine);
-
-    var when = [t(W.headline.datesLabel), t(W.headline.venue) || t(W.headline.city)]
-      .filter(Boolean).join(" · ");
-    put("invWhen", when);
   }());
 
   /* -- events: five individual invitation cards ---------------------------
