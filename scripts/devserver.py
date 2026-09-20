@@ -26,6 +26,16 @@ class NoCacheHandler(SimpleHTTPRequestHandler):
         ".ics": "text/calendar",
     })
 
+    def do_GET(self):
+        # SPA routing: if requesting a clean guest path that doesn't exist on disk, serve index.html
+        clean_path = self.path.split("?")[0].split("#")[0]
+        full_path = self.translate_path(clean_path)
+        if not os.path.exists(full_path) and not os.path.splitext(clean_path)[1]:
+            # Preserve query string if any
+            query = ("?" + self.path.split("?", 1)[1]) if "?" in self.path else ""
+            self.path = "/index.html" + query
+        return super().do_GET()
+
     def end_headers(self):
         self.send_header("Cache-Control", "no-store, must-revalidate")
         self.send_header("Pragma", "no-cache")

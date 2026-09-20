@@ -61,6 +61,10 @@
   var LANGS = ["en", "gu"];
   var LANG = (function () {
     try {
+      var m = location.search.match(/[?&]lang=([a-z]{2})/i);
+      if (m && LANGS.indexOf(m[1].toLowerCase()) !== -1) {
+        return m[1].toLowerCase();
+      }
       var saved = localStorage.getItem("wedding-lang");
       if (LANGS.indexOf(saved) !== -1) return saved;
     } catch (e) {}
@@ -88,16 +92,35 @@
   document.documentElement.setAttribute("lang", LANG);
   document.documentElement.setAttribute("data-lang", LANG);
 
-  /* Switching carries the scroll position across the reload, and the presence
-     of that key is also what tells the intro to stay out of the way. */
+  var updateLangSwitchUI = null;
+  var updateChromeUI = null;
+  var updateIntroUI = null;
+  var updateHeroUI = null;
+  var updateInvitationUI = null;
+  var updateEventsUI = null;
+
+  /* Live in-place language switching: updates all visible text and typography
+     instantly without jarring reloads, keeping the door animation and audio
+     completely uninterrupted. */
   function setLang(next) {
     if (next === LANG) return;
+    LANG = next;
+    OTHER = LANG === "en" ? "gu" : "en";
     try {
-      localStorage.setItem("wedding-lang", next);
-      sessionStorage.setItem("wedding-langswitch", String(window.scrollY || 0));
+      localStorage.setItem("wedding-lang", LANG);
     } catch (e) {}
-    location.reload();
+
+    document.documentElement.setAttribute("lang", LANG);
+    document.documentElement.setAttribute("data-lang", LANG);
+
+    if (updateLangSwitchUI) updateLangSwitchUI();
+    if (updateIntroUI) updateIntroUI();
+    if (updateChromeUI) updateChromeUI();
+    if (updateHeroUI) updateHeroUI();
+    if (updateInvitationUI) updateInvitationUI();
+    if (updateEventsUI) updateEventsUI();
   }
+
   var switchedAt = null;
   try {
     switchedAt = sessionStorage.getItem("wedding-langswitch");
@@ -115,15 +138,55 @@
      rest of the site does not need to know a filtered visit is happening. */
   var GUEST = null;
   (function guestLink() {
+    // 1. Encoded base64 token (?for=...)
     var m = location.search.match(/[?&]for=([^&]+)/);
-    if (!m) return;
-    try {
-      var b64 = decodeURIComponent(m[1]).replace(/-/g, "+").replace(/_/g, "/");
-      while (b64.length % 4) b64 += "=";
-      var json = decodeURIComponent(escape(atob(b64)));
-      var data = JSON.parse(json);
-      if (data && typeof data === "object") GUEST = data;
-    } catch (e) { GUEST = null; }        // a malformed or tampered link just shows everything
+    if (m) {
+      try {
+        var b64 = decodeURIComponent(m[1]).replace(/-/g, "+").replace(/_/g, "/");
+        while (b64.length % 4) b64 += "=";
+        var json = decodeURIComponent(escape(atob(b64)));
+        var data = JSON.parse(json);
+        if (data && typeof data === "object") GUEST = data;
+      } catch (e) { GUEST = null; }
+    }
+
+    // 2. Query param (?name=... or ?guest=... or ?to=...)
+    var gParam = location.search.match(/[?&](?:guest|name|to)=([^&]+)/i);
+    if (gParam && (!GUEST || !GUEST.n)) {
+      try {
+        var rawSlug = decodeURIComponent(gParam[1]).replace(/[-_+]+/g, " ").trim();
+        var formatted = rawSlug.replace(/\band\b/gi, "&").replace(/\b\w/g, function (l) { return l.toUpperCase(); });
+        if (!GUEST) GUEST = { n: formatted, c: [] };
+        else GUEST.n = formatted;
+      } catch (e) {}
+    }
+
+    // 3. Clean pathname slug: e.g. /priya-and-raj-shah or /jeet-bhavini/priya-and-raj-shah
+    if (!GUEST || !GUEST.n) {
+      var segments = location.pathname.split("/").filter(function (s) {
+        return s && s !== "index.html" && s !== "admin.html";
+      });
+      if (segments.length > 0) {
+        var lastSeg = segments[segments.length - 1];
+        // Ignore static file extensions and base folder names
+        if (lastSeg !== "jeet-bhavini" && lastSeg !== "wedding" && lastSeg.indexOf(".") === -1) {
+          var rawSlug = decodeURIComponent(lastSeg).replace(/[-_+]+/g, " ").trim();
+          var formatted = rawSlug.replace(/\band\b/gi, "&").replace(/\b\w/g, function (l) { return l.toUpperCase(); });
+          if (!GUEST) GUEST = { n: formatted, c: [] };
+          else GUEST.n = formatted;
+        }
+      }
+    }
+
+    // Optional event filtering via query ?c=mameru,sangeet or ?events=...
+    var cParam = location.search.match(/[?&](?:c|events)=([^&]+)/i);
+    if (cParam) {
+      var customCards = decodeURIComponent(cParam[1]).split(",").map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
+      if (customCards.length) {
+        if (!GUEST) GUEST = { n: "", c: customCards };
+        else GUEST.c = customCards;
+      }
+    }
 
     if (GUEST && Array.isArray(GUEST.c) && GUEST.c.length && Array.isArray(W.events)) {
       var keep = GUEST.c;
@@ -135,23 +198,27 @@
     var host = $("langSwitch");
     if (!host) return;
     var short = W.ui.langShort || { en: "EN", gu: "GU" };
-    // Both languages sit in the toggle at once - the active one filled, the
-    // other plain - rather than one button that only ever names where a tap
-    // would take you.
-    LANGS.forEach(function (code) {
-      var isActive = code === LANG;
-      var seg = el("button", "langswitch__opt" +
-        (isActive ? " is-active" : "") + (code === "gu" ? " langswitch__opt--gu" : ""));
-      seg.type = "button";
-      seg.textContent = short[code] || code.toUpperCase();
-      seg.setAttribute("aria-pressed", isActive ? "true" : "false");
-      if (!isActive) {
-        seg.setAttribute("aria-label", u("langSwitchTo"));
-        seg.title = u("langSwitchTo");
-        seg.addEventListener("click", function () { setLang(code); });
-      }
-      host.appendChild(seg);
-    });
+
+    function renderToggle() {
+      host.innerHTML = "";
+      LANGS.forEach(function (code) {
+        var isActive = code === LANG;
+        var seg = el("button", "langswitch__opt" +
+          (isActive ? " is-active" : "") + (code === "gu" ? " langswitch__opt--gu" : ""));
+        seg.type = "button";
+        seg.textContent = short[code] || code.toUpperCase();
+        seg.setAttribute("aria-pressed", isActive ? "true" : "false");
+        if (!isActive) {
+          seg.setAttribute("aria-label", u("langSwitchTo"));
+          seg.title = u("langSwitchTo");
+          seg.addEventListener("click", function () { setLang(code); });
+        }
+        host.appendChild(seg);
+      });
+    }
+
+    renderToggle();
+    updateLangSwitchUI = renderToggle;
   }());
 
   /* Static labels that live in index.html rather than in a render function:
@@ -163,22 +230,26 @@
       e.setAttribute("aria-label", u(key));
       if (alsoTitle) e.title = u(key);
     }
-    label("scrollCueLabel",  "scrollCue");
-    label("eventsEyebrow",   "eventsEyebrow");
-    label("eventsTitle",     "eventsTitle");
-    label("familiesEyebrow", "familiesEyebrow");
-    label("familiesTitle",   "familiesTitle");
 
-    /* The line under "Our Events" carries the heading in the OTHER language -
-       a pairing, the way a kankotri sets both, not a mixed-language page. */
-    var alt = $("eventsAlt");
-    if (alt) {
-      alt.textContent = (W.ui.eventsTitle || {})[OTHER] || "";
-      if (OTHER === "gu") alt.classList.add("gu");
+    function renderChrome() {
+      label("scrollCueLabel",  "scrollCue");
+      label("eventsEyebrow",   "eventsEyebrow");
+      label("eventsTitle",     "eventsTitle");
+      label("familiesEyebrow", "familiesEyebrow");
+      label("familiesTitle",   "familiesTitle");
+
+      var alt = $("eventsAlt");
+      if (alt) {
+        alt.textContent = (W.ui.eventsTitle || {})[OTHER] || "";
+        alt.classList.toggle("gu", OTHER === "gu");
+      }
+
+      aria("musicBtn",   "aMusic", true);
+      aria("topBtn",     "aTop",   true);
     }
 
-    aria("musicBtn",   "aMusic", true);
-    aria("topBtn",     "aTop",   true);
+    renderChrome();
+    updateChromeUI = renderChrome;
   }());
 
   /* A language switch reloads. Put the reader back where they were. */
@@ -255,11 +326,11 @@
      the whole thing, so an impatient visitor still sees their own name. */
 
   var PORTAL = {
-    ring:    1150,  // bell struck -> gate appears
-    gate:    1200,  // gate held closed before it starts to open (let it be seen)
-    doors:    950,  // doors fully swing open (matches CSS portalLeafL/R duration)
-    zoom:    2400,  // camera zooms through the open doorway (matches CSS portalWalkIn)
-    settle:   700   // held while the hero smoothly finishes taking over
+    ring:     900,  // bell struck -> gate appears
+    gate:     750,  // gate held closed before it starts to open
+    doors:    850,  // doors fully swing open (matches CSS portalLeafL/R duration)
+    zoom:    1600,  // camera zooms through the open doorway (matches CSS portalWalkIn)
+    settle:   500   // held while the hero smoothly finishes taking over
   };
 
   /* -- audio controller ---------------------------------------------------
@@ -331,6 +402,13 @@
 
     if (btn) btn.addEventListener("click", toggle);
 
+    // Play music on first user touch/click/scroll gesture
+    function onFirstGesture() {
+      play();
+    }
+    window.addEventListener("pointerdown", onFirstGesture, { passive: true, once: true });
+    window.addEventListener("keydown", onFirstGesture, { passive: true, once: true });
+
     return { play: play, pause: pause, toggle: toggle };
   }());
 
@@ -339,13 +417,18 @@
     var stage = $("portalStage");
     if (!box) return;
 
-    put("introCueTitle", u("introCueTitle"));
-    put("introCueSub",   u("introCueSub"));
-    var cue = $("introCue");
-    if (cue && LANG === "gu") cue.classList.add("gu");
+    function renderIntroText() {
+      put("introCueTitle", u("introCueTitle"));
+      put("introCueSub",   u("introCueSub"));
+      var cue = $("introCue");
+      if (cue) cue.classList.toggle("gu", LANG === "gu");
+    }
+    renderIntroText();
+    updateIntroUI = renderIntroText;
 
     // A language switch comes back mid-page; do not replay any of it.
-    if (switchedAt !== null || reduced) {
+    var switchY = switchedAt !== null ? (parseInt(switchedAt, 10) || 0) : null;
+    if ((switchY !== null && switchY > 100) || reduced) {
       box.remove();
       if (stage) stage.remove();
       document.body.classList.remove("intro-open");
@@ -412,13 +495,17 @@
       document.body.classList.remove("intro-open");
       document.body.classList.remove("page-proper");
       window.scrollTo(0, 0);
-      if (triggerGuestHandwriting) triggerGuestHandwriting();
-      if (!stage) return;
+      if (!stage) {
+        if (triggerGuestHandwriting) triggerGuestHandwriting();
+        return;
+      }
       stage.classList.remove("is-visible");
       stage.classList.add("is-gone");
       setTimeout(function () {
         if (stage && stage.parentNode) stage.remove();
-      }, 100);
+        // The doors are completely gone: start the calligraphy handwriting animation now!
+        if (triggerGuestHandwriting) triggerGuestHandwriting();
+      }, 120);
     }
 
     // The camera is through the doorway: the plate has flown past, so hand
@@ -431,7 +518,7 @@
       document.body.classList.remove("intro-open");
       document.body.classList.remove("page-proper");
       window.scrollTo(0, 0);
-      // Immediately start writing in sync as the garland hero starts
+      // The garland hero page has loaded: start the calligraphy handwriting animation now!
       if (triggerGuestHandwriting) triggerGuestHandwriting();
       if (!hold) at(PORTAL.settle, finish);
     }
@@ -442,7 +529,6 @@
       step = 3;
       stage.classList.add("is-zooming");
       stage.style.pointerEvents = "none";
-      // As camera zooms through, transition page behind to proper clarity
       setTimeout(function () {
         document.body.classList.add("page-proper");
       }, 150);
@@ -526,14 +612,164 @@
   }());
   /* -- authentic calligraphy cursive handwriting animation -------------- */
 
-  function renderGuestHandwriting() {
+  function toGujaratiText(str) {
+    if (!str) return "";
+    var s = String(str).trim();
+    if (!s || s.toLowerCase() === "you") return u("inviteYou") || "આપને";
+    if (/[\u0A80-\u0AFF]/.test(s)) return s;
+
+    var dict = {
+      "and": "અને", "&": "અને", "+": "અને",
+      "family": "પરિવાર", "parivar": "પરિવાર", "friends": "મિત્રો", "with": "સહિત",
+      "mr": "શ્રી", "mr.": "શ્રી", "shri": "શ્રી", "shree": "શ્રી",
+      "mrs": "શ્રીમતી", "mrs.": "શ્રીમતી", "smt": "શ્રીમતી", "smt.": "શ્રીમતી",
+      "dr": "ડો.", "dr.": "ડો.", "miss": "કુ.", "kumar": "કુમાર", "kumari": "કુમારી",
+      "bhai": "ભાઈ", "ben": "બેન", "ba": "બા", "bhabhi": "ભાભી",
+      "kaka": "કાકા", "kaki": "કાકી", "mama": "મામા", "mami": "મામી",
+      "fua": "ફુઆ", "fui": "ફોઈ", "dada": "દાદા", "dadi": "દાદી", "nana": "નાના", "nani": "નાની",
+      "shah": "શાહ", "patel": "પટેલ", "mehta": "મહેતા", "joshi": "જોષી",
+      "desai": "દેસાઈ", "nakrani": "નકરાણી", "jabuani": "જબુઆણી",
+      "priya": "પ્રિયા", "raj": "રાજ", "jeet": "જીત", "bhavini": "ભાવિની",
+      "dhrumil": "ધ્રુમિલ", "ramesh": "રમેશ", "bhavna": "ભાવના", "ankit": "અંકિત",
+      "kirit": "કિરીટ", "amit": "અમિત", "rahul": "રાહુલ", "pooja": "પૂજા",
+      "neha": "નેહા", "sanjay": "સંજય", "manoj": "મનોજ", "sunil": "સુનિલ",
+      "anil": "અનિલ", "jay": "જય", "vijay": "વિજય", "chetan": "ચેતન",
+      "deepak": "દીપક", "dipak": "દીપક", "harsh": "હર્ષ", "parth": "પાર્થ",
+      "kunal": "કુણાલ", "chirag": "ચિરાગ", "bhavesh": "ભાવેશ", "hitesh": "હિતેશ",
+      "kamlesh": "કમલેશ", "mukesh": "મુકેશ", "nilesh": "નિલેશ", "paresh": "પરેશ",
+      "rajesh": "રાજેશ", "suresh": "સુરેશ", "yogesh": "યોગેશ", "pramod": "પ્રમોદ",
+      "naresh": "નરેશ", "mahesh": "મહેશ", "dinesh": "દિનેશ", "ganesh": "ગણેશ",
+      "ashok": "અશોક", "vinod": "વિનોદ", "vijaybhai": "વિજયભાઈ", "rameshbhai": "રમેશભાઈ",
+      "anilbhai": "અનિલભાઈ", "kiritbhai": "કિરીટભાઈ", "sunilbhai": "સુનિલભાઈ",
+      "vedant": "વેદાંત", "sneha": "સ્નેહા", "hardik": "હાર્દિક", "nirav": "નીરવ",
+      "mehul": "મેહુલ", "ketan": "કેતન", "jignesh": "જીજ્ઞેશ", "vipul": "વિપુલ",
+      "dimple": "ડિમ્પલ", "alpa": "અલ્પા", "tina": "ટીના", "mona": "મોના",
+      "hetal": "હેતલ", "sejal": "સેજલ", "payal": "પાયલ", "rekha": "રેખા",
+      "geeta": "ગીતા", "dina": "દીના", "shital": "શીતલ", "sheetal": "શીતલ",
+      "mital": "મિતલ", "kajal": "કાજલ", "priti": "પ્રીતિ", "preeti": "પ્રીતિ",
+      "dipti": "દીપ્તિ", "deepti": "દીપ્તિ"
+    };
+
+    var words = s.split(/(\s+|[,&+/])/);
+    return words.map(function (w) {
+      var low = w.toLowerCase().trim();
+      if (dict[low]) return dict[low];
+      if (/^[,\s&+/]+$/.test(w)) return w === "&" ? " અને " : w;
+      return transliterateWordToGu(w);
+    }).join("");
+  }
+
+  function transliterateWordToGu(word) {
+    if (!word) return "";
+    var w = word.toLowerCase();
+
+    var cMulti = [
+      ["chh", "છ"], ["kh", "ખ"], ["gh", "ઘ"], ["ch", "ચ"], ["jh", "ઝ"],
+      ["th", "થ"], ["dh", "ધ"], ["bh", "ભ"], ["ph", "ફ"], ["sh", "શ"],
+      ["gn", "જ્ઞ"], ["tr", "ત્ર"], ["ksh", "ક્ષ"], ["gy", "જ્ઞ"], ["pr", "પ્ર"]
+    ];
+    var cSingle = {
+      "k": "ક", "g": "ગ", "j": "જ", "t": "ત", "d": "દ", "n": "ન",
+      "p": "પ", "b": "બ", "m": "મ", "y": "ય", "r": "ર", "l": "લ",
+      "v": "વ", "w": "વ", "s": "સ", "h": "હ", "z": "ઝ", "f": "ફ", "c": "ક"
+    };
+    var vInit = {
+      "aa": "આ", "a": "અ", "ee": "ઈ", "i": "ઇ", "oo": "ઊ", "u": "ઉ",
+      "e": "એ", "ai": "ઐ", "o": "ઓ", "au": "ઔ", "an": "અં", "am": "અં"
+    };
+    var vMatra = [
+      ["aa", "ા"], ["ee", "ી"], ["oo", "ૂ"], ["ai", "ૈ"], ["au", "ૌ"],
+      ["a", ""], ["i", "િ"], ["u", "ુ"], ["e", "ે"], ["o", "ો"]
+    ];
+
+    var res = "";
+    var i = 0;
+    var isStart = true;
+
+    while (i < w.length) {
+      var matched = false;
+
+      for (var m = 0; m < cMulti.length; m++) {
+        var mc = cMulti[m][0];
+        if (w.substr(i, mc.length) === mc) {
+          res += cMulti[m][1];
+          i += mc.length;
+          matched = true;
+          isStart = false;
+          break;
+        }
+      }
+      if (matched) {
+        for (var vm = 0; vm < vMatra.length; vm++) {
+          var vstr = vMatra[vm][0];
+          if (w.substr(i, vstr.length) === vstr) {
+            res += vMatra[vm][1];
+            i += vstr.length;
+            break;
+          }
+        }
+        continue;
+      }
+
+      var ch = w[i];
+      if (cSingle[ch]) {
+        res += cSingle[ch];
+        i += 1;
+        isStart = false;
+        for (var vm2 = 0; vm2 < vMatra.length; vm2++) {
+          var vstr2 = vMatra[vm2][0];
+          if (w.substr(i, vstr2.length) === vstr2) {
+            res += vMatra[vm2][1];
+            i += vstr2.length;
+            break;
+          }
+        }
+        continue;
+      }
+
+      if (isStart) {
+        for (var iv in vInit) {
+          if (w.substr(i, iv.length) === iv) {
+            res += vInit[iv];
+            i += iv.length;
+            matched = true;
+            isStart = false;
+            break;
+          }
+        }
+        if (matched) continue;
+      }
+
+      res += w[i];
+      i += 1;
+    }
+    return res;
+  }
+
+  function renderGuestHandwriting(isLangSwitch) {
     var host = $("heroGuest");
     var cue = $("scrollCue");
     if (!host) return;
 
-    var rawText = (GUEST && GUEST.n) || u("inviteYou") || "you";
+    var isGu = LANG === "gu";
+    host.classList.toggle("gu", isGu);
+
+    var rawText = "";
+    if (isGu) {
+      if (!GUEST || !GUEST.n || GUEST.n.trim().toLowerCase() === "you") {
+        rawText = u("inviteYou") || "આપને";
+      } else {
+        rawText = toGujaratiText(GUEST.n);
+      }
+    } else {
+      if (!GUEST || !GUEST.n || GUEST.n.trim().toLowerCase() === "you") {
+        rawText = u("inviteYou") || "you";
+      } else {
+        rawText = GUEST.n;
+      }
+    }
     rawText = String(rawText).trim();
-    if (!rawText) rawText = "you";
+    if (!rawText) rawText = isGu ? "આપને" : "you";
 
     host.hidden = false;
     host.setAttribute("aria-label", rawText);
@@ -647,10 +883,15 @@
       }
       pen.classList.add("is-hidden");
 
+      // Reveal below text AFTER the name is written!
+      var below = $("heroBelow");
+      if (below) below.classList.add("is-revealed");
+
       setTimeout(function () {
         var cue = $("scrollCue");
         if (cue) cue.classList.add("is-shown");
         SCROLL_LOCK.unlock();
+        isWritingNow = false;
       }, 350);
     }
 
@@ -658,6 +899,7 @@
       if (animRaf) cancelAnimationFrame(animRaf);
 
       var cue = $("scrollCue");
+      var below = $("heroBelow");
       if (reduced) {
         wordElements.forEach(function (w) {
           w.classList.add("is-done");
@@ -665,6 +907,7 @@
           w.style.setProperty("--w-prog", "100%");
         });
         pen.classList.add("is-hidden");
+        if (below) below.classList.add("is-revealed");
         if (cue) cue.classList.add("is-shown");
         SCROLL_LOCK.unlock();
         return;
@@ -673,6 +916,7 @@
       if (!isReplay) {
         SCROLL_LOCK.lock();
         if (cue) cue.classList.remove("is-shown");
+        if (below) below.classList.remove("is-revealed");
       }
 
       // Reset all words
@@ -768,89 +1012,113 @@
       startWritingWord(0);
     }
 
+    var isWritingNow = false;
     triggerGuestHandwriting = function () {
-      if (hasAnimated) return;
+      if (hasAnimated || isWritingNow) return;
       hasAnimated = true;
+      isWritingNow = true;
       runAnimation(false);
     };
 
     host.addEventListener("click", function () {
+      isWritingNow = true;
       runAnimation(true);
     });
 
-    if (reduced) {
+    if (isLangSwitch) {
+      if (hasAnimated) {
+        runAnimation(true);
+      } else if (isWritingNow) {
+        runAnimation(false);
+      }
+    } else if (reduced) {
       wordElements.forEach(function (w) {
         w.classList.add("is-done");
         w.style.setProperty("--w-prog", "100%");
       });
       pen.classList.add("is-hidden");
+      var below = $("heroBelow");
+      if (below) below.classList.add("is-revealed");
       var cue = $("scrollCue");
       if (cue) cue.classList.add("is-shown");
       SCROLL_LOCK.unlock();
       hasAnimated = true;
     } else if (!document.body.classList.contains("intro-open")) {
-      setTimeout(function () {
+      // Direct load without intro: start writing immediately!
+      requestAnimationFrame(function () {
         if (triggerGuestHandwriting) triggerGuestHandwriting();
-      }, 500);
+      });
     }
   }
 
   (function hero() {
-    var h = $("heroNames");
-    h.appendChild(document.createTextNode(t(first)));
-    h.appendChild(el("span", "hero__amp", "&"));
-    h.appendChild(document.createTextNode(t(second)));
+    function renderHero() {
+      var h = $("heroNames");
+      if (h) {
+        h.innerHTML = "";
+        h.appendChild(document.createTextNode(t(first)));
+        h.appendChild(el("span", "hero__amp", "&"));
+        h.appendChild(document.createTextNode(t(second)));
+      }
 
-    var halt = $("heroGu");
-    if (halt) halt.hidden = true;
+      var halt = $("heroGu");
+      if (halt) halt.hidden = true;
 
-    /* The hero is the invitation itself, and it is one sentence laid out over
-       four lines around the names:
+      put("heroHosts",  u("inviteHosts"));
+      put("heroInvite", u("inviteVerb"));
+      put("heroTo",     u("inviteOccasion"));
+    }
 
-         Jabuani & Nakrani Family / cordially invite / Mr Dhrumil Shah /
-         to the wedding of / Jeet & Bhavini
-
-       A ?for= link supplies the third line. Without one there is no name to
-       place, so it falls back to "you" and the sentence still reads. */
-    put("heroHosts",  u("inviteHosts"));
-    put("heroInvite", u("inviteVerb"));
+    renderHero();
     renderGuestHandwriting();
-    put("heroTo",     u("inviteOccasion"));
+
+    updateHeroUI = function () {
+      renderHero();
+      renderGuestHandwriting(true);
+    };
   }());
 
   /* -- invitation --------------------------------------------------------- */
 
   (function invitation() {
     var inv = W.invitation;
-    put("invBlessing", t(inv.blessing));
-    put("invLead", t(inv.lead));
-
     var host = $("invParties");
-    if (!host) return;
-    function party(person, parents) {
-      host.appendChild(el("p", "invite__name", t(person)));
-      if (parents) {
-        var pEl = el("p", "invite__parents");
-        var val = t(parents);
-        if (Array.isArray(val)) {
-          val.forEach(function (line, idx) {
-            if (idx > 0) pEl.appendChild(document.createElement("br"));
-            pEl.appendChild(document.createTextNode(line));
-          });
-        } else if (typeof val === "string" && val.indexOf("\n") !== -1) {
-          val.split("\n").forEach(function (line, idx) {
-            if (idx > 0) pEl.appendChild(document.createElement("br"));
-            pEl.appendChild(document.createTextNode(line.trim()));
-          });
-        } else {
-          pEl.textContent = val;
+
+    function renderInvitation() {
+      put("invBlessing", t(inv.blessing));
+      put("invLead", t(inv.lead));
+
+      if (!host) return;
+      host.innerHTML = "";
+
+      function party(person, parents) {
+        host.appendChild(el("p", "invite__name", t(person)));
+        if (parents) {
+          var pEl = el("p", "invite__parents");
+          var val = t(parents);
+          if (Array.isArray(val)) {
+            val.forEach(function (line, idx) {
+              if (idx > 0) pEl.appendChild(document.createElement("br"));
+              pEl.appendChild(document.createTextNode(line));
+            });
+          } else if (typeof val === "string" && val.indexOf("\n") !== -1) {
+            val.split("\n").forEach(function (line, idx) {
+              if (idx > 0) pEl.appendChild(document.createElement("br"));
+              pEl.appendChild(document.createTextNode(line.trim()));
+            });
+          } else {
+            pEl.textContent = val;
+          }
+          host.appendChild(pEl);
         }
-        host.appendChild(pEl);
       }
+      party(groom, inv.groomLine);
+      host.appendChild(el("p", "invite__weds", "—   " + t(inv.weds) + "   —"));
+      party(bride, inv.brideLine);
     }
-    party(groom, inv.groomLine);
-    host.appendChild(el("p", "invite__weds", "—   " + t(inv.weds) + "   —"));
-    party(bride, inv.brideLine);
+
+    renderInvitation();
+    updateInvitationUI = renderInvitation;
   }());
 
   /* -- events: five individual invitation cards ---------------------------
@@ -1141,6 +1409,46 @@
       img.addEventListener("error", scheduleFit);
     });
 
+    function updateEvents() {
+      (W.events || []).forEach(function (ev) {
+        var card = $("scroll-card-" + ev.key);
+        if (!card) return;
+        var isGu = (LANG === "gu");
+        card.classList.toggle("scroll-card--gu", isGu);
+        var title = card.querySelector(".scroll-card__title");
+        if (title) {
+          title.textContent = isGu ? ev.gu : ev.en;
+          title.className = "scroll-card__title inv__script" + (isGu ? " inv__script--gu" : "");
+        }
+        var tag = card.querySelector(".scroll-card__tagline");
+        if (tag && ev.tagline) tag.textContent = t(ev.tagline);
+        var yr = card.querySelector(".scroll-card__year");
+        if (yr) yr.textContent = isGu ? "૨૦૨૬" : "2026";
+
+        var dayName = "";
+        var dayNum = "";
+        var monthName = isGu ? "ડિસેમ્બર" : "DECEMBER";
+        if (ev.dateShort && ev.dateShort.month) monthName = t(ev.dateShort.month);
+        if (ev.key === "mameru" || ev.key === "sangeet") {
+          dayName = isGu ? "મંગળવાર" : "TUESDAY";
+          dayNum = isGu ? "૧" : "1ST";
+        } else {
+          dayName = isGu ? "બુધવાર" : "WEDNESDAY";
+          dayNum = isGu ? "૨" : "2ND";
+        }
+        var dl = card.querySelector(".scroll-card__dateline");
+        if (dl) {
+          dl.innerHTML = "";
+          dl.appendChild(el("span", "inv__date-part", dayName));
+          dl.appendChild(el("span", "inv__date-sep", "|"));
+          dl.appendChild(el("span", "inv__date-part inv__date-part--num", dayNum));
+          dl.appendChild(el("span", "inv__date-sep", "|"));
+          dl.appendChild(el("span", "inv__date-part", (monthName || "").toUpperCase()));
+        }
+      });
+    }
+
+    updateEventsUI = updateEvents;
   }());
 
   /* -- families ----------------------------------------------------------- */

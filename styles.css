@@ -998,10 +998,87 @@ html[data-lang="gu"] .hero__lead {
   font-style: normal;
 }
 
-html[data-lang="gu"] .hero__guest {
-  font-family: var(--gu-display);
-  font-size: clamp(1.7rem, 7.6vw, 2.7rem);
-  line-height: 1.32;
+html[lang="gu"] .hero__guest,
+html[data-lang="gu"] .hero__guest,
+.hero__guest.gu,
+.hero__guest.gu .calligraphy-word,
+html[lang="gu"] .hero__guest .calligraphy-word,
+html[data-lang="gu"] .hero__guest .calligraphy-word,
+#heroGuest.gu,
+#heroGuest.gu * {
+  font-family: "Noto Serif Gujarati", "Rasa", serif !important;
+  font-size: clamp(2.2rem, 9.2vw, 3.4rem);
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+  font-style: normal !important;
+}
+
+/* Elements below the guest handwriting (hidden until calligraphy name finishes) */
+.hero__below {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(18px);
+  pointer-events: none;
+  transition: opacity 0.85s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 0.85s cubic-bezier(0.22, 0.61, 0.36, 1),
+              visibility 0.85s;
+  will-change: opacity, transform;
+}
+
+.hero__below.is-revealed {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.hero__below > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.75s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 0.75s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.hero__below.is-revealed > *:not(#scrollCue) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero__below.is-revealed #scrollCue.is-shown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.hero__below.is-revealed #heroTo {
+  transition-delay: 0.06s;
+}
+
+.hero__below.is-revealed #heroNames {
+  transition-delay: 0.24s;
+}
+
+.hero__below.is-revealed #heroGu {
+  transition-delay: 0.40s;
+}
+
+.hero__below.is-revealed .rule {
+  transition-delay: 0.52s;
+}
+
+.hero__below.is-revealed #scrollCue {
+  transition-delay: 0.70s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__below,
+  .hero__below > * {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 /* scroll cue --------------------------------------------------------------

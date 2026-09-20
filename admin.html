@@ -4,111 +4,914 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Guest links · Jeet &amp; Bhavini</title>
+<title>Guest Links &amp; Invitations · Jeet &amp; Bhavini</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600&display=swap">
+<!-- SheetJS for client-side Excel (.xlsx / .xls) reading and writing -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-  /* Utility page for the couple, not a guest-facing screen - styled plainly
-     in the site's own palette, but with none of the ornament. There is no
-     server: everything a guest link needs travels inside the link itself
-     (see main.js's guestLink()). This page only composes and remembers
-     those links for whoever is sending invitations out. */
   :root {
-    --paper: #F2F1ED; --paper-warm: #EDE9E0; --ink: #33322E; --ink-soft: #6B6862;
-    --ink-faint: #9C988F; --hairline: #D8D4CA; --brass: #A8894F; --rose: #C08478;
-    --serif: "Cormorant Garamond", Georgia, serif; --sans: "Jost", system-ui, sans-serif;
+    --paper: #F6F5F2;
+    --paper-card: #FFFFFF;
+    --paper-warm: #F0EDE5;
+    --ink: #2C2825;
+    --ink-soft: #635E57;
+    --ink-faint: #969086;
+    --hairline: #DDD8CE;
+    --brass: #9E7D3B;
+    --brass-hover: #86682E;
+    --brass-soft: #F5EFE0;
+    --rose: #B85D6B;
+    --wa-green: #25D366;
+    --wa-green-hover: #1EBE5D;
+    --serif: "Cormorant Garamond", Georgia, serif;
+    --sans: "Jost", system-ui, -apple-system, sans-serif;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 var(--sans); }
-  .wrap { max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
-  h1 { font-family: var(--serif); font-weight: 600; font-size: 1.9rem; margin: 0 0 .2rem; }
-  .sub { color: var(--ink-soft); margin: 0 0 2rem; font-size: .92rem; }
-  .card { background: var(--paper-warm); border: 1px solid var(--hairline); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.75rem; }
-  label { display: block; font-size: .82rem; letter-spacing: .03em; color: var(--ink-soft); margin: 1rem 0 .3rem; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 15px/1.5 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 66rem;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 6rem;
+  }
+  header.admin-header {
+    margin-bottom: 2rem;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 2.3rem;
+    margin: 0 0 .35rem;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+  }
+  .sub {
+    color: var(--ink-soft);
+    margin: 0;
+    font-size: .95rem;
+    max-width: 46rem;
+    line-height: 1.55;
+  }
+  
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--hairline);
+    padding-bottom: .4rem;
+  }
+  .tab-btn {
+    font: inherit;
+    font-weight: 500;
+    font-size: .95rem;
+    padding: .65rem 1.25rem;
+    border-radius: 8px 8px 0 0;
+    border: none;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all .2s ease;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+  }
+  .tab-btn:hover {
+    color: var(--brass);
+    background: rgba(158, 125, 59, 0.06);
+  }
+  .tab-btn.is-active {
+    color: var(--brass);
+    font-weight: 600;
+    border-bottom: 3px solid var(--brass);
+    background: transparent;
+  }
+  .tab-panel {
+    display: none;
+  }
+  .tab-panel.is-active {
+    display: block;
+  }
+
+  .card {
+    background: var(--paper-card);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 2px 8px rgba(44, 40, 37, 0.04);
+  }
+  .card-title {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin: 0 0 .8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  .card-desc {
+    color: var(--ink-soft);
+    font-size: .88rem;
+    margin: 0 0 1.25rem;
+    line-height: 1.5;
+  }
+
+  label {
+    display: block;
+    font-size: .82rem;
+    letter-spacing: .03em;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin: 1.1rem 0 .35rem;
+    text-transform: uppercase;
+  }
   label:first-child { margin-top: 0; }
-  input[type=text] {
-    width: 100%; padding: .6rem .7rem; font: inherit; font-size: .95rem;
-    border: 1px solid var(--hairline); border-radius: 6px; background: #fff; color: var(--ink);
+  
+  input[type=text], input[type=tel] {
+    width: 100%;
+    padding: .65rem .8rem;
+    font: inherit;
+    font-size: .95rem;
+    border: 1px solid var(--hairline);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--ink);
+    transition: border-color .2s;
   }
-  input[type=text]:focus { outline: 2px solid var(--brass); outline-offset: 1px; }
-  .events { display: grid; gap: .5rem; margin-top: .3rem; }
+  input[type=text]:focus, input[type=tel]:focus {
+    outline: none;
+    border-color: var(--brass);
+    box-shadow: 0 0 0 3px rgba(158, 125, 59, 0.15);
+  }
+
+  /* Event Badges & Checkboxes */
+  .events {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: .6rem;
+    margin-top: .4rem;
+  }
   .events label {
-    display: flex; align-items: center; gap: .55rem; margin: 0; padding: .55rem .7rem;
-    background: #fff; border: 1px solid var(--hairline); border-radius: 6px;
-    font-size: .92rem; color: var(--ink); cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    margin: 0;
+    padding: .65rem .8rem;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    font-size: .92rem;
+    color: var(--ink);
+    cursor: pointer;
+    text-transform: none;
+    font-weight: 400;
+    transition: all .2s;
   }
-  .events input { width: 1rem; height: 1rem; accent-color: var(--brass); }
-  .events span.gu { color: var(--ink-faint); font-size: .82rem; margin-left: auto; }
-  .row { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; margin-top: 1.1rem; }
-  button {
-    font: inherit; font-size: .88rem; padding: .6rem 1.1rem; border-radius: 6px; cursor: pointer;
-    border: 1px solid var(--brass); background: var(--brass); color: #fff;
+  .events label:hover {
+    border-color: var(--brass);
+    background: #fff;
   }
-  button.ghost { background: transparent; color: var(--ink); border-color: var(--hairline); }
-  button:disabled { opacity: .5; cursor: not-allowed; }
-  .out { display: none; margin-top: 1.1rem; }
+  .events input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--brass);
+    cursor: pointer;
+  }
+  .events span.gu {
+    color: var(--ink-faint);
+    font-size: .82rem;
+    margin-left: auto;
+  }
+
+  .row {
+    display: flex;
+    gap: .65rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+  }
+
+  button, a.btn-action {
+    font: inherit;
+    font-size: .88rem;
+    font-weight: 500;
+    padding: .6rem 1.15rem;
+    border-radius: 7px;
+    cursor: pointer;
+    border: 1px solid var(--brass);
+    background: var(--brass);
+    color: #fff;
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    text-decoration: none;
+  }
+  button:hover, a.btn-action:hover {
+    background: var(--brass-hover);
+    border-color: var(--brass-hover);
+  }
+  button.ghost, a.btn-action.ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--hairline);
+  }
+  button.ghost:hover, a.btn-action.ghost:hover {
+    background: var(--paper-warm);
+    border-color: var(--ink-faint);
+  }
+
+  /* WhatsApp buttons & links */
+  .btn-whatsapp, a.btn-whatsapp {
+    background: var(--wa-green) !important;
+    border: 1px solid var(--wa-green) !important;
+    color: #fff !important;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    border-radius: 6px;
+    transition: all .2s ease;
+  }
+  .btn-whatsapp:hover, a.btn-whatsapp:hover {
+    background: var(--wa-green-hover) !important;
+    border-color: var(--wa-green-hover) !important;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.35);
+  }
+
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed var(--hairline);
+    border-radius: 12px;
+    padding: 2.2rem 1.5rem;
+    text-align: center;
+    background: var(--paper);
+    cursor: pointer;
+    transition: all .25s ease;
+    position: relative;
+  }
+  .dropzone:hover, .dropzone.is-dragover {
+    border-color: var(--brass);
+    background: var(--brass-soft);
+  }
+  .dropzone-icon {
+    font-size: 2.2rem;
+    margin-bottom: .6rem;
+    display: block;
+  }
+  .dropzone-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: .3rem;
+  }
+  .dropzone-desc {
+    color: var(--ink-soft);
+    font-size: .84rem;
+    margin: 0;
+  }
+  .dropzone input[type=file] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: .2rem .5rem;
+    border-radius: 5px;
+    font-size: .75rem;
+    font-weight: 500;
+    letter-spacing: .02em;
+    margin: .12rem;
+    white-space: nowrap;
+  }
+  .badge-mameru { background: #E4ECE5; color: #2D5438; }
+  .badge-sangeet { background: #E6EAF4; color: #2E4374; }
+  .badge-mandap { background: #F6F0DF; color: #7B5F1F; }
+  .badge-lagna { background: #F7E7E9; color: #8C2B38; }
+
+  /* Output Link Box */
+  .out {
+    display: none;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--hairline);
+  }
   .out.is-shown { display: block; }
-  .link-row { display: flex; gap: .5rem; }
-  .link-row input { font-family: monospace; font-size: .82rem; }
-  .hint { font-size: .78rem; color: var(--ink-faint); margin: .5rem 0 0; }
-  table { width: 100%; border-collapse: collapse; font-size: .86rem; }
-  th, td { text-align: left; padding: .55rem .5rem; border-bottom: 1px solid var(--hairline); vertical-align: top; }
-  th { color: var(--ink-soft); font-weight: 500; font-size: .76rem; letter-spacing: .04em; text-transform: uppercase; }
-  td.cards { color: var(--ink-soft); }
-  td.actions { white-space: nowrap; }
-  td.actions button { padding: .3rem .6rem; font-size: .78rem; margin-right: .3rem; }
-  .empty { color: var(--ink-faint); font-style: italic; padding: 1rem 0; }
-  .toast {
-    position: fixed; left: 50%; bottom: 1.5rem; transform: translate(-50%, 8px);
-    background: var(--ink); color: #fff; padding: .5rem 1rem; border-radius: 20px;
-    font-size: .82rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+  .link-row {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
   }
-  .toast.is-shown { opacity: 1; transform: translate(-50%, 0); }
+  .link-row input {
+    font-family: monospace;
+    font-size: .85rem;
+    background: var(--paper);
+    flex: 1;
+    min-width: 200px;
+  }
+  .hint {
+    font-size: .82rem;
+    color: var(--ink-faint);
+    margin: .6rem 0 0;
+  }
+
+  /* Table styling */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: .75rem;
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    background: #fff;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+    min-width: 720px;
+  }
+  th, td {
+    text-align: left;
+    padding: .75rem .85rem;
+    border-bottom: 1px solid var(--hairline);
+    vertical-align: middle;
+  }
+  th {
+    background: var(--paper-warm);
+    color: var(--ink-soft);
+    font-weight: 600;
+    font-size: .76rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAF9F6; }
+  td.guest-name {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  td.actions {
+    white-space: nowrap;
+    text-align: right;
+  }
+  td.actions .btn-whatsapp, td.actions button, td.actions a {
+    padding: .35rem .65rem;
+    font-size: .78rem;
+    margin-left: .3rem;
+  }
+
+  /* Message Template Box */
+  .msg-template-box {
+    margin-bottom: 1.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--paper-warm);
+    border-radius: 8px;
+    border: 1px solid var(--hairline);
+  }
+  .msg-template-box summary {
+    cursor: pointer;
+    font-weight: 500;
+    font-size: .9rem;
+    color: var(--ink);
+    user-select: none;
+  }
+  .msg-template-box textarea {
+    width: 100%;
+    height: 95px;
+    font: inherit;
+    font-size: .86rem;
+    padding: .65rem;
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    background: #fff;
+    resize: vertical;
+    margin-top: .5rem;
+    line-height: 1.45;
+  }
+
+  /* WhatsApp Chat Emoji Trigger & Popup Tray */
+  .wa-chat-emoji-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: #ffffff;
+    border: 1.5px solid #25D366;
+    color: #075E54;
+    font-size: .88rem;
+    font-weight: 600;
+    padding: .4rem .95rem;
+    border-radius: 24px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 2px 6px rgba(37,211,102,0.12);
+    transition: all .2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+  }
+  .wa-chat-emoji-trigger:hover {
+    background: #f0fdf4;
+    border-color: #128C7E;
+    color: #054c44;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(37,211,102,0.22);
+  }
+  .wa-chat-emoji-trigger.is-active {
+    background: #128C7E;
+    border-color: #075E54;
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(18,140,126,0.3);
+  }
+  .wa-chat-emoji-trigger .wa-smiley-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.12));
+    transition: transform .2s ease;
+  }
+  .wa-chat-emoji-trigger:hover .wa-smiley-badge {
+    transform: scale(1.18) rotate(6deg);
+  }
+  .wa-chat-emoji-trigger.is-active .wa-smiley-badge {
+    transform: scale(1.1);
+  }
+  .wa-chat-emoji-trigger .wa-trigger-chevron {
+    transition: transform .2s ease;
+    opacity: .7;
+  }
+  .wa-chat-emoji-trigger.is-active .wa-trigger-chevron {
+    transform: rotate(180deg);
+    opacity: 1;
+  }
+
+  .wa-emoji-tray-container {
+    position: relative;
+  }
+
+  .wa-emoji-tray {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: min(390px, 94vw);
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 1000;
+    margin-top: .4rem;
+    flex-direction: column;
+    overflow: hidden;
+    animation: waTraySlide .18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .wa-emoji-tray.is-open {
+    display: flex;
+  }
+  @keyframes waTraySlide {
+    from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .wa-tray-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .5rem .75rem;
+    background: #F0F2F5;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .wa-tray-search-wrap {
+    flex: 1;
+    position: relative;
+    margin-right: .5rem;
+  }
+  .wa-tray-search-wrap input {
+    width: 100%;
+    padding: .35rem .6rem .35rem 1.7rem;
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    font-size: .82rem;
+    background: #fff;
+    outline: none;
+  }
+  .wa-tray-search-wrap input:focus {
+    border-color: #25D366;
+  }
+  .wa-tray-search-icon {
+    position: absolute;
+    left: .55rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: .8rem;
+    color: var(--ink-faint);
+    pointer-events: none;
+  }
+  .wa-tray-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+    padding: .2rem .4rem;
+    border-radius: 4px;
+    line-height: 1;
+  }
+  .wa-tray-close-btn:hover {
+    background: rgba(0,0,0,0.08);
+    color: var(--ink);
+  }
+
+  .wa-tray-nav {
+    display: flex;
+    gap: .15rem;
+    background: #F0F2F5;
+    padding: .25rem .4rem;
+    border-bottom: 1px solid var(--hairline);
+    overflow-x: auto;
+  }
+  .wa-cat-tab {
+    background: transparent;
+    border: none;
+    font-size: 1.15rem;
+    padding: .25rem .45rem;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background .12s;
+  }
+  .wa-cat-tab:hover {
+    background: rgba(0,0,0,0.08);
+  }
+  .wa-cat-tab.is-active {
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+
+  .wa-tray-list {
+    max-height: 240px;
+    overflow-y: auto;
+    padding: .6rem;
+  }
+  .wa-tray-section-title {
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin: .35rem 0 .25rem;
+  }
+  .wa-tray-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+  .wa-emoji-item {
+    width: 34px;
+    height: 34px;
+    font-size: 1.35rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform .08s, background .1s;
+    line-height: 1;
+  }
+  .wa-emoji-item:hover {
+    background: #E9EDEF;
+    transform: scale(1.22);
+  }
+  .wa-emoji-item:active {
+    transform: scale(0.92);
+  }
+
+  /* Tag & formatting chips */
+  .tag-chip {
+    background: var(--paper-warm);
+    border: 1px solid var(--hairline);
+    color: var(--ink);
+    padding: .2rem .55rem;
+    border-radius: 4px;
+    font-size: .78rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: monospace;
+    transition: all .15s;
+  }
+  .tag-chip:hover {
+    background: var(--brass-soft);
+    color: var(--brass);
+    border-color: var(--brass);
+  }
+  .tag-chip--fmt {
+    font-style: italic;
+  }
+
+  /* WhatsApp live chat bubble preview */
+  .wa-preview-wrap {
+    margin-top: .85rem;
+    background: #EFEAE2;
+    border-radius: 8px;
+    padding: .85rem 1rem;
+    border: 1px solid var(--hairline);
+  }
+  .wa-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: .75rem;
+    font-weight: 600;
+    color: #54656F;
+    margin-bottom: .5rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .wa-bubble {
+    background: #DCF8C6;
+    border-radius: 7.5px;
+    box-shadow: 0 1px .5px rgba(11,20,26,.13);
+    padding: .6rem .8rem;
+    font-size: .86rem;
+    line-height: 1.45;
+    color: #111B21;
+    white-space: pre-wrap;
+    word-break: break-word;
+    position: relative;
+    max-width: 95%;
+  }
+  .wa-bubble a {
+    color: #027EB5;
+    text-decoration: underline;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--ink-soft);
+  }
+  .empty-state-icon {
+    font-size: 2.5rem;
+    margin-bottom: .6rem;
+    display: block;
+    opacity: .7;
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 2rem;
+    transform: translate(-50%, 10px);
+    background: var(--ink);
+    color: #fff;
+    padding: .6rem 1.4rem;
+    border-radius: 30px;
+    font-size: .86rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    z-index: 1000;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+  .toast.is-shown {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 </style>
 </head>
 <body>
 
-<!-- No login: this page is not linked from anywhere on the site, and the
-     robots meta tag above keeps it out of search results. Anyone with the
-     URL can open it, so treat that URL itself as the thing to keep private. -->
 <div class="wrap" id="app">
-  <h1>Guest links</h1>
-  <p class="sub">
-    Build a personal link for a guest, choosing which of the four events they
-    should see. There is no guest database - the name and the chosen events
-    are encoded straight into the link, so it works the moment you send it,
-    on any device, with nothing to upload or keep in sync.
-  </p>
+  <header class="admin-header">
+    <h1>Guest Links &amp; Invitations</h1>
+  </header>
 
-  <div class="card">
-    <label for="gName">Guest or family name</label>
-    <input type="text" id="gName" placeholder="e.g. Priya &amp; Raj Shah" autocomplete="off">
+  <!-- Navigation Tabs to Choose Input Method -->
+  <div class="tabs">
+    <button class="tab-btn is-active" data-tab="bulkTab">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+      Option A: Upload Spreadsheet (Excel / CSV)
+    </button>
+    <button class="tab-btn" data-tab="singleTab">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      Option B: Add Single Guest Manually
+    </button>
+  </div>
 
-    <label for="gSlug">Label for your own list <span style="text-transform:none;color:var(--ink-faint)">(not sent anywhere - just so you can find it again below)</span></label>
-    <input type="text" id="gSlug" placeholder="auto-filled from the name" autocomplete="off">
-
-    <label>Which events should they see?</label>
-    <div class="events" id="gEvents"></div>
-
-    <div class="row">
-      <button id="gGenerate">Generate link</button>
-      <button class="ghost" id="gReset" type="button">Clear</button>
-    </div>
-
-    <div class="out" id="gOut">
-      <label style="margin-top:1.1rem">Link to send</label>
-      <div class="link-row">
-        <input type="text" id="gLink" readonly>
-        <button id="gCopy" type="button">Copy</button>
+  <!-- INPUT PANEL 1: BULK IMPORT (EXCEL / CSV) -->
+  <div class="tab-panel is-active" id="bulkTab">
+    <div class="card">
+      <div class="card-title">
+        <span>Upload Guest Spreadsheet</span>
+        <div style="display:flex;gap:.5rem;">
+          <button class="ghost" id="btnDownloadTemplateXlsx" type="button" title="Download Excel Template (.xlsx)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Template (.xlsx)
+          </button>
+          <button class="ghost" id="btnDownloadTemplateCsv" type="button" title="Download CSV Template (.csv)">
+            Template (.csv)
+          </button>
+        </div>
       </div>
-      <p class="hint" id="gPreview"></p>
+      <p class="card-desc">
+        Upload an Excel (<code>.xlsx</code> / <code>.xls</code>) or <code>.csv</code> file.
+        The sheet should contain columns for <strong>Name</strong>, <strong>Events</strong> (e.g. "All" or "Mameru, Lagna"), and optional <strong>Phone</strong> number (e.g. <code>9876543210</code> or <code>+91 98765 43210</code>).
+        All imported guests will be merged directly into your Master Guest List below.
+      </p>
+
+      <div class="dropzone" id="dropzone">
+        <span class="dropzone-icon">📊</span>
+        <div class="dropzone-title">Click to choose file or drag and drop spreadsheet here</div>
+        <div class="dropzone-desc">Supports Excel (.xlsx, .xls) and CSV (.csv)</div>
+        <input type="file" id="fileInput" accept=".xlsx, .xls, .csv">
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <h1 style="font-size:1.2rem;margin-bottom:.9rem">Saved on this device</h1>
-    <div id="gList"></div>
+  <!-- INPUT PANEL 2: SINGLE GUEST GENERATOR -->
+  <div class="tab-panel" id="singleTab">
+    <div class="card">
+      <div class="card-title">Add Single Guest to Master List</div>
+      
+      <label for="gName">Guest or Family Name</label>
+      <input type="text" id="gName" placeholder="e.g. Priya &amp; Raj Shah" autocomplete="off">
+
+      <label for="gPhone">Phone / WhatsApp Number (Optional)</label>
+      <input type="tel" id="gPhone" placeholder="Enter phone or WhatsApp number" autocomplete="off">
+
+      <label for="gSlug">Label / Identifier <span style="text-transform:none;color:var(--ink-faint)">(optional)</span></label>
+      <input type="text" id="gSlug" placeholder="auto-generated identifier" autocomplete="off">
+
+      <label>Which ceremonies should they be invited to?</label>
+      <div class="events" id="gEvents"></div>
+
+      <div class="row">
+        <button id="gGenerate" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Add to Guest List
+        </button>
+        <button class="ghost" id="gReset" type="button">Clear Form</button>
+      </div>
+
+      <div class="out" id="gOut">
+        <label style="margin-top:0">Generated Link</label>
+        <div class="link-row">
+          <input type="text" id="gLink" readonly>
+          <button id="gCopy" type="button">Copy Link</button>
+          <a class="btn-whatsapp" id="gWhatsAppSingle" target="_blank" rel="noopener" style="padding:.6rem 1rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.044c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/></svg>
+            Send WhatsApp
+          </a>
+          <a id="gPreviewBtn" class="ghost" style="text-decoration:none;padding:.6rem 1rem;display:inline-flex;align-items:center;" target="_blank" rel="noopener">
+            Preview
+          </a>
+        </div>
+        <p class="hint" id="gPreviewText"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHATSAPP MESSAGE TEMPLATE SETTING & EMOJI CUSTOMIZATION -->
+  <details class="msg-template-box" id="waTemplateDetails">
+    <summary>
+      💬 Customize WhatsApp Invitation Message Template &amp; Emojis (Click to Expand)
+    </summary>
+    <div style="margin-top:.75rem;">
+      <div style="display:flex;align-items:center;margin-bottom:.55rem;">
+        <!-- WhatsApp Chat Emoji Icon Button (Click to open WhatsApp emoji tray) -->
+        <div class="wa-emoji-tray-container">
+          <button type="button" class="wa-chat-emoji-trigger" id="waEmojiChatBtn" title="Click to open WhatsApp emoji picker">
+            <span class="wa-smiley-badge">😊</span>
+            <span>Add Emojis</span>
+            <svg class="wa-trigger-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+
+          <!-- WhatsApp Chat Emoji Tray Popup -->
+          <div class="wa-emoji-tray" id="waEmojiTray">
+            <div class="wa-tray-header">
+              <div class="wa-tray-search-wrap">
+                <span class="wa-tray-search-icon">🔍</span>
+                <input type="text" id="waEmojiSearchInput" placeholder="Search emojis (e.g. smile, ring, heart, namaste)...">
+              </div>
+              <button type="button" class="wa-tray-close-btn" id="waTrayCloseBtn" title="Close">✕</button>
+            </div>
+            <div class="wa-tray-nav" id="waTrayNav">
+              <button type="button" class="wa-cat-tab is-active" data-cat="wedding" title="Wedding &amp; Love">💍</button>
+              <button type="button" class="wa-cat-tab" data-cat="smileys" title="Smileys &amp; Emotion">😀</button>
+              <button type="button" class="wa-cat-tab" data-cat="gestures" title="Gestures &amp; People">🙏</button>
+              <button type="button" class="wa-cat-tab" data-cat="love" title="Hearts &amp; Romance">💖</button>
+              <button type="button" class="wa-cat-tab" data-cat="flowers" title="Flowers &amp; Nature">🌸</button>
+              <button type="button" class="wa-cat-tab" data-cat="auspicious" title="Traditional &amp; Auspicious">🪔</button>
+              <button type="button" class="wa-cat-tab" data-cat="celebrate" title="Celebration &amp; Party">🎉</button>
+              <button type="button" class="wa-cat-tab" data-cat="details" title="Dates, Time &amp; Details">📅</button>
+              <button type="button" class="wa-cat-tab" data-cat="all" title="All Emojis">✨</button>
+            </div>
+            <div class="wa-tray-list" id="waTrayList">
+              <div class="wa-tray-grid" id="waTrayGrid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <textarea id="waMessageTemplate">Pranam {name}, 🙏
+
+With the blessings of our elders and the divine, we cordially invite you to celebrate the wedding of Jeet & Bhavini on 1–2 December 2026 at Oleander Farms, Karjat. 🪷
+
+Please open your personalized royal wedding invitation card here:
+{link}
+
+Warm regards,
+Jabuani & Nakrani Family 🌸</textarea>
+
+      <!-- Live WhatsApp Chat Bubble Preview -->
+      <div class="wa-preview-wrap">
+        <div class="wa-preview-header">
+          <span>Live WhatsApp Preview</span>
+          <span style="font-size:.76rem;color:#128C7E;font-weight:600;display:inline-flex;align-items:center;gap:.35rem;">
+            <span style="color:var(--ink-faint);font-weight:normal;">Live preview for:</span>
+            <strong id="waPreviewGuestName" style="background:#e8f5e9;padding:.15rem .55rem;border-radius:12px;color:#075E54;">Priya &amp; Raj Shah</strong>
+          </span>
+        </div>
+        <div class="wa-bubble" id="waBubblePreview"></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- UNIFIED MASTER GUEST LIST (PERSISTENT & SHARED FOR BOTH BULK AND SINGLE) -->
+  <div class="card" id="masterListCard">
+    <div class="card-title">
+      <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+        <span>Master Guest List</span>
+        <span class="badge" id="masterCountBadge" style="background:var(--brass-soft);color:var(--brass);font-size:.88rem;padding:.25rem .7rem;">0 guests</span>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
+        <button class="ghost" id="btnExportXlsx" type="button" title="Export entire list with links to Excel">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Export to Excel (.xlsx)
+        </button>
+        <button class="ghost" id="btnExportCsv" type="button" title="Export entire list to CSV">
+          Export to CSV
+        </button>
+        <button class="ghost" id="btnClearMaster" type="button" style="color:var(--rose);">
+          Clear All
+        </button>
+      </div>
+    </div>
+
+    <!-- Search / Filter Bar -->
+    <div style="display:flex;gap:.75rem;margin-bottom:1rem;align-items:center;flex-wrap:wrap;">
+      <div style="flex:1;min-width:260px;position:relative;">
+        <input type="text" id="masterSearchInput" placeholder="Search guests by name, phone, or ceremony..." style="padding-left:2.3rem;">
+        <svg style="position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--ink-faint);pointer-events:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </div>
+      <span id="showingCount" style="font-size:.82rem;color:var(--ink-soft);white-space:nowrap;"></span>
+    </div>
+
+    <!-- Master Table -->
+    <div class="table-responsive">
+      <table id="masterTable">
+        <thead>
+          <tr>
+            <th style="width:36px;">#</th>
+            <th>Guest Name</th>
+            <th>Phone</th>
+            <th>Invited Ceremonies</th>
+            <th>Personal Invitation Link</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="masterTableBody"></tbody>
+      </table>
+    </div>
+
+    <div id="masterEmptyState" class="empty-state" style="display:none;">
+      <span class="empty-state-icon">💌</span>
+      <div style="font-weight:600;font-size:1.05rem;margin-bottom:.3rem;">No guests in your list yet</div>
+      <div style="font-size:.88rem;color:var(--ink-faint);max-width:28rem;margin:0 auto;">
+        Upload a spreadsheet using Option A above, or add individual guests using Option B. All your guests will show here.
+      </div>
+    </div>
   </div>
 </div>
 
@@ -118,11 +921,12 @@
 <script>
 (function () {
   "use strict";
-  var W = window.WEDDING || { events: [] };
-  renderEvents();
-  renderSaved();
 
-  // ---- base64url encode, matching main.js's decode exactly ------------
+  var W = window.WEDDING || { events: [] };
+  var STORAGE_KEY = "wedding-guest-links";
+  var TEMPLATE_STORAGE_KEY = "wedding-wa-template";
+
+  // ---- Base64URL encode, matching main.js's decode exactly ------------
   function encodeToken(obj) {
     var json = JSON.stringify(obj);
     var b64 = btoa(unescape(encodeURIComponent(json)));
@@ -131,12 +935,317 @@
 
   function slugify(s) {
     return (s || "").toLowerCase().trim()
-      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "guest";
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "guest";
   }
 
-  // ---- the four event checkboxes, built from content.js ----------------
+  function getBaseUrl() {
+    var pathDir = location.pathname.replace(/\/(?:admin|index)\.html$/i, "").replace(/\/+$/, "");
+    return location.origin + (pathDir ? pathDir + "/" : "/");
+  }
+
+  // ---- Phone Number Normalization & WhatsApp Deep Link ----------------
+  function cleanPhoneNumber(phone) {
+    if (!phone) return "";
+    var cleaned = String(phone).replace(/[^0-9+]/g, "");
+    cleaned = cleaned.replace(/^\+/, "");
+    // If entered with leading 0 (e.g. 09876543210), strip the leading 0
+    if (/^0[6-9]\d{9}$/.test(cleaned)) {
+      cleaned = cleaned.replace(/^0/, "");
+    }
+    // If entered as 10-digit Indian number without country code, prepend 91
+    if (/^[6-9]\d{9}$/.test(cleaned)) {
+      cleaned = "91" + cleaned;
+    }
+    return cleaned;
+  }
+
+  function getWaTemplate() {
+    var textarea = document.getElementById("waMessageTemplate");
+    return textarea ? textarea.value : "";
+  }
+
+  function composeWhatsAppUrl(phone, name, link) {
+    var tmpl = getWaTemplate() || "Pranam {name},\n\nPlease open your wedding invitation card here:\n{link}";
+    var msg = tmpl.replace(/\{name\}/g, name || "Guest").replace(/\{link\}/g, link || "");
+    var cleanPhone = cleanPhoneNumber(phone);
+    // Use api.whatsapp.com/send to ensure all multi-byte Unicode emojis are 100% preserved
+    if (cleanPhone) {
+      return "https://api.whatsapp.com/send?phone=" + cleanPhone + "&text=" + encodeURIComponent(msg);
+    }
+    return "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
+  }
+
+  // ---- WhatsApp Emojis & Customizer (WhatsApp Chat Style) -------------
+  var DEFAULT_WA_TEMPLATE = "Pranam {name}, 🙏\n\nWith the blessings of our elders and the divine, we cordially invite you to celebrate the wedding of Jeet & Bhavini on 1–2 December 2026 at Oleander Farms, Karjat. 🪷\n\nPlease open your personalized royal wedding invitation card here:\n{link}\n\nWarm regards,\nJabuani & Nakrani Family 🌸";
+
+  var EMOJI_SETS = {
+    wedding:    ["💍", "👑", "💒", "🕊️", "💌", "💖", "❤️", "💐", "👰", "🤵", "🥂", "🍾", "✨", "🌟", "💎", "🏵️"],
+    smileys:    ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😋", "😛", "😜", "🤪", "😎", "🥳", "🤩", "🤗", "🤔", "🤫", "🤭"],
+    gestures:   ["🙏", "👏", "🙌", "👐", "🤲", "🤝", "👍", "✌️", "🤞", "🤟", "👌", "👈", "👉", "👆", "👇", "✋", "👋", "🤙", "💪", "🫶", "💃", "🕺"],
+    love:       ["💖", "❤️", "💕", "💞", "💓", "💗", "💘", "💝", "💟", "💌", "🥰", "😍", "😘", "🌹", "🌷", "💐", "🌺"],
+    flowers:    ["🌸", "🌺", "🪷", "💐", "🌹", "🌷", "🌻", "🌼", "🏵️", "🌿", "🍀", "🌴", "🌱"],
+    auspicious: ["🙏", "🪔", "🪷", "🔔", "🕉️", "🥥", "🐘", "🦚", "🌺", "🌸", "🏵️", "🕯️", "📜"],
+    celebrate:  ["🎉", "🎊", "🥳", "🎇", "🎆", "✨", "🌟", "💫", "🎶", "🎵", "🥁", "🪗", "🎈", "🎁", "🥂", "🍾"],
+    details:    ["📅", "🗓️", "📍", "🗺️", "⏰", "🕒", "⏳", "⌛", "🏰", "🚗", "📲", "✉️", "📢", "✨", "💯", "👉"]
+  };
+
+  EMOJI_SETS.all = [];
+  Object.keys(EMOJI_SETS).forEach(function (k) {
+    if (k === "all") return;
+    EMOJI_SETS[k].forEach(function (em) {
+      if (EMOJI_SETS.all.indexOf(em) === -1) EMOJI_SETS.all.push(em);
+    });
+  });
+
+  var currentEmojiCat = "wedding";
+
+  function renderEmojiGrid(category, query) {
+    var grid = document.getElementById("waTrayGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    var list = EMOJI_SETS[category] || EMOJI_SETS.wedding;
+
+    if (query && query.trim()) {
+      var q = query.trim().toLowerCase();
+      list = EMOJI_SETS.all.filter(function (em) {
+        return em.indexOf(q) !== -1;
+      });
+      if (!list.length) list = EMOJI_SETS.all;
+    }
+
+    list.forEach(function (em) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "wa-emoji-item";
+      btn.textContent = em;
+      btn.title = "Insert " + em;
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        insertAtCursor(waTemplateEl, em);
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  // Insert string at current cursor position in textarea
+  function insertAtCursor(field, val) {
+    if (!field) return;
+    var startPos = field.selectionStart || 0;
+    var endPos = field.selectionEnd || 0;
+    field.value = field.value.substring(0, startPos) + val + field.value.substring(endPos, field.value.length);
+    field.selectionStart = startPos + val.length;
+    field.selectionEnd = startPos + val.length;
+    field.focus();
+    field.dispatchEvent(new Event("input"));
+  }
+
+  // Wrap current selection in formatting like * or _
+  function wrapSelection(field, wrapper) {
+    if (!field) return;
+    var startPos = field.selectionStart || 0;
+    var endPos = field.selectionEnd || 0;
+    var selected = field.value.substring(startPos, endPos) || "text";
+    var wrapped = wrapper + selected + wrapper;
+    field.value = field.value.substring(0, startPos) + wrapped + field.value.substring(endPos, field.value.length);
+    field.selectionStart = startPos + wrapper.length;
+    field.selectionEnd = startPos + wrapper.length + selected.length;
+    field.focus();
+    field.dispatchEvent(new Event("input"));
+  }
+
+  function getActivePreviewGuest() {
+    // 1. Check if user is typing a guest name in the Single Guest form
+    var sName = document.getElementById("gName") ? document.getElementById("gName").value.trim() : "";
+    if (sName) {
+      var sSlug = document.getElementById("gSlug") ? document.getElementById("gSlug").value.trim() : "";
+      if (!sSlug) sSlug = slugify(sName);
+      var sCards = typeof checkedEvents === "function" ? checkedEvents() : [];
+      var allNames = (W.events || []).map(function (e) { return e.key; });
+      var sLink = getBaseUrl() + encodeURIComponent(sSlug);
+      if (sCards.length && sCards.length < allNames.length) {
+        sLink += "?c=" + sCards.join(",");
+      }
+      return { name: sName, link: sLink };
+    }
+    // 2. Otherwise check if there are guests in Master List
+    var list = loadSaved();
+    if (list && list.length > 0) {
+      return { name: list[0].name, link: list[0].link };
+    }
+    // 3. Fallback to sample guest if list is completely empty
+    var defaultSlug = "priya-and-raj-shah";
+    return { 
+      name: "Priya & Raj Shah", 
+      link: getBaseUrl() + defaultSlug 
+    };
+  }
+
+  function updateWaBubble() {
+    var bubble = document.getElementById("waBubblePreview");
+    if (!bubble) return;
+    var guest = getActivePreviewGuest();
+    var nameLabel = document.getElementById("waPreviewGuestName");
+    if (nameLabel) nameLabel.textContent = guest.name;
+
+    var tmpl = getWaTemplate();
+    var sampleMsg = tmpl.replace(/\{name\}/g, guest.name).replace(/\{link\}/g, guest.link);
+    var esc = sampleMsg.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    esc = esc.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+    esc = esc.replace(/\*([^\*]+)\*/g, '<strong>$1</strong>');
+    esc = esc.replace(/_([^_]+)_/g, '<em>$1</em>');
+    bubble.innerHTML = esc;
+  }
+
+  // WhatsApp Chat Emoji Trigger button & Popup Tray toggle
+  var emojiTrigger = document.getElementById("waEmojiChatBtn");
+  var emojiTray = document.getElementById("waEmojiTray");
+  var trayCloseBtn = document.getElementById("waTrayCloseBtn");
+  var emojiSearch = document.getElementById("waEmojiSearchInput");
+
+  function openEmojiTray() {
+    if (!emojiTray) return;
+    emojiTray.classList.add("is-open");
+    if (emojiTrigger) emojiTrigger.classList.add("is-active");
+    renderEmojiGrid(currentEmojiCat);
+    if (emojiSearch) {
+      emojiSearch.value = "";
+      setTimeout(function () { emojiSearch.focus(); }, 80);
+    }
+  }
+
+  function closeEmojiTray() {
+    if (!emojiTray) return;
+    emojiTray.classList.remove("is-open");
+    if (emojiTrigger) emojiTrigger.classList.remove("is-active");
+  }
+
+  if (emojiTrigger) {
+    emojiTrigger.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (emojiTray && emojiTray.classList.contains("is-open")) {
+        closeEmojiTray();
+      } else {
+        openEmojiTray();
+      }
+    });
+  }
+
+  if (trayCloseBtn) {
+    trayCloseBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      closeEmojiTray();
+    });
+  }
+
+  if (emojiTray) {
+    emojiTray.addEventListener("click", function (e) {
+      e.stopPropagation();
+    });
+  }
+
+  document.addEventListener("click", function (e) {
+    if (emojiTray && emojiTray.classList.contains("is-open")) {
+      closeEmojiTray();
+    }
+  });
+
+  // Category navigation tabs
+  var catTabs = document.querySelectorAll(".wa-cat-tab");
+  catTabs.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      catTabs.forEach(function (b) { b.classList.remove("is-active"); });
+      this.classList.add("is-active");
+      currentEmojiCat = this.getAttribute("data-cat");
+      renderEmojiGrid(currentEmojiCat, emojiSearch ? emojiSearch.value : "");
+    });
+  });
+
+  if (emojiSearch) {
+    emojiSearch.addEventListener("input", function () {
+      renderEmojiGrid(currentEmojiCat, this.value);
+    });
+  }
+
+  renderEmojiGrid("wedding");
+
+  // Quick insert buttons
+  var btnInsName = document.getElementById("btnInsertName");
+  if (btnInsName) btnInsName.addEventListener("click", function () { insertAtCursor(waTemplateEl, "{name}"); });
+  var btnInsLink = document.getElementById("btnInsertLink");
+  if (btnInsLink) btnInsLink.addEventListener("click", function () { insertAtCursor(waTemplateEl, "{link}"); });
+  var btnFmtBold = document.getElementById("btnFmtBold");
+  if (btnFmtBold) btnFmtBold.addEventListener("click", function () { wrapSelection(waTemplateEl, "*"); });
+  var btnFmtItalic = document.getElementById("btnFmtItalic");
+  if (btnFmtItalic) btnFmtItalic.addEventListener("click", function () { wrapSelection(waTemplateEl, "_"); });
+
+  var btnReset = document.getElementById("btnResetWaTmpl");
+  if (btnReset) {
+    btnReset.addEventListener("click", function () {
+      if (confirm("Reset WhatsApp template to original default?")) {
+        waTemplateEl.value = DEFAULT_WA_TEMPLATE;
+        waTemplateEl.dispatchEvent(new Event("input"));
+      }
+    });
+  }
+
+  // Persist custom WhatsApp message template in localStorage
+  var waTemplateEl = document.getElementById("waMessageTemplate");
+  var savedTmpl = localStorage.getItem(TEMPLATE_STORAGE_KEY);
+  if (savedTmpl && waTemplateEl) {
+    waTemplateEl.value = savedTmpl;
+  }
+  if (waTemplateEl) {
+    waTemplateEl.addEventListener("input", function () {
+      localStorage.setItem(TEMPLATE_STORAGE_KEY, this.value);
+      updateWaBubble();
+      renderMasterList(); // Refresh table so all WhatsApp links adopt updated message
+    });
+    updateWaBubble();
+  }
+
+  // ---- Storage Helpers (Unified LocalStorage) -------------------------
+  function loadSaved() {
+    try {
+      var list = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      var updated = false;
+      var allNames = (W.events || []).map(function (e) { return e.key; });
+      list.forEach(function (g) {
+        if (!g.slug && g.name) {
+          g.slug = slugify(g.name);
+          updated = true;
+        }
+        var expectedLink = getBaseUrl() + encodeURIComponent(g.slug);
+        if (g.cards && g.cards.length && g.cards.length < allNames.length) {
+          expectedLink += "?c=" + g.cards.join(",");
+        }
+        if (g.link !== expectedLink) {
+          g.link = expectedLink;
+          updated = true;
+        }
+      });
+      if (updated) {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+      }
+      return list;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveSaved(list) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // ---- Event Checkboxes Rendering -------------------------------------
   function renderEvents() {
     var host = document.getElementById("gEvents");
+    if (!host) return;
     host.innerHTML = "";
     (W.events || []).forEach(function (ev) {
       var label = document.createElement("label");
@@ -155,77 +1264,524 @@
     return Array.prototype.slice.call(document.querySelectorAll("#gEvents input:checked")).map(function (i) { return i.value; });
   }
 
-  // Slug follows the name until the guest edits it by hand.
-  var slugTouched = false;
-  document.getElementById("gSlug").addEventListener("input", function () { slugTouched = true; });
-  document.getElementById("gName").addEventListener("input", function () {
-    if (!slugTouched) document.getElementById("gSlug").value = slugify(this.value);
+  function eventKeyToBadge(key) {
+    var ev = (W.events || []).find(function (x) { return x.key === key; }) || { en: key };
+    return '<span class="badge badge-' + key + '">' + esc(ev.en) + '</span>';
+  }
+
+  // ---- Tabs Navigation -------------------------------------------------
+  var tabButtons = document.querySelectorAll(".tab-btn");
+  tabButtons.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      tabButtons.forEach(function (b) { b.classList.remove("is-active"); });
+      document.querySelectorAll(".tab-panel").forEach(function (p) { p.classList.remove("is-active"); });
+      btn.classList.add("is-active");
+      var panelId = btn.getAttribute("data-tab");
+      var panel = document.getElementById(panelId);
+      if (panel) panel.classList.add("is-active");
+    });
   });
 
-  // ---- saved list, this browser only -----------------------------------
-  function loadSaved() {
-    try { return JSON.parse(localStorage.getItem("wedding-guest-links") || "[]"); }
-    catch (e) { return []; }
-  }
-  function saveSaved(list) {
-    try { localStorage.setItem("wedding-guest-links", JSON.stringify(list)); } catch (e) {}
-  }
-  function renderSaved() {
-    var list = loadSaved();
-    var host = document.getElementById("gList");
-    if (!list.length) { host.innerHTML = '<p class="empty">Nothing generated yet.</p>'; return; }
-    var t = document.createElement("table");
-    t.innerHTML = "<thead><tr><th>Label</th><th>Name</th><th>Events</th><th></th></tr></thead>";
-    var tbody = document.createElement("tbody");
-    list.slice().reverse().forEach(function (row) {
+  // =========================================================================
+  // UNIFIED MASTER GUEST LIST RENDERING & SEARCH
+  // =========================================================================
+
+  var searchInput = document.getElementById("masterSearchInput");
+  searchInput.addEventListener("input", function () {
+    renderMasterList();
+  });
+
+  function renderMasterList() {
+    var allGuests = loadSaved();
+    var query = (searchInput.value || "").toLowerCase().trim();
+    var countBadge = document.getElementById("masterCountBadge");
+    var showingCount = document.getElementById("showingCount");
+    var tbody = document.getElementById("masterTableBody");
+    var table = document.getElementById("masterTable");
+    var emptyState = document.getElementById("masterEmptyState");
+
+    countBadge.textContent = allGuests.length + (allGuests.length === 1 ? " guest" : " guests");
+
+    if (!allGuests.length) {
+      table.style.display = "none";
+      emptyState.style.display = "block";
+      showingCount.textContent = "";
+      tbody.innerHTML = "";
+      return;
+    }
+
+    table.style.display = "table";
+    emptyState.style.display = "none";
+
+    var filtered = allGuests.filter(function (g) {
+      if (!query) return true;
+      var nameMatch = (g.name || "").toLowerCase().indexOf(query) !== -1;
+      var phoneMatch = (g.phone || "").replace(/\s+/g, "").indexOf(query.replace(/\s+/g, "")) !== -1;
+      var cardMatch = (g.cards || []).some(function (c) { return c.toLowerCase().indexOf(query) !== -1; });
+      return nameMatch || phoneMatch || cardMatch;
+    });
+
+    if (query) {
+      showingCount.textContent = "Showing " + filtered.length + " of " + allGuests.length + " guests";
+    } else {
+      showingCount.textContent = "";
+    }
+
+    tbody.innerHTML = "";
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);padding:2rem;">No guests matching "' + esc(query) + '"</td></tr>';
+      return;
+    }
+
+    filtered.forEach(function (g, idx) {
       var tr = document.createElement("tr");
-      var names = row.cards.map(function (k) {
-        var e = (W.events || []).filter(function (x) { return x.key === k; })[0];
-        return e ? e.en : k;
-      }).join(", ");
-      tr.innerHTML =
-        "<td>" + esc(row.slug) + "</td>" +
-        "<td>" + esc(row.name || "—") + "</td>" +
-        '<td class="cards">' + esc(names || "none") + "</td>" +
-        '<td class="actions"></td>';
-      var actions = tr.querySelector(".actions");
-      var copyBtn = document.createElement("button"); copyBtn.textContent = "Copy";
-      copyBtn.addEventListener("click", function () { copyText(row.link); });
-      var delBtn = document.createElement("button"); delBtn.className = "ghost"; delBtn.textContent = "Remove";
-      delBtn.addEventListener("click", function () {
-        saveSaved(loadSaved().filter(function (r) { return r.id !== row.id; }));
-        renderSaved();
+      var waUrl = composeWhatsAppUrl(g.phone, g.name, g.link);
+      var badgesHtml = (g.cards || []).map(eventKeyToBadge).join(" ");
+      var cleanPhone = cleanPhoneNumber(g.phone);
+
+      tr.innerHTML = 
+        '<td style="color:var(--ink-faint);font-size:.8rem;">' + (idx + 1) + '</td>' +
+        '<td class="guest-name">' + esc(g.name) + '</td>' +
+        '<td>' + 
+          (g.phone 
+            ? '<a href="' + waUrl + '" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:.35rem;" title="Chat on WhatsApp">' +
+                '<svg width="13" height="13" viewBox="0 0 24 24" fill="var(--wa-green)"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.044c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/></svg>' +
+                esc(g.phone) +
+              '</a>' 
+            : '<span style="color:var(--ink-faint)">—</span>') + 
+        '</td>' +
+        '<td>' + badgesHtml + '</td>' +
+        '<td>' +
+          '<div style="display:flex;gap:.35rem;align-items:center;">' +
+            '<input type="text" value="' + esc(g.link) + '" readonly style="font-size:.78rem;padding:.3rem .5rem;width:210px;background:var(--paper);">' +
+            '<button class="ghost copy-btn" type="button" style="padding:.3rem .6rem;font-size:.75rem;">Copy</button>' +
+          '</div>' +
+        '</td>' +
+        '<td class="actions">' +
+          '<a class="btn-whatsapp" href="' + waUrl + '" target="_blank" rel="noopener" title="Share personal invite card on WhatsApp">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.044c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/></svg>' +
+            'WhatsApp' +
+          '</a>' +
+          '<a class="ghost" href="' + g.link + '" target="_blank" rel="noopener" style="text-decoration:none;padding:.35rem .6rem;font-size:.78rem;border:1px solid var(--hairline);border-radius:6px;color:var(--ink);display:inline-block;" title="Preview farman link">' +
+            'Preview' +
+          '</a>' +
+          '<button class="ghost del-btn" type="button" style="color:var(--rose);padding:.35rem .6rem;font-size:.78rem;" title="Remove guest">Remove</button>' +
+        '</td>';
+
+      var waBtnEl = tr.querySelector(".btn-whatsapp");
+      if (waBtnEl) {
+        waBtnEl.addEventListener("click", function () {
+          this.href = composeWhatsAppUrl(g.phone, g.name, g.link);
+        });
+      }
+      var phoneWaEl = tr.querySelector("td a[title='Chat on WhatsApp']");
+      if (phoneWaEl) {
+        phoneWaEl.addEventListener("click", function () {
+          this.href = composeWhatsAppUrl(g.phone, g.name, g.link);
+        });
+      }
+
+      tr.querySelector(".copy-btn").addEventListener("click", function () {
+        copyText(g.link);
       });
-      actions.appendChild(copyBtn); actions.appendChild(delBtn);
+
+      tr.querySelector(".del-btn").addEventListener("click", function () {
+        var currentList = loadSaved().filter(function (item) { return item.id !== g.id; });
+        saveSaved(currentList);
+        renderMasterList();
+        toast("Removed " + g.name);
+      });
+
       tbody.appendChild(tr);
     });
-    t.appendChild(tbody);
-    host.innerHTML = ""; host.appendChild(t);
-  }
-  function esc(s) {
-    var d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML;
   }
 
-  // ---- generate ----------------------------------------------------------
+  // Clear Entire Master List
+  document.getElementById("btnClearMaster").addEventListener("click", function () {
+    var all = loadSaved();
+    if (!all.length) return;
+    if (confirm("Are you sure you want to clear all " + all.length + " guests from your Master List?")) {
+      saveSaved([]);
+      renderMasterList();
+      toast("Master guest list cleared");
+    }
+  });
+
+  // Export Entire Master List to Excel (.xlsx)
+  document.getElementById("btnExportXlsx").addEventListener("click", function () {
+    var all = loadSaved();
+    if (!all.length) { toast("Guest list is empty"); return; }
+    if (typeof XLSX === "undefined") { toast("SheetJS not loaded yet, please retry in a second"); return; }
+    
+    var data = all.map(function (g) {
+      return {
+        "Name": g.name,
+        "Phone": g.phone || "",
+        "Events": (g.cards || []).join(", "),
+        "Personal Invitation Link": g.link,
+        "WhatsApp Share Link": composeWhatsAppUrl(g.phone, g.name, g.link)
+      };
+    });
+
+    var ws = XLSX.utils.json_to_sheet(data);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Master Guest List");
+    XLSX.writeFile(wb, "Jeet_Bhavini_Master_Guest_List.xlsx");
+    toast("Downloaded Jeet_Bhavini_Master_Guest_List.xlsx");
+  });
+
+  // Export Entire Master List to CSV
+  document.getElementById("btnExportCsv").addEventListener("click", function () {
+    var all = loadSaved();
+    if (!all.length) { toast("Guest list is empty"); return; }
+    var csvContent = "Name,Phone,Events,Personal Invitation Link,WhatsApp Share Link\n" +
+      all.map(function (g) {
+        var wa = composeWhatsAppUrl(g.phone, g.name, g.link);
+        return [
+          '"' + (g.name || "").replace(/"/g, '""') + '"',
+          '"' + (g.phone || "").replace(/"/g, '""') + '"',
+          '"' + (g.cards || []).join(", ") + '"',
+          '"' + g.link + '"',
+          '"' + wa.replace(/"/g, '""') + '"'
+        ].join(",");
+      }).join("\n");
+
+    downloadFile(csvContent, "Jeet_Bhavini_Master_Guest_List.csv", "text/csv;charset=utf-8;");
+  });
+
+  // =========================================================================
+  // BULK IMPORT LOGIC (PARSES AND ADDS TO MASTER LIST)
+  // =========================================================================
+
+  var dropzone = document.getElementById("dropzone");
+  var fileInput = document.getElementById("fileInput");
+
+  dropzone.addEventListener("dragover", function (e) {
+    e.preventDefault();
+    dropzone.classList.add("is-dragover");
+  });
+  dropzone.addEventListener("dragleave", function () {
+    dropzone.classList.remove("is-dragover");
+  });
+  dropzone.addEventListener("drop", function (e) {
+    e.preventDefault();
+    dropzone.classList.remove("is-dragover");
+    if (e.dataTransfer.files && e.dataTransfer.files.length) {
+      handleFile(e.dataTransfer.files[0]);
+    }
+  });
+  fileInput.addEventListener("change", function () {
+    if (this.files && this.files.length) {
+      handleFile(this.files[0]);
+    }
+  });
+
+  function handleFile(file) {
+    var ext = file.name.split(".").pop().toLowerCase();
+    toast("Reading " + file.name + "...");
+
+    if (ext === "csv") {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        parseCSVText(e.target.result);
+      };
+      reader.readAsText(file);
+    } else if (ext === "xlsx" || ext === "xls") {
+      if (typeof XLSX === "undefined") {
+        toast("SheetJS library is still loading, please retry in a moment.");
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          var data = new Uint8Array(e.target.result);
+          var workbook = XLSX.read(data, { type: "array" });
+          var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          var jsonRows = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+          processParsedRows(jsonRows);
+        } catch (err) {
+          console.error(err);
+          toast("Failed to parse Excel file: " + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      toast("Unsupported file format. Please upload .xlsx, .xls, or .csv");
+    }
+  }
+
+  // Fallback CSV Parser
+  function parseCSVText(text) {
+    var lines = text.split(/\r\n|\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+    if (!lines.length) { toast("CSV file is empty"); return; }
+    
+    var headers = parseCSVLine(lines[0]);
+    var rows = [];
+    for (var i = 1; i < lines.length; i++) {
+      var values = parseCSVLine(lines[i]);
+      var rowObj = {};
+      headers.forEach(function (h, idx) {
+        rowObj[h] = values[idx] || "";
+      });
+      rows.push(rowObj);
+    }
+    processParsedRows(rows);
+  }
+
+  function parseCSVLine(line) {
+    var result = [];
+    var cur = "";
+    var inQuotes = false;
+    for (var i = 0; i < line.length; i++) {
+      var char = line[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(cur.trim());
+        cur = "";
+      } else {
+        cur += char;
+      }
+    }
+    result.push(cur.trim());
+    return result.map(function (s) { return s.replace(/^"|"$/g, ""); });
+  }
+
+  // Merge parsed rows directly into Master List
+  function processParsedRows(rows) {
+    if (!rows || !rows.length) {
+      toast("No data rows found in sheet");
+      return;
+    }
+
+    var allEventKeys = (W.events || []).map(function (e) { return e.key; });
+    var masterList = loadSaved();
+    var addedCount = 0;
+    var updatedCount = 0;
+
+    rows.forEach(function (row) {
+      var keys = Object.keys(row);
+      var name = "";
+      var phone = "";
+      var eventsStr = "";
+      var separateEvents = {};
+
+      keys.forEach(function (k) {
+        var cleanK = k.toLowerCase().trim();
+        var val = String(row[k]).trim();
+
+        if (cleanK === "name" || cleanK === "guest name" || cleanK === "guest" || cleanK === "invitee" || cleanK === "family") {
+          name = val;
+        } else if (cleanK === "phone" || cleanK === "mobile" || cleanK === "whatsapp" || cleanK === "number" || cleanK === "contact") {
+          phone = val;
+        } else if (cleanK === "events" || cleanK === "ceremonies" || cleanK === "functions" || cleanK === "cards") {
+          eventsStr = val;
+        } else {
+          // Check for event columns like Mameru: Yes, Sangeet: Yes
+          allEventKeys.forEach(function (evK) {
+            if (cleanK.indexOf(evK) !== -1 || cleanK.indexOf(evK.substring(0, 4)) !== -1) {
+              separateEvents[evK] = isTruthy(val);
+            }
+          });
+        }
+      });
+
+      if (!name) return; // Skip rows without name
+
+      // Determine selected events
+      var selectedCards = [];
+      if (Object.keys(separateEvents).length > 0) {
+        allEventKeys.forEach(function (k) {
+          if (separateEvents[k]) selectedCards.push(k);
+        });
+      } else if (eventsStr) {
+        var lowEv = eventsStr.toLowerCase();
+        if (lowEv === "all" || lowEv === "badha" || lowEv === "બધા" || lowEv === "all events") {
+          selectedCards = allEventKeys.slice();
+        } else {
+          allEventKeys.forEach(function (k) {
+            if (lowEv.indexOf(k) !== -1) {
+              selectedCards.push(k);
+            }
+          });
+        }
+      }
+
+      // Default to all events if none specified
+      if (!selectedCards.length) {
+        selectedCards = allEventKeys.slice();
+      }
+
+      var guestSlug = slugify(name);
+      var link = getBaseUrl() + encodeURIComponent(guestSlug);
+      if (selectedCards.length && selectedCards.length < allEventKeys.length) {
+        link += "?c=" + selectedCards.join(",");
+      }
+
+      // Check if guest already exists (case-insensitive name match)
+      var existingIdx = -1;
+      for (var j = 0; j < masterList.length; j++) {
+        if (masterList[j].name.trim().toLowerCase() === name.trim().toLowerCase()) {
+          existingIdx = j;
+          break;
+        }
+      }
+
+      if (existingIdx !== -1) {
+        // Update existing guest
+        masterList[existingIdx].phone = phone || masterList[existingIdx].phone;
+        masterList[existingIdx].cards = selectedCards;
+        masterList[existingIdx].slug = guestSlug;
+        masterList[existingIdx].link = link;
+        updatedCount++;
+      } else {
+        // Add new guest
+        masterList.push({
+          id: Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+          name: name,
+          phone: phone,
+          slug: guestSlug,
+          cards: selectedCards,
+          link: link,
+          createdAt: Date.now()
+        });
+        addedCount++;
+      }
+    });
+
+    if (addedCount === 0 && updatedCount === 0) {
+      toast("No valid guest names found in spreadsheet");
+      return;
+    }
+
+    saveSaved(masterList);
+    renderMasterList();
+    fileInput.value = "";
+    toast("Added " + addedCount + " new guests (" + updatedCount + " updated) to Master List!");
+  }
+
+  function isTruthy(val) {
+    var v = String(val).toLowerCase().trim();
+    return v === "yes" || v === "y" || v === "true" || v === "1" || v === "x" || v === "✓";
+  }
+
+  // Template Downloads (Headers only, no sample names)
+  document.getElementById("btnDownloadTemplateXlsx").addEventListener("click", function () {
+    if (typeof XLSX === "undefined") {
+      downloadSampleCsv();
+      return;
+    }
+    var ws = XLSX.utils.aoa_to_sheet([["Name", "Events", "Phone"]]);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Guests");
+    XLSX.writeFile(wb, "wedding_guest_template.xlsx");
+    toast("Downloaded wedding_guest_template.xlsx");
+  });
+
+  document.getElementById("btnDownloadTemplateCsv").addEventListener("click", downloadSampleCsv);
+
+  function downloadSampleCsv() {
+    var sampleCsv = "Name,Events,Phone\n";
+    downloadFile(sampleCsv, "wedding_guest_template.csv", "text/csv;charset=utf-8;");
+  }
+
+  function downloadFile(content, fileName, mimeType) {
+    var blob = new Blob([content], { type: mimeType });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast("Downloaded " + fileName);
+  }
+
+  // =========================================================================
+  // SINGLE GUEST GENERATOR LOGIC (SAVES TO SAME MASTER LIST)
+  // =========================================================================
+
+  var slugTouched = false;
+  document.getElementById("gSlug").addEventListener("input", function () { 
+    slugTouched = true; 
+    updateWaBubble();
+  });
+  document.getElementById("gName").addEventListener("input", function () {
+    if (!slugTouched) document.getElementById("gSlug").value = slugify(this.value);
+    updateWaBubble();
+  });
+
   document.getElementById("gGenerate").addEventListener("click", function () {
     var name = document.getElementById("gName").value.trim();
+    var phone = document.getElementById("gPhone").value.trim();
     var slug = document.getElementById("gSlug").value.trim() || slugify(name);
     var cards = checkedEvents();
 
-    var token = encodeToken({ n: name, c: cards });
-    var link = location.origin + location.pathname.replace(/admin\.html$/, "index.html") + "?for=" + token;
+    if (!name) {
+      toast("Please enter a guest or family name");
+      document.getElementById("gName").focus();
+      return;
+    }
+
+    var allNames = (W.events || []).map(function (e) { return e.key; });
+    var link = getBaseUrl() + encodeURIComponent(slug);
+    if (cards.length && cards.length < allNames.length) {
+      link += "?c=" + cards.join(",");
+    }
 
     document.getElementById("gLink").value = link;
     document.getElementById("gOut").classList.add("is-shown");
+    
     var allNames = (W.events || []).map(function (e) { return e.key; });
-    document.getElementById("gPreview").textContent = cards.length === allNames.length
-      ? "Shows all events" + (name ? ", greets " + name + " by name." : ".")
-      : "Shows only: " + cards.join(", ") + (name ? " · greets " + name + " by name." : " · no name set.");
+    document.getElementById("gPreviewText").textContent = cards.length === allNames.length
+      ? "Invited to all ceremonies · Hand-lettered for " + name
+      : "Invited to: " + cards.join(", ") + " · Hand-lettered for " + name;
 
+    // Update WhatsApp & Preview buttons in the single card
+    var waUrl = composeWhatsAppUrl(phone, name, link);
+    var waBtn = document.getElementById("gWhatsAppSingle");
+    waBtn.href = waUrl;
+    waBtn.onclick = function () {
+      this.href = composeWhatsAppUrl(phone, name, link);
+    };
+    var previewBtn = document.getElementById("gPreviewBtn");
+    previewBtn.href = link;
+
+    // Update Live WhatsApp bubble
+    updateWaBubble();
+
+    // Save or update in master list
     var list = loadSaved();
-    list.push({ id: Date.now() + "-" + Math.random().toString(36).slice(2, 7), slug: slug, name: name, cards: cards, link: link });
+    var existingIdx = -1;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].name.trim().toLowerCase() === name.toLowerCase()) {
+        existingIdx = i;
+        break;
+      }
+    }
+
+    if (existingIdx !== -1) {
+      list[existingIdx].phone = phone;
+      list[existingIdx].cards = cards;
+      list[existingIdx].link = link;
+      list[existingIdx].slug = slug;
+    } else {
+      list.push({ 
+        id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), 
+        slug: slug, 
+        name: name, 
+        phone: phone, 
+        cards: cards, 
+        link: link,
+        createdAt: Date.now()
+      });
+    }
+
     saveSaved(list);
-    renderSaved();
+    renderMasterList();
+    toast("Saved " + name + " to Master List!");
   });
 
   document.getElementById("gCopy").addEventListener("click", function () {
@@ -234,11 +1790,18 @@
 
   document.getElementById("gReset").addEventListener("click", function () {
     document.getElementById("gName").value = "";
+    document.getElementById("gPhone").value = "";
     document.getElementById("gSlug").value = "";
     slugTouched = false;
     renderEvents();
     document.getElementById("gOut").classList.remove("is-shown");
+    updateWaBubble();
   });
+
+  // Utilities
+  function esc(s) {
+    var d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML;
+  }
 
   function copyText(text) {
     if (!text) return;
@@ -250,15 +1813,20 @@
         try { document.execCommand("copy"); } catch (e) {}
         document.body.removeChild(ta);
       });
-    toast("Copied");
+    toast("Copied link to clipboard!");
   }
+
   var toastTimer = null;
   function toast(msg) {
     var el = document.getElementById("toast");
     el.textContent = msg; el.classList.add("is-shown");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { el.classList.remove("is-shown"); }, 1400);
+    toastTimer = setTimeout(function () { el.classList.remove("is-shown"); }, 2000);
   }
+
+  // Initialize
+  renderEvents();
+  renderMasterList();
 }());
 </script>
 </body>

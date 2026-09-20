@@ -50,7 +50,7 @@
 <!-- ?v= is bumped whenever styles.css or a generated asset changes; this
      site is edited in place with no build step, and browsers hold on to
      both the stylesheet and the PNGs otherwise. -->
-<link rel="stylesheet" href="styles.css?v=20260919o">
+<link rel="stylesheet" href="styles.css?v=20260921c">
 </head>
 <body>
 
@@ -219,13 +219,15 @@
       <p class="eyebrow reveal" id="heroHosts"></p>
       <p class="hero__lead reveal" style="--d:60ms" id="heroInvite"></p>
       <p class="hero__guest reveal" style="--d:110ms" id="heroGuest"></p>
-      <p class="hero__lead reveal" style="--d:160ms" id="heroTo"></p>
-      <h1 class="display hero__names reveal" style="--d:210ms" id="heroNames"></h1>
-      <p class="gu hero__gu reveal" style="--d:280ms" id="heroGu"></p>
-      <span class="rule reveal" style="--d:220ms" aria-hidden="true">
-        <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
-      </span>
-      <span class="scroll-cue" id="scrollCue" aria-hidden="true"><span class="scroll-cue__label" id="scrollCueLabel"></span></span>
+      <div class="hero__below" id="heroBelow">
+        <p class="hero__lead" id="heroTo"></p>
+        <h1 class="display hero__names" id="heroNames"></h1>
+        <p class="gu hero__gu" id="heroGu"></p>
+        <span class="rule" aria-hidden="true">
+          <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+        </span>
+        <span class="scroll-cue" id="scrollCue" aria-hidden="true"><span class="scroll-cue__label" id="scrollCueLabel"></span></span>
+      </div>
     </div>
   </header>
 
@@ -463,7 +465,7 @@
   </button>
 </div>
 
-<script src="content.js?v=20260919g"></script>
-<script src="main.js?v=20260919m"></script>
+<script src="content.js?v=20260921c"></script>
+<script src="main.js?v=20260921c"></script>
 </body>
 </html>
