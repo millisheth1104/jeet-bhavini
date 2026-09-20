@@ -1505,24 +1505,14 @@ html[data-lang="gu"] .hero__guest {
   width: 82%; /* spans cylinder body between wooden finials */
   margin-top: -10px; /* tucks under top roller cylinder */
   margin-bottom: 0;
-  display: grid;
-  /* minmax(0, ...) matters: a bare fr track still floors at its content's
-     min-content size, so without this the "closed" state never reaches 0
-     and every card sits open a crack before it's scrolled to. */
-  grid-template-rows: minmax(0, var(--roll-fr, 0fr));
+  height: 0px;
   overflow: hidden;
   contain: paint;
   z-index: 5;
 }
 
-/* The Parchment Sheet. Flat - a 3D rotateX tilt was tried here too (hinged
-   at the top, standing up as it opened) and scrapped along with the roller
-   spin: on a tall card the whole sheet swinging down from a top hinge just
-   reads as a lid/flap opening, i.e. exactly the "sliding down" this was
-   meant to avoid. The curved top edge below plus the seam shadow carry the
-   "unrolling" read instead, on a sheet that stays flat throughout. */
+/* The Parchment Sheet. Stays firmly attached to bottom roller as track height unrolls */
 .scroll-card__sheet {
-  min-height: 100%;
   position: relative;
   display: flex;
   flex-direction: column;

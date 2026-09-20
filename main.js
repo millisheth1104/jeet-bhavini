@@ -1030,30 +1030,30 @@
       // --lead-roll is set on the section itself so every .events__lead
       // descendant picks it up (custom properties inherit).
       var leadRef = section && section.querySelector(".eyebrow");
-      var targets = cards.map(function (c) { return { el: c, roll: "--roll", rollFr: "--roll-fr" }; });
+      var targets = cards.map(function (c) { 
+        return { 
+          el: c, 
+          track: c.querySelector(".scroll-card__unroll-track"),
+          sheet: c.querySelector(".scroll-card__sheet"),
+          roll: "--roll" 
+        }; 
+      });
       if (leadRef) targets.push({ el: leadRef, setEl: section, roll: "--lead-roll" });
 
       if (reduced) {
         targets.forEach(function (tgt) {
           (tgt.setEl || tgt.el).style.setProperty(tgt.roll, 1);
-          if (tgt.rollFr) (tgt.setEl || tgt.el).style.setProperty(tgt.rollFr, "1fr");
+          if (tgt.track) tgt.track.style.height = "auto";
         });
         return;
       }
-      // Measured with a scripted scroll + rAF frame-timing capture: this
-      // loop itself was never dropping frames (avg ~9ms, zero frames over
-      // 33ms) - the roughness people feel here is the easing curve, not
-      // jank. 0.22 catches up to a new scroll target in ~14 frames (~0.2s),
-      // closer to a snap than a glide; 0.14 takes ~26 frames (~0.4s) and
-      // reads as a genuine ease rather than the roll chasing the scrollbar.
-      var LERP_RATE = 0.14;
+      var LERP_RATE = 0.18;
       // Once a card (or the heading) has fully opened, it STAYS open even
-      // if you scroll back up past it - a card that unrolls and re-rolls
-      // shut every time you pass it read as glitchy, not "synced". locked
-      // pins target at 1 for good the first time p reaches 1; until then,
-      // position keeps driving it normally (including closing back down if
-      // you scroll away before it ever finished opening).
-      var state = targets.map(function () { return { cur: 0, target: 0, locked: false }; });
+      // if you scroll back up past it. locked pins target at 1 for good.
+      var state = targets.map(function (tgt) { 
+        if (tgt.track) tgt.track.style.height = "0px";
+        return { cur: 0, target: 0, locked: false }; 
+      });
       var ticking = false;
 
       function computeTargets() {
@@ -1069,17 +1069,6 @@
         });
       }
 
-      // Mobile browsers throttle/batch 'scroll' events hard during momentum
-      // flicks - they can go a third of a second between events while the
-      // page is visibly still moving. A loop that only advances when a
-      // scroll event fires (and stops once cur reaches target) goes stale
-      // in those gaps: position keeps changing, target doesn't, and the
-      // catch-up on the next event reads as a stutter/snap rather than
-      // smooth tracking. Running continuously off rAF - sampling position
-      // every single rendered frame regardless of whether a scroll event
-      // happened to fire - is what actually keeps this glued to the
-      // scrollbar. It only stops for good once every target is locked, so
-      // there is nothing left it could ever need to notice.
       function allLocked() {
         return state.every(function (s) { return s.locked; });
       }
@@ -1093,7 +1082,14 @@
           var tgt = targets[i];
           var host = tgt.setEl || tgt.el;
           host.style.setProperty(tgt.roll, s.cur.toFixed(3));
-          if (tgt.rollFr) host.style.setProperty(tgt.rollFr, s.cur.toFixed(3) + "fr");
+          if (tgt.track && tgt.sheet) {
+            if (s.locked) {
+              tgt.track.style.height = "auto";
+            } else {
+              var fullH = tgt.sheet.scrollHeight;
+              tgt.track.style.height = Math.round(fullH * s.cur) + "px";
+            }
+          }
         });
         if (!allLocked()) requestAnimationFrame(tick);
         else ticking = false;
