@@ -746,7 +746,25 @@
     return res;
   }
 
+  var calligraphyState = {
+    hasAnimated: false,
+    isWriting: false,
+    animRaf: null,
+    timers: []
+  };
+
+  function clearCalligraphyTimers() {
+    if (calligraphyState.animRaf) {
+      cancelAnimationFrame(calligraphyState.animRaf);
+      calligraphyState.animRaf = null;
+    }
+    while (calligraphyState.timers.length) {
+      clearTimeout(calligraphyState.timers.pop());
+    }
+  }
+
   function renderGuestHandwriting(isLangSwitch) {
+    clearCalligraphyTimers();
     var host = $("heroGuest");
     var cue = $("scrollCue");
     if (!host) return;
@@ -869,9 +887,6 @@
       '</svg>';
     host.appendChild(pen);
 
-    var hasAnimated = false;
-    var animRaf = null;
-
     function finishSequence() {
       // Pen lifts up gracefully along its writing angle and fades out
       pen.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease";
@@ -887,16 +902,20 @@
       var below = $("heroBelow");
       if (below) below.classList.add("is-revealed");
 
-      setTimeout(function () {
+      var tFinish = setTimeout(function () {
         var cue = $("scrollCue");
         if (cue) cue.classList.add("is-shown");
         SCROLL_LOCK.unlock();
-        isWritingNow = false;
+        calligraphyState.isWriting = false;
+        calligraphyState.hasAnimated = true;
       }, 350);
+      calligraphyState.timers.push(tFinish);
     }
 
     function runAnimation(isReplay) {
-      if (animRaf) cancelAnimationFrame(animRaf);
+      clearCalligraphyTimers();
+      calligraphyState.isWriting = true;
+      calligraphyState.hasAnimated = true;
 
       var cue = $("scrollCue");
       var below = $("heroBelow");
@@ -910,6 +929,7 @@
         if (below) below.classList.add("is-revealed");
         if (cue) cue.classList.add("is-shown");
         SCROLL_LOCK.unlock();
+        calligraphyState.isWriting = false;
         return;
       }
 
@@ -957,30 +977,31 @@
         var wordDuration = Math.max(280, Math.min(850, textContent.length * 85));
         var startTime = performance.now();
 
+        // Pre-compute word geometry once before starting rAF loop (prevents forced layout thrashing)
+        var hRect = host.getBoundingClientRect();
+        var wRect = currentEl.getBoundingClientRect();
+        var penW = pen.offsetWidth || 56;
+        var penH = pen.offsetHeight || 80;
+        var tipOffX = penW * (10 / 70);
+        var tipOffY = penH * (86 / 100);
+        var wordStartX = wRect.left - hRect.left;
+        var wordWidth = wRect.width;
+        var baselineY = (wRect.top - hRect.top) + (wRect.height * 0.72);
+
         function drawFrame(now) {
           var elapsed = now - startTime;
           var progress = Math.min(1, elapsed / wordDuration);
 
           currentEl.style.setProperty("--w-prog", (progress * 100).toFixed(1) + "%");
 
-          // Track nib tip (10, 86) proportionally to current pen dimensions
-          var hRect = host.getBoundingClientRect();
-          var wRect = currentEl.getBoundingClientRect();
-          var targetX = (wRect.left - hRect.left) + (progress * wRect.width);
-          var baselineY = (wRect.top - hRect.top) + (wRect.height * 0.72);
+          var targetX = wordStartX + (progress * wordWidth);
           var wobble = Math.sin(progress * Math.PI * 8) * 3.0;
           var targetY = baselineY + wobble;
 
-          var penW = pen.offsetWidth || 56;
-          var penH = pen.offsetHeight || 80;
-          var tipOffX = penW * (10 / 70);
-          var tipOffY = penH * (86 / 100);
-
-          pen.style.transition = "none";
           pen.style.transform = "translate3d(" + (targetX - tipOffX).toFixed(1) + "px, " + (targetY - tipOffY).toFixed(1) + "px, 0)";
 
           if (progress < 1) {
-            animRaf = requestAnimationFrame(drawFrame);
+            calligraphyState.animRaf = requestAnimationFrame(drawFrame);
           } else {
             currentEl.classList.add("is-done");
             currentEl.classList.remove("is-active");
@@ -996,40 +1017,38 @@
               pen.style.transition = "transform 0.14s ease-out";
               pen.style.transform = "translate3d(" + (nextX - tipOffX).toFixed(1) + "px, " + (nextY - tipOffY).toFixed(1) + "px, 0)";
 
-              setTimeout(function () {
+              var tNext = setTimeout(function () {
                 startWritingWord(nextIdx);
               }, 140);
+              calligraphyState.timers.push(tNext);
             } else {
               finishSequence();
             }
           }
         }
 
-        animRaf = requestAnimationFrame(drawFrame);
+        calligraphyState.animRaf = requestAnimationFrame(drawFrame);
       }
 
-      // Start immediately in sync with the garland page start
+      // Start immediately
       startWritingWord(0);
     }
 
-    var isWritingNow = false;
     triggerGuestHandwriting = function () {
-      if (hasAnimated || isWritingNow) return;
-      hasAnimated = true;
-      isWritingNow = true;
+      if (calligraphyState.isWriting) return;
       runAnimation(false);
     };
 
     host.addEventListener("click", function () {
-      isWritingNow = true;
       runAnimation(true);
     });
 
     if (isLangSwitch) {
-      if (hasAnimated) {
-        runAnimation(true);
-      } else if (isWritingNow) {
-        runAnimation(false);
+      if (!document.body.classList.contains("intro-open")) {
+        // Language switched while viewing page: immediately animate in the newly chosen language!
+        requestAnimationFrame(function () {
+          runAnimation(true);
+        });
       }
     } else if (reduced) {
       wordElements.forEach(function (w) {
@@ -1042,7 +1061,7 @@
       var cue = $("scrollCue");
       if (cue) cue.classList.add("is-shown");
       SCROLL_LOCK.unlock();
-      hasAnimated = true;
+      calligraphyState.hasAnimated = true;
     } else if (!document.body.classList.contains("intro-open")) {
       // Direct load without intro: start writing immediately!
       requestAnimationFrame(function () {
@@ -1343,6 +1362,17 @@
 
       function tick() {
         computeTargets();
+
+        // Phase 1 (READ): batch read sheet heights before mutating styles
+        var heights = [];
+        for (var hIdx = 0; hIdx < targets.length; hIdx++) {
+          var tCard = targets[hIdx];
+          if (tCard.track && tCard.sheet && !state[hIdx].locked) {
+            heights[hIdx] = tCard.sheet.scrollHeight;
+          }
+        }
+
+        // Phase 2 (WRITE): batch apply CSS properties without layout thrashing
         state.forEach(function (s, i) {
           var d = s.target - s.cur;
           if (Math.abs(d) > 0.001) s.cur += d * LERP_RATE;
@@ -1354,7 +1384,7 @@
             if (s.locked) {
               tgt.track.style.height = "auto";
             } else {
-              var fullH = tgt.sheet.scrollHeight;
+              var fullH = heights[i] || 0;
               tgt.track.style.height = Math.round(fullH * s.cur) + "px";
             }
           }
@@ -1882,34 +1912,45 @@
   /* -- hero parallax + controls that follow the ground ------------------------------- */
 
   (function scrollFx() {
-    var layers = Array.prototype.slice.call(document.querySelectorAll("[data-par]"));
+    var parLayers = Array.prototype.map.call(
+      document.querySelectorAll("[data-par]"),
+      function (el) {
+        return { el: el, f: parseFloat(el.getAttribute("data-par")) || 0 };
+      }
+    );
     var closing = $("closing");
     var topBtn = $("topBtn");
     var queued = false;
+    var lastTopVisible = null;
+
+    // Zero-overhead intersection observer for floating controls theme flip
+    if (closing && "IntersectionObserver" in window) {
+      var closeIo = new IntersectionObserver(function (entries) {
+        if (entries && entries[0]) {
+          document.body.classList.toggle("is-closing", entries[0].isIntersecting);
+        }
+      }, { rootMargin: "0px 0px -25% 0px", threshold: 0 });
+      closeIo.observe(closing);
+    }
 
     function frame() {
       queued = false;
       var y = window.pageYOffset || document.documentElement.scrollTop;
+      var vh = window.innerHeight;
 
-      if (!reduced) {
-        for (var i = 0; i < layers.length; i++) {
-          var f = parseFloat(layers[i].getAttribute("data-par")) || 0;
-          // only worth moving while the hero is still in view
-          if (y < window.innerHeight * 1.2) {
-            layers[i].style.transform = "translate3d(0," + (y * f).toFixed(1) + "px,0)";
-          }
+      if (!reduced && y < vh * 1.3) {
+        for (var i = 0; i < parLayers.length; i++) {
+          parLayers[i].el.style.transform = "translate3d(0," + (y * parLayers[i].f).toFixed(1) + "px,0)";
         }
       }
 
-      // flip the floating controls once the closing half is behind them
-      if (closing) {
-        var r = closing.getBoundingClientRect();
-        document.body.classList.toggle("is-closing", r.top < window.innerHeight * 0.75);
-      }
-
       if (topBtn) {
-        topBtn.style.opacity = y > window.innerHeight * 0.8 ? "1" : "0";
-        topBtn.style.pointerEvents = y > window.innerHeight * 0.8 ? "auto" : "none";
+        var showTop = y > vh * 0.8;
+        if (showTop !== lastTopVisible) {
+          lastTopVisible = showTop;
+          topBtn.style.opacity = showTop ? "1" : "0";
+          topBtn.style.pointerEvents = showTop ? "auto" : "none";
+        }
       }
     }
 

@@ -917,7 +917,7 @@ Jabuani & Nakrani Family 🌸</textarea>
 
 <div class="toast" id="toast"></div>
 
-<script src="content.js?v=20260918a"></script>
+<script src="content.js?v=20260921d"></script>
 <script>
 (function () {
   "use strict";
@@ -941,8 +941,28 @@ Jabuani & Nakrani Family 🌸</textarea>
   }
 
   function getBaseUrl() {
-    var pathDir = location.pathname.replace(/\/(?:admin|index)\.html$/i, "").replace(/\/+$/, "");
-    return location.origin + (pathDir ? pathDir + "/" : "/");
+    if (location.protocol === "file:") {
+      return "http://localhost:5179/";
+    }
+    var origin = location.origin || (location.protocol + "//" + location.host);
+    var path = location.pathname || "";
+    // Aggressively strip admin.html, index.html, /admin
+    path = path.replace(/\/admin(?:\.html)?(?:\/.*)?$/i, "");
+    path = path.replace(/\/index(?:\.html)?(?:\/.*)?$/i, "");
+    path = path.replace(/\/+$/, "");
+    var base = origin + (path ? path + "/" : "/");
+    return base.replace(/\/admin(?:\.html)?\/?/gi, "/");
+  }
+
+  function formatGuestLink(slug, cards) {
+    var allNames = (W.events || []).map(function (e) { return e.key; });
+    var cleanSlug = String(slug || "guest").replace(/^\/+|\/+$/g, "");
+    var base = getBaseUrl();
+    var link = base + encodeURIComponent(cleanSlug);
+    if (cards && cards.length && cards.length < allNames.length) {
+      link += "?c=" + cards.join(",");
+    }
+    return link;
   }
 
   // ---- Phone Number Normalization & WhatsApp Deep Link ----------------
@@ -1062,12 +1082,7 @@ Jabuani & Nakrani Family 🌸</textarea>
       var sSlug = document.getElementById("gSlug") ? document.getElementById("gSlug").value.trim() : "";
       if (!sSlug) sSlug = slugify(sName);
       var sCards = typeof checkedEvents === "function" ? checkedEvents() : [];
-      var allNames = (W.events || []).map(function (e) { return e.key; });
-      var sLink = getBaseUrl() + encodeURIComponent(sSlug);
-      if (sCards.length && sCards.length < allNames.length) {
-        sLink += "?c=" + sCards.join(",");
-      }
-      return { name: sName, link: sLink };
+      return { name: sName, link: formatGuestLink(sSlug, sCards) };
     }
     // 2. Otherwise check if there are guests in Master List
     var list = loadSaved();
@@ -1075,10 +1090,9 @@ Jabuani & Nakrani Family 🌸</textarea>
       return { name: list[0].name, link: list[0].link };
     }
     // 3. Fallback to sample guest if list is completely empty
-    var defaultSlug = "priya-and-raj-shah";
     return { 
       name: "Priya & Raj Shah", 
-      link: getBaseUrl() + defaultSlug 
+      link: formatGuestLink("priya-and-raj-shah", [])
     };
   }
 
@@ -1216,10 +1230,7 @@ Jabuani & Nakrani Family 🌸</textarea>
           g.slug = slugify(g.name);
           updated = true;
         }
-        var expectedLink = getBaseUrl() + encodeURIComponent(g.slug);
-        if (g.cards && g.cards.length && g.cards.length < allNames.length) {
-          expectedLink += "?c=" + g.cards.join(",");
-        }
+        var expectedLink = formatGuestLink(g.slug, g.cards);
         if (g.link !== expectedLink) {
           g.link = expectedLink;
           updated = true;
@@ -1614,10 +1625,7 @@ Jabuani & Nakrani Family 🌸</textarea>
       }
 
       var guestSlug = slugify(name);
-      var link = getBaseUrl() + encodeURIComponent(guestSlug);
-      if (selectedCards.length && selectedCards.length < allEventKeys.length) {
-        link += "?c=" + selectedCards.join(",");
-      }
+      var link = formatGuestLink(guestSlug, selectedCards);
 
       // Check if guest already exists (case-insensitive name match)
       var existingIdx = -1;
@@ -1725,11 +1733,7 @@ Jabuani & Nakrani Family 🌸</textarea>
       return;
     }
 
-    var allNames = (W.events || []).map(function (e) { return e.key; });
-    var link = getBaseUrl() + encodeURIComponent(slug);
-    if (cards.length && cards.length < allNames.length) {
-      link += "?c=" + cards.join(",");
-    }
+    var link = formatGuestLink(slug, cards);
 
     document.getElementById("gLink").value = link;
     document.getElementById("gOut").classList.add("is-shown");

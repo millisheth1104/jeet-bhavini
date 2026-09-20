@@ -112,7 +112,7 @@ html[data-lang="gu"] .countdown__title { line-height: 1.4; }
 *, *::before, *::after { box-sizing: border-box; }
 
 /* Scaled up base font size sitewide (desktop: 20px, mobile: 17.5px balanced) */
-html { font-size: 20px; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+html { font-size: 20px; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; overscroll-behavior-y: none; }
 @media (max-width: 560px) {
   html { font-size: 17.5px; }
   :root {
@@ -611,20 +611,17 @@ body.is-scroll-locked {
   transition: opacity .8s cubic-bezier(.25, 1, .5, 1), background 1.8s cubic-bezier(.25, 1, .5, 1);
 }
 
-/* The page behind starts with a soft, dreamy atmospheric blur, then resolves smoothly to crystal clarity */
+/* The page behind transitions smoothly into view without expensive full-screen raster blur */
 body.intro-open #top {
-  opacity: 0.35;
-  filter: blur(6px);
-  transform: scale(0.96);
-  transition: opacity 1.9s cubic-bezier(.16, 1, .3, 1),
-              filter 1.9s cubic-bezier(.16, 1, .3, 1),
-              transform 1.9s cubic-bezier(.16, 1, .3, 1);
+  opacity: 0.38;
+  transform: scale(0.97);
+  transition: opacity 1.4s cubic-bezier(.16, 1, .3, 1),
+              transform 1.4s cubic-bezier(.16, 1, .3, 1);
 }
 
 body.intro-open.page-proper #top,
 body:not(.intro-open) #top {
   opacity: 1;
-  filter: blur(0px);
   transform: scale(1);
 }
 
@@ -3079,25 +3076,40 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
   transition-delay: var(--d, 0ms);
   will-change: opacity, translate;
 }
-.reveal.is-in { opacity: 1; translate: 0 0; }
+.reveal.is-in { opacity: 1; translate: 0 0; will-change: auto; }
 
 /* Garlands drop in from above rather than rising. */
 .deco--garland-a, .deco--garland-b,
 .deco--garland-c, .deco--garland-d {
   transform-origin: top center;
 }
-.reveal--drop { opacity: 0; translate: 0 -40px; }
-.reveal--drop.is-in { opacity: 1; translate: 0 0; }
+.reveal--drop { opacity: 0; translate: 0 -40px; will-change: opacity, translate; }
+.reveal--drop.is-in { opacity: 1; translate: 0 0; will-change: auto; }
 
 /* Directional entrances - cards, prints, lockets and list rows sliding in
    from alternating sides as they cross into view, instead of every single
    thing on the site rising the same way. Kept short (32px) and on the same
    timing as the base .reveal, so it reads as "the same motion, a different
    axis" rather than a competing animation. */
-.reveal--left  { opacity: 0; translate: -32px 0; }
-.reveal--left.is-in  { opacity: 1; translate: 0 0; }
-.reveal--right { opacity: 0; translate: 32px 0; }
-.reveal--right.is-in { opacity: 1; translate: 0 0; }
+.reveal--left  { opacity: 0; translate: -32px 0; will-change: opacity, translate; }
+.reveal--left.is-in  { opacity: 1; translate: 0 0; will-change: auto; }
+.reveal--right { opacity: 0; translate: 32px 0; will-change: opacity, translate; }
+.reveal--right.is-in { opacity: 1; translate: 0 0; will-change: auto; }
+
+/* ---- layout containment for silky 60/120fps scrolling ---- */
+.events {
+  contain: layout style;
+}
+
+.gallery,
+.savedate,
+.postcard-sec,
+.countdown,
+.families,
+.compliments {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 650px;
+}
 @media (max-width: 30rem) {
   /* halved on a phone - the sideways travel reads as a lurch on a narrow
      card, where 32px is a much larger fraction of the width than on desktop */
