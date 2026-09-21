@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeet &amp; Bhavini · 1–2 December 2026</title>
+<meta name="description" content="Jeet Jabuani weds Bhavini Nakrani — 1st and 2nd December 2026. Our events, our families, and your invitation.">
+<meta name="theme-color" content="#F2F1ED">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Jeet &amp; Bhavini · 1–2 December 2026">
+<meta property="og:description" content="With the blessings of the divine, we request the honour of your presence.">
+<meta property="og:image" content="assets/photos/couple-beach-01.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Noto+Serif+Gujarati:wght@400;500;600&family=Noto+Serif+Devanagari:wght@400;500;600&family=Rasa:wght@500;600;700&family=Great+Vibes&family=Mogra&family=Playfair+Display:ital,wght@1,400;1,500;1,600&family=DM+Serif+Display:ital@0;1&display=swap">
+
+<!-- The elephant's body is a JPEG + a mask PNG composited via CSS
+     background/mask (see .intro__eleBody, bake_intro3.py) - CSS-referenced
+     images are only discovered once the browser parses the stylesheet AND
+     matches the element, which is slower than the <img> tags the bell and
+     legs use. That gap is what let the legs render while the body was
+     still loading ("half elephant"). Preloading both at the top of <head>
+     starts them fetching immediately, at the same priority tier as the
+     rest of the first intro frame, so they land together. -->
+<link rel="preload" as="image" href="assets/generated/intro3_ele_body.jpg?v=11" fetchpriority="high">
+<!-- Chromium logs a harmless "preload not used" warning for mask-image
+     specifically (its mask loader uses a different internal fetch path
+     that can't match a preload's cache entry, crossorigin or not) - the
+     bytes still land in the browser's HTTP cache from this fetch, so the
+     actual mask use still resolves fast; only the preload-reuse bookkeeping
+     misses, not the caching. -->
+<link rel="preload" as="image" href="assets/generated/intro3_ele_mask.png?v=11" fetchpriority="high">
+<link rel="preload" as="image" href="assets/generated/intro3_plate.jpg?v=11" fetchpriority="high">
+<link rel="preload" as="image" href="assets/generated/intro3_bellbody.png?v=11">
+<link rel="preload" as="image" href="assets/generated/intro3_leg_far.png?v=11">
+<link rel="preload" as="image" href="assets/generated/intro3_leg_near.png?v=11">
+<!-- The palace doors: not needed for the first frame (only once the bell
+     is rung and the gate phase begins, ~2.3s in - see PORTAL timing in
+     main.js), so no fetchpriority="high" here - the intro assets above
+     should win the race for bandwidth first. Preloaded anyway so they're
+     fetching in parallel from the very start rather than only once the
+     browser reaches that far-down, initially hidden markup. These were
+     also re-encoded from PNG to WebP (2.1MB -> 172KB for the facade alone)
+     since that was the far bigger latency lever than fetch ordering. -->
+<link rel="preload" as="image" href="assets/generated/portal_facade.webp?v=1">
+<link rel="preload" as="image" href="assets/generated/portal_leaf_left.webp?v=1">
+<link rel="preload" as="image" href="assets/generated/portal_leaf_right.webp?v=1">
+<!-- ?v= is bumped whenever styles.css or a generated asset changes; this
+     site is edited in place with no build step, and browsers hold on to
+     both the stylesheet and the PNGs otherwise. -->
+<link rel="stylesheet" href="styles.css?v=20260921e">
+</head>
+<body>
+
+<!-- ==== inline SVG library ============================================== -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+
+    <!-- tapered rule with a lotus medallion -->
+    <g id="orn-rule">
+      <g stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity=".7" fill="none">
+        <path d="M8 12h122"/><path d="M190 12h122"/>
+        <path d="M2 12l3-2.2 3 2.2-3 2.2z" fill="currentColor" stroke="none"/>
+        <path d="M318 12l-3-2.2-3 2.2 3 2.2z" fill="currentColor" stroke="none"/>
+      </g>
+      <g transform="translate(160 12)">
+        <path d="M0-7.5c2.6 2.1 3.9 4.6 3.9 7.5C3.9 2.9 2.6 5.4 0 7.5c-2.6-2.1-3.9-4.6-3.9-7.5 0-2.9 1.3-5.4 3.9-7.5z" fill="var(--rose)" opacity=".85"/>
+        <path d="M-4.4-4.1C-1.7-3.3.2-1.7 1.2.6 2.2 2.9 2.1 5.3 1 7.4c-2.7-.8-4.6-2.4-5.6-4.7C-5.6.4-5.5-2-4.4-4.1z" fill="var(--rose)" opacity=".5"/>
+        <path d="M4.4-4.1C5.5-2 5.6.4 4.6 2.7 3.6 5 1.7 6.6-1 7.4c-1.1-2.1-1.2-4.5-.2-6.8C-.2-1.7 1.7-3.3 4.4-4.1z" fill="var(--rose)" opacity=".5"/>
+        <circle r="1.15" fill="var(--brass)"/>
+      </g>
+    </g>
+
+    <!-- Photo-frame corner filigree, drawn in a 40-box. The frame's borders
+         and beading are CSS on .gallery__frame; only the corners are drawn
+         here, so the filigree never stretches with the stage's aspect. -->
+    <g id="orn-frame-corner" fill="none">
+      <path d="M0 26c0-14 12-26 26-26" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M6 30c0-13 11-24 24-24" stroke="currentColor" stroke-width=".7" opacity=".55"/>
+      <path d="M13 13c5-6 12-8 19-6-6 1-11 4-14 8-3 4-4 9-3 14-3-6-3-12-2-16z" fill="currentColor" opacity=".5"/>
+      <circle cx="26" cy="26" r="1.6" fill="currentColor"/>
+    </g>
+
+    <!-- essentials + control icons, 24-box, stroked -->
+    <g id="ic-cal" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3.5" y="5" width="17" height="16" rx="2"/>
+      <path d="M8 3v4M16 3v4M3.5 10h17"/>
+    </g>
+    <g id="ic-music" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>
+    </g>
+    <g id="ic-mute" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>
+      <path d="M3 3l18 18"/>
+    </g>
+    <g id="ic-top" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V6M6 12l6-6 6 6"/>
+    </g>
+  </defs>
+</svg>
+
+<noscript>
+  <div style="padding:2rem;text-align:center;font-family:Georgia,serif">
+    <p>Please enable JavaScript to view the invitation.</p>
+  </div>
+</noscript>
+
+<!-- ==== intro screen ===================================================
+     The temple bell hangs from a floral arch, with the ceremonial elephant's
+     trunk raised to it. The scene holds still until the visitor rings the
+     bell; the trunk then strikes, the bell rocks, and the page opens.
+     Art: scripts/gen_intro3.py. Geometry: styles.css. -->
+<div class="intro" id="intro" role="dialog" aria-label="Opening the invitation">
+  <div class="intro__scene">
+    <!-- Everything below is a percentage of this one box, which is the
+         painting's own frame - so there is a single coordinate system and the
+         bell, chain and trunk cannot drift apart from the painting. -->
+    <div class="intro__stage">
+      <img class="intro__bg" src="assets/generated/intro3_plate.jpg?v=11"
+           alt="A garden pavilion with a temple bell hanging in its archway">
+
+      <!-- everything below here moves -->
+      <div class="intro__chain" aria-hidden="true"></div>
+      <img class="intro__bell" id="introBell" src="assets/generated/intro3_bellbody.png?v=11" alt="">
+
+      <!-- The elephant rears to reach the bell, so all of it moves.
+           .intro__ele tilts back on the hind legs; the legs and trunk are
+           children, so they inherit that tilt and add their own on top. The
+           body is a JPEG cut out by a mask rather than a transparent PNG - a
+           quarter of the weight for the same picture. See bake_intro3.py. -->
+      <div class="intro__ele">
+        <div class="intro__eleBody" role="img"
+             aria-label="A ceremonial elephant rearing to ring a temple bell"></div>
+        <img class="intro__leg intro__leg--far"  src="assets/generated/intro3_leg_far.png?v=11"  alt="" aria-hidden="true">
+        <img class="intro__leg intro__leg--near" src="assets/generated/intro3_leg_near.png?v=11" alt="" aria-hidden="true">
+        <div class="intro__trunk" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <!-- On the scene, not the stage: the stage overflows the width on a phone,
+         and a cue centred on it would run off both edges. -->
+    <p class="intro__cue" id="introCue">
+      <span class="intro__cueTitle" id="introCueTitle"></span>
+      <span class="intro__cueSub" id="introCueSub"></span>
+    </p>
+  </div>
+</div>
+
+<!-- ==== royal palace portal ============================================
+     After the elephant rings the bell, the palace gate stands closed. The two
+     leaves then swing inward on their hinges, warm light widens out of the
+     opening, and the camera walks through the doorway onto the invitation.
+
+     Three layers, back to front: the glow that lives behind the doors, the
+     two leaves, and the facade. The facade has the doorway cut out of it
+     (scripts/gen_portal.py), so the leaves show through the hole while the
+     carved surround around them never moves.
+
+     The gate opens onto the hero below, which carries the invitation and the
+     guest's name - there is no separate card in between. -->
+<div class="portal-stage" id="portalStage" role="dialog" aria-label="The palace gate" hidden>
+  <div class="portal" id="portal">
+    <div class="portal__doorway" id="portalDoorway" aria-hidden="true">
+      <img class="portal__leaf portal__leaf--l" src="assets/generated/portal_leaf_left.webp?v=1" alt="">
+      <img class="portal__leaf portal__leaf--r" src="assets/generated/portal_leaf_right.webp?v=1" alt="">
+      <span class="portal__seam"></span>
+    </div>
+    <img class="portal__facade" src="assets/generated/portal_facade.webp?v=1" alt="Palace gate" aria-hidden="true">
+  </div>
+</div>
+
+<!-- ==== language ====================================================== -->
+<!-- Fixed to the top right, above everything, on every screen. Both
+     languages sit in the toggle at once; the active one is filled. -->
+<div class="topbar">
+  <div class="langswitch" id="langSwitch" role="group"></div>
+</div>
+
+<main id="top">
+
+  <!-- ==== hero ========================================================= -->
+  <header class="hero" id="hero">
+    <div class="deco garland deco--garland-a reveal reveal--drop"><img src="assets/generated/mogra_long.png"  alt="" data-par="0.16" decoding="async"></div>
+    <div class="deco garland deco--garland-b reveal reveal--drop" style="--d:120ms"><img src="assets/generated/mogra_short.png" alt="" data-par="0.26" decoding="async"></div>
+    <div class="deco garland deco--garland-c reveal reveal--drop" style="--d:60ms"><img src="assets/generated/mogra_long.png"  alt="" data-par="0.20" decoding="async"></div>
+    <div class="deco garland deco--garland-d reveal reveal--drop" style="--d:180ms"><img src="assets/generated/mogra_short.png" alt="" data-par="0.30" decoding="async"></div>
+
+    <div class="deco deco--palm-l reveal" style="--d:220ms"><img src="assets/generated/banana_palm_left.png"  alt="" data-par="-0.08" decoding="async"></div>
+    <div class="deco deco--palm-r reveal" style="--d:280ms"><img src="assets/generated/banana_palm_right.png" alt="" data-par="-0.06" decoding="async"></div>
+
+    <div class="deco deco--kalash   reveal" style="--d:340ms"><img src="assets/generated/brass_kalash.png"   alt="" decoding="async"></div>
+    <div class="deco deco--lotus    reveal" style="--d:380ms"><img src="assets/generated/lotus_bowl.png"     alt="" decoding="async"></div>
+    <div class="deco deco--elephant reveal" style="--d:420ms"><img src="assets/generated/brass_elephant.png" alt="" decoding="async"></div>
+
+    <!-- Two birds hovering beside the names. Each is three frames sliced from
+         one sprite sheet, played folded -> spread -> raised -> spread, which
+         gives a real wingbeat rather than a twitch. Both sides use bird_b's
+         design now (a mirrored pair of the same bird, not two species) -
+         bird_a's own frames are unused but kept on disk. -->
+    <div class="bird bird--a" aria-hidden="true">
+      <img class="wf wf1" src="assets/generated/bird_b_2.png" alt="" decoding="async">
+      <img class="wf wf2" src="assets/generated/bird_b_3.png" alt="" decoding="async">
+      <img class="wf wf3" src="assets/generated/bird_b_4.png" alt="" decoding="async">
+    </div>
+    <div class="bird bird--b" aria-hidden="true">
+      <img class="wf wf1" src="assets/generated/bird_b_2.png" alt="" decoding="async">
+      <img class="wf wf2" src="assets/generated/bird_b_3.png" alt="" decoding="async">
+      <img class="wf wf3" src="assets/generated/bird_b_4.png" alt="" decoding="async">
+    </div>
+
+    <div class="hero__inner">
+      <img class="hero__ganesha reveal" src="assets/generated/ganesha_motif.png" alt="Shri Ganesha" decoding="async">
+      <!-- One sentence, broken over the lines below and meant to be read
+           straight through: "<hosts> cordially invite <guest> to the wedding
+           of <Jeet & Bhavini>". With no ?for= link there is no name to place,
+           so the guest line falls back to "you" and it still reads. -->
+      <p class="eyebrow reveal" id="heroHosts"></p>
+      <p class="hero__lead reveal" style="--d:60ms" id="heroInvite"></p>
+      <p class="hero__guest reveal" style="--d:110ms" id="heroGuest"></p>
+      <div class="hero__below" id="heroBelow">
+        <p class="hero__lead" id="heroTo"></p>
+        <h1 class="display hero__names" id="heroNames"></h1>
+        <p class="gu hero__gu" id="heroGu"></p>
+        <span class="rule" aria-hidden="true">
+          <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+        </span>
+        <span class="scroll-cue" id="scrollCue" aria-hidden="true"><span class="scroll-cue__label" id="scrollCueLabel"></span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==== invitation =================================================== -->
+  <section class="section invite" aria-labelledby="inviteName">
+    <div class="invite__palace-card reveal">
+      <div class="invite__palace-content">
+        <p class="invite__shree">॥ श्री गणेशाय नमः ॥</p>
+        <img class="invite__ganesha-motif" src="assets/generated/palace_ganesha.png" alt="Shri Ganesha" loading="lazy" decoding="async">
+        <p class="invite__shloka">
+          वक्रतुण्ड महाकाय सूर्यकोटि समप्रभः ।<br>
+          निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥
+        </p>
+        <div id="invParties" class="invite__parties"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== events ======================================================= -->
+  <section class="section section--center events" id="events" aria-labelledby="eventsTitle">
+    <div class="wrap">
+      <!-- No .reveal here: that fires once on a one-shot IntersectionObserver
+           threshold, which popped this heading in as soon as the section's
+           edge crossed into view - well before the first card had scrolled
+           far enough to start rolling open. events__lead below is instead
+           driven by the exact same continuous scroll progress as the cards
+           (see cardRoll() in main.js), so the heading and card 1 fade/rise
+           in lockstep rather than the heading arriving early. -->
+      <p class="eyebrow events__lead" id="eventsEyebrow"></p>
+      <h2 class="section-title events__lead" id="eventsTitle"></h2>
+      <p class="events__lead" id="eventsAlt" style="color:var(--ink-soft);margin:.4rem 0 0"></p>
+      <span class="rule events__lead" aria-hidden="true">
+        <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+      </span>
+      <!-- Five separate cards, each rendered from its own entry in content.js.
+           Deliberately not one composite image. -->
+      <div class="events__list" id="eventsList"></div>
+    </div>
+  </section>
+
+  <!-- ==== gallery ====================================================== -->
+  <section class="section section--center gallery" id="gallery" aria-labelledby="galleryTitle">
+    <div class="wrap">
+      <h2 class="section-title reveal" id="galleryTitle"></h2>
+      <p class="section-subtitle reveal" id="gallerySubtitle"></p>
+      <span class="rule reveal" style="--d:120ms" aria-hidden="true">
+        <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+      </span>
+      <!-- A depth carousel: a focused centre print with the rest scaled
+           down toward the edges, dragged or scrolled through. Built in
+           main.js from the photos in content.js. -->
+      <div class="depthcar" id="galleryStage">
+        <div class="depthcar__track" id="galleryTrack" role="list"></div>
+        <button class="depthcar__nav depthcar__nav--prev" id="galPrev" type="button"></button>
+        <button class="depthcar__nav depthcar__nav--next" id="galNext" type="button"></button>
+      </div>
+      <p class="gallery__caption reveal" id="galleryCaption"></p>
+    </div>
+  </section>
+
+  <!-- ==== closing half =================================================== -->
+  <div class="closing" id="closing">
+    <span class="closing__seam" aria-hidden="true"></span>
+
+    <!-- Save the date: the wedding month with its days marked. Month, weekday
+         heads and marked days are all built in main.js from the dates in
+         content.js, so this cannot drift from the cards. -->
+    <section class="section savedate" id="savedate">
+      <div class="wrap--narrow">
+        <figure class="cal reveal">
+          <div class="cal__top-banner" aria-hidden="true">
+            <img src="assets/generated/cal_top_border_clean.png" alt="" loading="lazy" decoding="async">
+          </div>
+          <div class="cal__body">
+            <figcaption class="cal__month" id="calMonth"></figcaption>
+            <div class="cal__grid" id="calGrid"></div>
+            <div class="cal__meta" id="calMeta">
+              <p class="cal__venue-line">
+                <span class="cal__pin" aria-hidden="true">📍</span>
+                <span class="cal__venue-name">OLEANDER FARMS</span>
+              </p>
+              <p class="cal__city-line" id="calCityLine">Karjat, Maharashtra</p>
+              <div class="cal__divider" aria-hidden="true"></div>
+              <p class="cal__regards-title" id="calRegardsTitle">Warm Regards</p>
+              <p class="cal__family" id="calFamily">Jabuani &amp; Nakrani Family</p>
+              <div class="cal__leaf-orn" aria-hidden="true">
+                <svg width="24" height="14" viewBox="0 0 24 14" fill="#B38B4D" opacity=".85"><path d="M12 7c-2-3-5-4-8-3 2 3 4 5 8 3zm0 0c2-3 5-4 8-3-2 3-4 5-8 3zm0 0v5"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="cal__foot">
+            <img class="cal__garden-art" src="assets/generated/cal_elephant_garden_clean.png" alt="" loading="lazy" decoding="async">
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ==== postcard location ============================================
+         A romantic vintage postcard set against scenic watercolor Sahyadri hills,
+         featuring the couple's royal crest, cancellation postmark with heart,
+         vintage postage stamp, venue coordinates, and interactive Google Maps link. -->
+    <section class="section postcard-sec" id="postcardSec" aria-label="Wedding Venue &amp; Location">
+      <div class="postcard-sec__scenic-bg" aria-hidden="true">
+        <img class="postcard-sec__landscape-img" src="assets/generated/postcard_scenic_bg.jpg" alt="" loading="lazy" decoding="async">
+        <div class="postcard-sec__sky-overlay"></div>
+      </div>
+
+      <div class="wrap postcard-sec__wrap">
+        <div class="postcard-container reveal">
+          <article class="postcard" id="postcardCard">
+            <!-- Subtle paper crease and grain overlay -->
+            <div class="postcard__crease-line" aria-hidden="true"></div>
+
+            <!-- Top postal elements: Postmark with wavy cancellation lines & Postage Stamp -->
+            <div class="postcard__postal-header" aria-hidden="true">
+              <div class="postmark">
+                <!-- Wavy cancellation lines -->
+                <svg class="postmark__waves" viewBox="0 0 110 38" fill="none">
+                  <path d="M4,10 Q16,2 28,10 T52,10 T76,10 T100,10" stroke="#9A2838" stroke-width="1.3" opacity="0.8" stroke-linecap="round"/>
+                  <path d="M4,19 Q16,11 28,19 T52,19 T76,19 T100,19" stroke="#9A2838" stroke-width="1.3" opacity="0.8" stroke-linecap="round"/>
+                  <path d="M4,28 Q16,20 28,28 T52,28 T76,28 T100,28" stroke="#9A2838" stroke-width="1.3" opacity="0.8" stroke-linecap="round"/>
+                </svg>
+                <!-- Circular red cancellation seal with heart -->
+                <div class="postmark__seal">
+                  <svg viewBox="0 0 90 90" class="postmark__seal-svg">
+                    <circle cx="45" cy="45" r="41" stroke="#9A2838" stroke-width="1.4" stroke-dasharray="3.5 2" fill="none" opacity="0.85"/>
+                    <circle cx="45" cy="45" r="36" stroke="#9A2838" stroke-width="1.1" fill="none" opacity="0.75"/>
+                    <path id="postmarkCirclePath" d="M 45,45 m -28,0 a 28,28 0 1,1 56,0 a 28,28 0 1,1 -56,0" fill="none"/>
+                    <text font-size="6.8" font-family="'Jost', sans-serif" font-weight="600" fill="#9A2838" letter-spacing="1.4" opacity="0.9">
+                      <textPath id="postmarkPathText" href="#postmarkCirclePath" startOffset="0%">
+                        JEET &amp; BHAVINI • 01.12.2026 • KARJAT •
+                      </textPath>
+                    </text>
+                    <!-- Center crimson heart -->
+                    <path d="M45,48 C45,48 39,42 37,38 C35,34 37.5,30 41,30 C43,30 44.3,31.5 45,33 C45.7,31.5 47,30 49,30 C52.5,30 55,34 53,38 C51,42 45,48 45,48 Z" fill="#9A2838" opacity="0.92"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Miniature perforated postage stamp -->
+              <div class="poststamp">
+                <img src="assets/generated/postcard_stamp.png?v=3" alt="Jeet &amp; Bhavini Wedding Postage Stamp" class="poststamp__img" loading="lazy" decoding="async">
+              </div>
+            </div>
+
+            <!-- Postcard main body: Botanical J&B monogram on left, Event & Location details on right -->
+            <div class="postcard__content-grid">
+              <div class="postcard__crest-col">
+                <div class="postcard__crest-frame" aria-hidden="true">
+                  <img src="assets/generated/postcard_jb_monogram.png?v=3" alt="Jeet &amp; Bhavini Monogram" class="postcard__crest-img" loading="lazy" decoding="async">
+                </div>
+              </div>
+
+              <div class="postcard__info-col">
+                <h3 class="postcard__couple-script" id="pcCouple">Jeet &amp; Bhavini</h3>
+                <p class="postcard__dates-pill" id="pcDates">1ST – 2ND DECEMBER, 2026</p>
+                <div class="postcard__separator" aria-hidden="true">
+                  <span class="postcard__sep-line"></span>
+                  <span class="postcard__sep-dot">♦</span>
+                  <span class="postcard__sep-line"></span>
+                </div>
+                <h4 class="postcard__venue-title" id="pcVenue">OLEANDER FARMS</h4>
+                <p class="postcard__address-block" id="pcAddress">
+                  Karjat Chowk Road, Wavarle Village, Khalapur,<br>
+                  Karjat, Maharashtra 410201
+                </p>
+                <p class="postcard__note-text" id="pcNote">
+                  Nestled in the lush hills of Karjat — join us as we celebrate our new beginning.
+                </p>
+
+                <!-- Google Maps interactive button -->
+                <div class="postcard__btn-wrapper">
+                  <a class="postcard__map-button" id="pcMapBtn" href="https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&amp;ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698" target="_blank" rel="noopener noreferrer">
+                    <span class="postcard__map-pin-icon" aria-hidden="true">📍</span>
+                    <span class="postcard__map-btn-text" id="pcBtnLabel">View on Google Maps</span>
+                    <svg class="postcard__map-arrow-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="7" y1="17" x2="17" y2="7"></line>
+                      <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section countdown" id="countdown" aria-labelledby="cdTitle">
+      <div class="wrap">
+        <h2 class="countdown__title reveal" id="cdTitle"></h2>
+        <span class="rule reveal" style="--d:100ms" aria-hidden="true">
+          <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+        </span>
+        <div class="countdown__grid reveal" style="--d:220ms" id="cdGrid" role="timer" aria-live="off"></div>
+
+        <div class="signoff reveal" style="--d:300ms">
+          <span class="rule" aria-hidden="true"><svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg></span>
+          <p class="signoff__names" id="signoffNames"></p>
+          <p class="signoff__date"  id="signoffDate"></p>
+          <p class="signoff__line"  id="signoffLine"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==== families ===================================================== -->
+    <section class="section section--center families" id="families" aria-labelledby="familiesTitle">
+      <div class="wrap">
+        <p class="eyebrow reveal" id="familiesEyebrow"></p>
+        <h2 class="section-title reveal" style="--d:80ms" id="familiesTitle"></h2>
+        <span class="rule reveal" style="--d:160ms" aria-hidden="true">
+          <svg viewBox="0 0 320 24"><use href="#orn-rule"/></svg>
+        </span>
+        <div id="hostsPaired" class="hosts"></div>
+        <div id="hostsAwaiting" class="hosts"></div>
+      </div>
+    </section>
+
+    <section class="compliments" id="compliments" aria-labelledby="compHeading">
+      <p class="compliments__heading" id="compHeading"></p>
+      <div class="compliments__list" id="compList"></div>
+    </section>
+
+    <footer class="footer" id="footer"></footer>
+  </div>
+</main>
+
+<!-- ==== floating controls ============================================== -->
+<div class="controls">
+  <button class="ctrl" id="musicBtn" type="button" aria-pressed="false" aria-label="Play music" title="Music">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mute" id="musicIcon"/></svg>
+  </button>
+  <button class="ctrl" id="topBtn" type="button" aria-label="Back to top" title="Back to top">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-top"/></svg>
+  </button>
+</div>
+
+<script src="content.js?v=20260921e"></script>
+<script src="main.js?v=20260921e"></script>
+</body>
+</html>

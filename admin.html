@@ -1398,6 +1398,7 @@ Jabuani & Nakrani Family 🌸</textarea>
       });
 
       tr.querySelector(".del-btn").addEventListener("click", function () {
+        if (!confirm("Are you sure you want to remove " + g.name + " from the guest list?")) return;
         var currentList = loadSaved().filter(function (item) { return item.id !== g.id; });
         saveSaved(currentList);
         renderMasterList();
