@@ -145,12 +145,15 @@
 
           // Check if guest exists in window.WEDDING_GUESTS or localStorage
           var matchedGuest = null;
-          var guestList = (window.WEDDING_GUESTS && Array.isArray(window.WEDDING_GUESTS)) ? window.WEDDING_GUESTS : null;
-          if (!guestList) {
-            try {
-              guestList = JSON.parse(localStorage.getItem("wedding-guest-links") || "[]");
-            } catch (e) {}
-          }
+          var localRaw = null;
+          try {
+            if (localStorage.getItem("wedding-db-initialized")) {
+              localRaw = JSON.parse(localStorage.getItem("wedding-guest-links") || "[]");
+            }
+          } catch (e) {}
+
+          var guestList = (localRaw && Array.isArray(localRaw)) ? localRaw :
+            ((window.WEDDING_GUESTS && Array.isArray(window.WEDDING_GUESTS)) ? window.WEDDING_GUESTS : []);
           if (Array.isArray(guestList)) {
             for (var gi = 0; gi < guestList.length; gi++) {
               var candidate = guestList[gi];

@@ -864,7 +864,6 @@ Jabuani & Nakrani Family 🌸</textarea>
       <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
         <span>Master Guest List</span>
         <span class="badge" id="masterCountBadge" style="background:var(--brass-soft);color:var(--brass);font-size:.88rem;padding:.25rem .7rem;">0 guests</span>
-        <span id="syncStatusBadge" style="font-size:.78rem;font-weight:normal;color:var(--ink-faint);display:inline-flex;align-items:center;gap:.3rem;"></span>
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
         <button class="ghost" id="btnExportJson" type="button" title="Download updated guests.json file to commit to GitHub so everyone sees these guests" style="color:var(--brass);border-color:var(--brass);">
@@ -1241,6 +1240,7 @@ Jabuani & Nakrani Family 🌸</textarea>
   }
 
   // ---- Unified Master List Storage (Shared Repository + Local Working Copy + Cloud Sync) ----
+  var DB_INIT_KEY = "wedding-db-initialized";
   var CLOUD_SYNC_KEY = "wedding-cloud-sync-url";
   var masterListCache = null;
 
@@ -1280,6 +1280,7 @@ Jabuani & Nakrani Family 🌸</textarea>
     masterListCache = list;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      localStorage.setItem(DB_INIT_KEY, "1");
     } catch (e) {
       console.error(e);
     }
@@ -1580,10 +1581,8 @@ Jabuani & Nakrani Family 🌸</textarea>
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "saveGuests", guests: list, timestamp: Date.now() })
       });
-      if (resp.ok) {
-        var statusBadge = document.getElementById("syncStatusBadge");
-        if (statusBadge) statusBadge.innerHTML = '<span style="color:#0f8a3c;">● Synced with Cloud (' + list.length + ' guests)</span>';
-        if (!silent) toast("Synced " + list.length + " guests to Cloud!");
+      if (resp.ok && !silent) {
+        toast("Synced " + list.length + " guests to Cloud!");
       }
     } catch (e) {
       if (!silent) toast("Cloud sync push note: " + e.message);
@@ -1591,83 +1590,58 @@ Jabuani & Nakrani Family 🌸</textarea>
   }
 
   async function syncMasterGuests(manualNotice) {
-    var statusBadge = document.getElementById("syncStatusBadge");
-    if (statusBadge) statusBadge.textContent = "Syncing master list...";
+    var isInitialized = localStorage.getItem(DB_INIT_KEY);
 
-    var localList = loadLocalOnly();
-    var merged = localList.slice();
-    var byName = {};
-    merged.forEach(function (g) {
-      if (g && g.name) byName[g.name.trim().toLowerCase()] = g;
-    });
-
-    var fetchedSource = null;
-
-    // 1. Pull from Cloud if configured
-    var cloudUrl = localStorage.getItem(CLOUD_SYNC_KEY) || "";
-    if (cloudUrl && cloudUrl.trim()) {
-      try {
-        var cResp = await fetch(cloudUrl.trim(), { method: "GET" });
-        if (cResp.ok) {
-          var cloudData = await cResp.json();
-          var cloudGuests = Array.isArray(cloudData) ? cloudData : (cloudData.guests || cloudData.data || []);
-          if (Array.isArray(cloudGuests) && cloudGuests.length) {
-            cloudGuests.forEach(function (cg) {
-              var norm = normalizeGuest(cg);
-              if (!norm) return;
-              var k = norm.name.trim().toLowerCase();
-              if (!byName[k]) {
-                merged.push(norm);
-                byName[k] = norm;
-              }
-            });
-            fetchedSource = "Cloud Endpoint";
+    // If user clicked "Pull from Cloud" manually:
+    if (manualNotice) {
+      var cloudUrl = localStorage.getItem(CLOUD_SYNC_KEY) || "";
+      if (cloudUrl && cloudUrl.trim()) {
+        try {
+          var cResp = await fetch(cloudUrl.trim(), { method: "GET" });
+          if (cResp.ok) {
+            var cloudData = await cResp.json();
+            var cloudGuests = Array.isArray(cloudData) ? cloudData : (cloudData.guests || cloudData.data || []);
+            if (Array.isArray(cloudGuests)) {
+              var normCloud = cloudGuests.map(normalizeGuest).filter(Boolean);
+              saveSaved(normCloud, true);
+              renderMasterList();
+              toast("Pulled " + normCloud.length + " guests from Cloud!");
+              return;
+            }
           }
+        } catch (cErr) {
+          toast("Cloud pull error: " + cErr.message);
         }
-      } catch (cErr) {
-        console.warn("Cloud sync fetch:", cErr);
+      } else {
+        toast("No Cloud Sync URL configured.");
       }
+      return;
     }
 
-    // 2. Pull from shared guests.json in repository
+    // On normal reload: If DB is ALREADY initialized, NEVER override or re-inject deleted guests!
+    if (isInitialized) {
+      renderMasterList();
+      return;
+    }
+
+    // Only on very first visit when DB has never been initialized:
     try {
       var rResp = await fetch("guests.json?v=" + Date.now(), { cache: "no-store" });
       if (rResp.ok) {
         var repoGuests = await rResp.json();
         if (Array.isArray(repoGuests) && repoGuests.length) {
-          repoGuests.forEach(function (rg) {
-            var norm = normalizeGuest(rg);
-            if (!norm) return;
-            var k = norm.name.trim().toLowerCase();
-            if (!byName[k]) {
-              merged.push(norm);
-              byName[k] = norm;
-            }
-          });
-          if (!fetchedSource) fetchedSource = "Repository (guests.json)";
+          var normRepo = repoGuests.map(normalizeGuest).filter(Boolean);
+          saveSaved(normRepo, true);
+          renderMasterList();
+          return;
         }
       }
     } catch (rErr) {
       console.warn("Repo guests.json fetch:", rErr);
     }
 
-    merged.forEach(function (g) { normalizeGuest(g); });
-    masterListCache = merged;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(merged)); } catch (e) {}
+    localStorage.setItem(DB_INIT_KEY, "1");
     renderMasterList();
-
-    if (statusBadge) {
-      if (fetchedSource) {
-        statusBadge.innerHTML = '<span style="color:#0f8a3c;">● Synced from ' + fetchedSource + ' (' + merged.length + ' guests)</span>';
-      } else if (merged.length) {
-        statusBadge.innerHTML = '<span style="color:var(--brass);">● Loaded ' + merged.length + ' guests</span>';
-      } else {
-        statusBadge.innerHTML = '<span style="color:var(--ink-faint);">● Master list ready</span>';
-      }
-    }
-    if (manualNotice) {
-      toast("Master list synced! Total guests: " + merged.length);
-    }
   }
 
   // =========================================================================
