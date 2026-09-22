@@ -735,16 +735,16 @@
         </div>
       </div>
       <p class="card-desc">
-        Upload an Excel (<code>.xlsx</code> / <code>.xls</code>) or <code>.csv</code> file.
+        Upload an Excel (<code>.xlsx</code> / <code>.xls</code>), <code>.csv</code>, or <code>.json</code> file.
         The sheet should contain columns for <strong>Name</strong>, <strong>Events</strong> (e.g. "All" or "Mameru, Lagna"), and optional <strong>Phone</strong> number (e.g. <code>9876543210</code> or <code>+91 98765 43210</code>).
         All imported guests will be merged directly into your Master Guest List below.
       </p>
 
       <div class="dropzone" id="dropzone">
         <span class="dropzone-icon">📊</span>
-        <div class="dropzone-title">Click to choose file or drag and drop spreadsheet here</div>
-        <div class="dropzone-desc">Supports Excel (.xlsx, .xls) and CSV (.csv)</div>
-        <input type="file" id="fileInput" accept=".xlsx, .xls, .csv">
+        <div class="dropzone-title">Click to choose file or drag and drop spreadsheet / guests.json here</div>
+        <div class="dropzone-desc">Supports Excel (.xlsx, .xls), CSV (.csv), and JSON (.json)</div>
+        <input type="file" id="fileInput" accept=".xlsx, .xls, .csv, .json">
       </div>
     </div>
   </div>
@@ -864,18 +864,44 @@ Jabuani & Nakrani Family 🌸</textarea>
       <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
         <span>Master Guest List</span>
         <span class="badge" id="masterCountBadge" style="background:var(--brass-soft);color:var(--brass);font-size:.88rem;padding:.25rem .7rem;">0 guests</span>
+        <span id="syncStatusBadge" style="font-size:.78rem;font-weight:normal;color:var(--ink-faint);display:inline-flex;align-items:center;gap:.3rem;"></span>
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
+        <button class="ghost" id="btnExportJson" type="button" title="Download updated guests.json file to commit to GitHub so everyone sees these guests" style="color:var(--brass);border-color:var(--brass);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download guests.json (For All Devices)
+        </button>
+        <button class="ghost" id="btnToggleCloudSync" type="button" title="Sync live across devices via Google Sheets or Webhook">
+          ☁️ Cloud Sync
+        </button>
         <button class="ghost" id="btnExportXlsx" type="button" title="Export entire list with links to Excel">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          Export to Excel (.xlsx)
+          Export Excel (.xlsx)
         </button>
         <button class="ghost" id="btnExportCsv" type="button" title="Export entire list to CSV">
-          Export to CSV
+          Export CSV
         </button>
         <button class="ghost" id="btnClearMaster" type="button" style="color:var(--rose);">
           Clear All
         </button>
+      </div>
+    </div>
+
+    <!-- Cloud Sync Drawer (Expandable) -->
+    <div id="cloudSyncPanel" style="display:none;background:var(--paper-warm);border:1px solid var(--hairline);border-radius:8px;padding:1rem;margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">
+        <strong style="font-size:.9rem;color:var(--ink);display:inline-flex;align-items:center;gap:.4rem;">
+          ☁️ Cloud Sync (Multi-Device Live Sync)
+        </strong>
+        <button type="button" class="ghost" id="btnCloseCloudSync" style="padding:.2rem .5rem;font-size:.8rem;">✕ Close</button>
+      </div>
+      <p style="font-size:.82rem;color:var(--ink-soft);margin:0 0 .6rem;line-height:1.45;">
+        Connect a Google Apps Script Webhook URL or Cloud JSON endpoint to automatically share and synchronize guest lists across all phones and computers in real-time.
+      </p>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
+        <input type="text" id="cloudSyncUrlInput" placeholder="https://script.google.com/macros/s/.../exec" style="flex:1;min-width:260px;font-size:.82rem;padding:.4rem .6rem;">
+        <button type="button" id="btnSaveCloudSync" style="font-size:.82rem;padding:.45rem .9rem;">Save &amp; Sync</button>
+        <button type="button" class="ghost" id="btnPullCloudSync" style="font-size:.82rem;padding:.45rem .9rem;">Pull from Cloud</button>
       </div>
     </div>
 
@@ -917,7 +943,7 @@ Jabuani & Nakrani Family 🌸</textarea>
 
 <div class="toast" id="toast"></div>
 
-<script src="content.js?v=20260921d"></script>
+<script src="content.js?v=20260923a"></script>
 <script>
 (function () {
   "use strict";
@@ -1219,38 +1245,60 @@ Jabuani & Nakrani Family 🌸</textarea>
     updateWaBubble();
   }
 
-  // ---- Storage Helpers (Unified LocalStorage) -------------------------
-  function loadSaved() {
+  // ---- Unified Master List Storage (Shared Repository + Local Working Copy + Cloud Sync) ----
+  var CLOUD_SYNC_KEY = "wedding-cloud-sync-url";
+  var masterListCache = null;
+
+  function normalizeGuest(g) {
+    if (!g || !g.name) return null;
+    if (!g.slug) g.slug = slugify(g.name);
+    if (!g.cards || !Array.isArray(g.cards) || !g.cards.length) {
+      g.cards = (W.events || []).map(function (e) { return e.key; });
+    }
+    g.link = formatGuestLink(g.slug, g.cards);
+    if (!g.id) g.id = "g-" + Math.random().toString(36).slice(2, 9);
+    return g;
+  }
+
+  function loadLocalOnly() {
     try {
-      var list = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      var updated = false;
-      var allNames = (W.events || []).map(function (e) { return e.key; });
-      list.forEach(function (g) {
-        if (!g.slug && g.name) {
-          g.slug = slugify(g.name);
-          updated = true;
-        }
-        var expectedLink = formatGuestLink(g.slug, g.cards);
-        if (g.link !== expectedLink) {
-          g.link = expectedLink;
-          updated = true;
-        }
-      });
-      if (updated) {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
-      }
-      return list;
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       return [];
     }
   }
 
-  function saveSaved(list) {
+  function loadSaved() {
+    if (masterListCache !== null) {
+      return masterListCache;
+    }
+    var list = loadLocalOnly();
+    list.forEach(function (g) { normalizeGuest(g); });
+    masterListCache = list;
+    return masterListCache;
+  }
+
+  function saveSaved(list, skipCloud) {
+    masterListCache = list;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
     } catch (e) {
       console.error(e);
     }
+    if (!skipCloud) {
+      triggerCloudSyncDebounced();
+    }
+  }
+
+  var cloudSyncTimer = null;
+  function triggerCloudSyncDebounced() {
+    clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = setTimeout(function () {
+      pushToCloudSync(true);
+    }, 1200);
   }
 
   // ---- Event Checkboxes Rendering -------------------------------------
@@ -1462,6 +1510,171 @@ Jabuani & Nakrani Family 🌸</textarea>
     downloadFile(csvContent, "Jeet_Bhavini_Master_Guest_List.csv", "text/csv;charset=utf-8;");
   });
 
+  // Export Entire Master List to guests.json (For Repository Sharing)
+  function downloadMasterJson() {
+    var all = loadSaved();
+    if (!all.length) { toast("Master guest list is empty"); return; }
+    var cleanList = all.map(function (g) {
+      return {
+        id: g.id || ("g-" + Math.random().toString(36).slice(2, 9)),
+        name: g.name,
+        phone: g.phone || "",
+        slug: g.slug || slugify(g.name),
+        cards: g.cards || (W.events || []).map(function (e) { return e.key; }),
+        link: formatGuestLink(g.slug || slugify(g.name), g.cards),
+        createdAt: g.createdAt || Date.now()
+      };
+    });
+    var jsonStr = JSON.stringify(cleanList, null, 2);
+    downloadFile(jsonStr, "guests.json", "application/json;charset=utf-8;");
+    toast("Downloaded guests.json! Push to GitHub to share with all devices.");
+  }
+
+  var btnExportJson = document.getElementById("btnExportJson");
+  if (btnExportJson) {
+    btnExportJson.addEventListener("click", downloadMasterJson);
+  }
+
+  // Cloud Sync Drawer toggle & logic
+  var cloudPanel = document.getElementById("cloudSyncPanel");
+  var btnToggleCloudSync = document.getElementById("btnToggleCloudSync");
+  var btnCloseCloudSync = document.getElementById("btnCloseCloudSync");
+  var cloudInput = document.getElementById("cloudSyncUrlInput");
+  var btnSaveCloudSync = document.getElementById("btnSaveCloudSync");
+  var btnPullCloudSync = document.getElementById("btnPullCloudSync");
+
+  var savedCloudUrl = localStorage.getItem(CLOUD_SYNC_KEY) || "";
+  if (cloudInput && savedCloudUrl) cloudInput.value = savedCloudUrl;
+
+  if (btnToggleCloudSync) {
+    btnToggleCloudSync.addEventListener("click", function () {
+      if (!cloudPanel) return;
+      cloudPanel.style.display = (cloudPanel.style.display === "none" || !cloudPanel.style.display) ? "block" : "none";
+    });
+  }
+  if (btnCloseCloudSync) {
+    btnCloseCloudSync.addEventListener("click", function () {
+      if (cloudPanel) cloudPanel.style.display = "none";
+    });
+  }
+  if (btnSaveCloudSync) {
+    btnSaveCloudSync.addEventListener("click", function () {
+      var url = (cloudInput ? cloudInput.value.trim() : "");
+      localStorage.setItem(CLOUD_SYNC_KEY, url);
+      if (url) {
+        toast("Saved Cloud Sync URL! Syncing now...");
+        pushToCloudSync(false);
+      } else {
+        toast("Cleared Cloud Sync URL.");
+      }
+    });
+  }
+  if (btnPullCloudSync) {
+    btnPullCloudSync.addEventListener("click", function () {
+      syncMasterGuests(true);
+    });
+  }
+
+  async function pushToCloudSync(silent) {
+    var url = localStorage.getItem(CLOUD_SYNC_KEY) || "";
+    if (!url || !url.trim()) return;
+    try {
+      var list = loadSaved();
+      var resp = await fetch(url.trim(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "saveGuests", guests: list, timestamp: Date.now() })
+      });
+      if (resp.ok) {
+        var statusBadge = document.getElementById("syncStatusBadge");
+        if (statusBadge) statusBadge.innerHTML = '<span style="color:#0f8a3c;">● Synced with Cloud (' + list.length + ' guests)</span>';
+        if (!silent) toast("Synced " + list.length + " guests to Cloud!");
+      }
+    } catch (e) {
+      if (!silent) toast("Cloud sync push note: " + e.message);
+    }
+  }
+
+  async function syncMasterGuests(manualNotice) {
+    var statusBadge = document.getElementById("syncStatusBadge");
+    if (statusBadge) statusBadge.textContent = "Syncing master list...";
+
+    var localList = loadLocalOnly();
+    var merged = localList.slice();
+    var byName = {};
+    merged.forEach(function (g) {
+      if (g && g.name) byName[g.name.trim().toLowerCase()] = g;
+    });
+
+    var fetchedSource = null;
+
+    // 1. Pull from Cloud if configured
+    var cloudUrl = localStorage.getItem(CLOUD_SYNC_KEY) || "";
+    if (cloudUrl && cloudUrl.trim()) {
+      try {
+        var cResp = await fetch(cloudUrl.trim(), { method: "GET" });
+        if (cResp.ok) {
+          var cloudData = await cResp.json();
+          var cloudGuests = Array.isArray(cloudData) ? cloudData : (cloudData.guests || cloudData.data || []);
+          if (Array.isArray(cloudGuests) && cloudGuests.length) {
+            cloudGuests.forEach(function (cg) {
+              var norm = normalizeGuest(cg);
+              if (!norm) return;
+              var k = norm.name.trim().toLowerCase();
+              if (!byName[k]) {
+                merged.push(norm);
+                byName[k] = norm;
+              }
+            });
+            fetchedSource = "Cloud Endpoint";
+          }
+        }
+      } catch (cErr) {
+        console.warn("Cloud sync fetch:", cErr);
+      }
+    }
+
+    // 2. Pull from shared guests.json in repository
+    try {
+      var rResp = await fetch("guests.json?v=" + Date.now(), { cache: "no-store" });
+      if (rResp.ok) {
+        var repoGuests = await rResp.json();
+        if (Array.isArray(repoGuests) && repoGuests.length) {
+          repoGuests.forEach(function (rg) {
+            var norm = normalizeGuest(rg);
+            if (!norm) return;
+            var k = norm.name.trim().toLowerCase();
+            if (!byName[k]) {
+              merged.push(norm);
+              byName[k] = norm;
+            }
+          });
+          if (!fetchedSource) fetchedSource = "Repository (guests.json)";
+        }
+      }
+    } catch (rErr) {
+      console.warn("Repo guests.json fetch:", rErr);
+    }
+
+    merged.forEach(function (g) { normalizeGuest(g); });
+    masterListCache = merged;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(merged)); } catch (e) {}
+    renderMasterList();
+
+    if (statusBadge) {
+      if (fetchedSource) {
+        statusBadge.innerHTML = '<span style="color:#0f8a3c;">● Synced from ' + fetchedSource + ' (' + merged.length + ' guests)</span>';
+      } else if (merged.length) {
+        statusBadge.innerHTML = '<span style="color:var(--brass);">● Loaded ' + merged.length + ' guests</span>';
+      } else {
+        statusBadge.innerHTML = '<span style="color:var(--ink-faint);">● Master list ready</span>';
+      }
+    }
+    if (manualNotice) {
+      toast("Master list synced! Total guests: " + merged.length);
+    }
+  }
+
   // =========================================================================
   // BULK IMPORT LOGIC (PARSES AND ADDS TO MASTER LIST)
   // =========================================================================
@@ -1493,7 +1706,23 @@ Jabuani & Nakrani Family 🌸</textarea>
     var ext = file.name.split(".").pop().toLowerCase();
     toast("Reading " + file.name + "...");
 
-    if (ext === "csv") {
+    if (ext === "json") {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          var parsed = JSON.parse(e.target.result);
+          var list = Array.isArray(parsed) ? parsed : (parsed.guests || parsed.data || []);
+          if (Array.isArray(list) && list.length) {
+            processParsedRows(list);
+          } else {
+            toast("No guests found in JSON file");
+          }
+        } catch (err) {
+          toast("Invalid JSON file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    } else if (ext === "csv") {
       var reader = new FileReader();
       reader.onload = function (e) {
         parseCSVText(e.target.result);
@@ -1519,7 +1748,7 @@ Jabuani & Nakrani Family 🌸</textarea>
       };
       reader.readAsArrayBuffer(file);
     } else {
-      toast("Unsupported file format. Please upload .xlsx, .xls, or .csv");
+      toast("Unsupported file format. Please upload .xlsx, .xls, .csv, or .json");
     }
   }
 
@@ -1574,8 +1803,8 @@ Jabuani & Nakrani Family 🌸</textarea>
 
     rows.forEach(function (row) {
       var keys = Object.keys(row);
-      var name = "";
-      var phone = "";
+      var name = row.name ? String(row.name).trim() : "";
+      var phone = row.phone ? String(row.phone).trim() : "";
       var eventsStr = "";
       var separateEvents = {};
 
@@ -1583,9 +1812,9 @@ Jabuani & Nakrani Family 🌸</textarea>
         var cleanK = k.toLowerCase().trim();
         var val = String(row[k]).trim();
 
-        if (cleanK === "name" || cleanK === "guest name" || cleanK === "guest" || cleanK === "invitee" || cleanK === "family") {
+        if (!name && (cleanK === "name" || cleanK === "guest name" || cleanK === "guest" || cleanK === "invitee" || cleanK === "family")) {
           name = val;
-        } else if (cleanK === "phone" || cleanK === "mobile" || cleanK === "whatsapp" || cleanK === "number" || cleanK === "contact") {
+        } else if (!phone && (cleanK === "phone" || cleanK === "mobile" || cleanK === "whatsapp" || cleanK === "number" || cleanK === "contact")) {
           phone = val;
         } else if (cleanK === "events" || cleanK === "ceremonies" || cleanK === "functions" || cleanK === "cards") {
           eventsStr = val;
@@ -1603,7 +1832,9 @@ Jabuani & Nakrani Family 🌸</textarea>
 
       // Determine selected events
       var selectedCards = [];
-      if (Object.keys(separateEvents).length > 0) {
+      if (Array.isArray(row.cards) && row.cards.length) {
+        selectedCards = row.cards.slice();
+      } else if (Object.keys(separateEvents).length > 0) {
         allEventKeys.forEach(function (k) {
           if (separateEvents[k]) selectedCards.push(k);
         });
@@ -1832,6 +2063,7 @@ Jabuani & Nakrani Family 🌸</textarea>
   // Initialize
   renderEvents();
   renderMasterList();
+  syncMasterGuests(false);
 }());
 </script>
 </body>

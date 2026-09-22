@@ -1,0 +1,83 @@
+[
+  {
+    "id": "g-1",
+    "name": "Mr Naran Kanji Jabuani & Mrs. Premila Naran Jabuani",
+    "phone": "7738047555",
+    "slug": "mr-naran-kanji-jabuani-and-mrs-premila-naran-jabuani",
+    "cards": ["mameru", "sangeet", "mandap", "wedding"],
+    "link": "https://millisheth1104.github.io/jeet-bhavini/mr-naran-kanji-jabuani-and-mrs-premila-naran-jabuani",
+    "createdAt": 1726900000000
+  },
+  {
+    "id": "g-2",
+    "name": "Mr Dhiraj Naran Jabuani & Mrs. Bhavna Dhiraj Jabuani",
+    "phone": "",
+    "slug": "mr-dhiraj-naran-jabuani-and-mrs-bhavna-dhiraj-jabuani",
+    "cards": ["mameru", "sangeet", "mandap", "wedding"],
+    "link": "https://millisheth1104.github.io/jeet-bhavini/mr-dhiraj-naran-jabuani-and-mrs-bhavna-dhiraj-jabuani",
+    "createdAt": 1726900001000
+  },
+  {
+    "id": "g-3",
+    "name": "Mr Arvind Naran Jabuani & Mrs. Ranjana Arvind Jabuani",
+    "phone": "7738047555",
+    "slug": "mr-arvind-naran-jabuani-and-mrs-ranjana-arvind-jabuani",
+    "cards": ["mameru", "sangeet", "mandap", "wedding"],
+    "link": "https://millisheth1104.github.io/jeet-bhavini/mr-arvind-naran-jabuani-and-mrs-ranjana-arvind-jabuani",
+    "createdAt": 1726900002000
+  },
+  {
+    "id": "g-4",
+    "name": "Mr Bhumit Dhiraj Jabuani & Mrs. Prachi Bhumit Jabuani",
+    "phone": "",
+    "slug": "mr-bhumit-dhiraj-jabuani-and-mrs-prachi-bhumit-jabuani",
+    "cards": ["mameru", "sangeet", "mandap", "wedding"],
+    "link": "https://millisheth1104.github.io/jeet-bhavini/mr-bhumit-dhiraj-jabuani-and-mrs-prachi-bhumit-jabuani",
+    "createdAt": 1726900003000
+  },
+  {
+    "id": "g-5",
+    "name": "Mr Dhruv Dhiraj Jabuani & Mrs. Nishita Dhruv Jabuani",
+    "phone": "",
+    "slug": "mr-dhruv-dhiraj-jabuani-and-mrs-nishita-dhruv-jabuani",
+    "cards": ["mameru", "sangeet", "mandap", "wedding"],
+    "link": "https://millisheth1104.github.io/jeet-bhavini/mr-dhruv-dhiraj-jabuani-and-mrs-nishita-dhruv-jabuani",
+    "createdAt": 1726900004000
+  },
+  {
+    "id": "g-6",
+    "name": "Mr Amrut Kanti Pokar & Mrs. Sangita Amrut Pokar",
+    "phone": "",
+    "slug": "mr-amrut-kanti-pokar-and-mrs-sangita-amrut-pokar",
+    "cards": ["mameru", "sangeet", "mandap", "wedding"],
+    "link": "https://millisheth1104.github.io/jeet-bhavini/mr-amrut-kanti-pokar-and-mrs-sangita-amrut-pokar",
+    "createdAt": 1726900005000
+  },
+  {
+    "id": "g-7",
+    "name": "Mr Deep Vipul Velani & Mrs. Kajal Deep Velani",
+    "phone": "",
+    "slug": "mr-deep-vipul-velani-and-mrs-kajal-deep-velani",
+    "cards": ["mameru", "sangeet", "mandap", "wedding"],
+    "link": "https://millisheth1104.github.io/jeet-bhavini/mr-deep-vipul-velani-and-mrs-kajal-deep-velani",
+    "createdAt": 1726900006000
+  },
+  {
+    "id": "g-8",
+    "name": "Pratham Amrut Pokar & Ms. Nidhi Amrut Pokar",
+    "phone": "",
+    "slug": "pratham-amrut-pokar-and-ms-nidhi-amrut-pokar",
+    "cards": ["mameru", "sangeet", "mandap", "wedding"],
+    "link": "https://millisheth1104.github.io/jeet-bhavini/pratham-amrut-pokar-and-ms-nidhi-amrut-pokar",
+    "createdAt": 1726900007000
+  },
+  {
+    "id": "g-9",
+    "name": "Priya & Raj Shah",
+    "phone": "9876543210",
+    "slug": "priya-and-raj-shah",
+    "cards": ["mameru", "sangeet", "mandap", "wedding"],
+    "link": "https://millisheth1104.github.io/jeet-bhavini/priya-and-raj-shah",
+    "createdAt": 1726900008000
+  }
+]
