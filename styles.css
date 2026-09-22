@@ -1309,7 +1309,7 @@ html[data-lang="gu"] .hero__guest .calligraphy-word,
 }
 
 .invite__ganesha-motif {
-  width: clamp(38px, 9vw, 52px);
+  width: clamp(44px, 10.5vw, 60px);
   height: auto;
   margin: 0.12rem auto 0.2rem;
   filter: drop-shadow(0 2px 4px rgba(125, 82, 35, 0.15));
@@ -1372,7 +1372,7 @@ html[data-lang="gu"] .hero__guest .calligraphy-word,
     bottom: 46.5%;
   }
   .invite__ganesha-motif {
-    width: 36px;
+    width: 42px;
     margin: 0.1rem auto 0.15rem;
   }
   .invite__weds {

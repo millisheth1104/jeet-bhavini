@@ -2327,3 +2327,10 @@ normal on the Rasa/Noto stack - untouched, unaffected by this.
 
 Verified both languages: English renders italic Cormorant Garamond 600,
 Gujarati stays on its own stack, no overflow, no console errors.
+
+## Invite card: slightly enlarged the Ganesh motif
+
+`.invite__ganesha-motif` width: `clamp(38px, 9vw, 52px)` -> `clamp(44px,
+10.5vw, 60px)`, mobile override `36px` -> `42px`. Verified both languages
+at 375px: still sits cleanly under the "shree ganeshaya namah" line, no
+overflow, no console errors.
