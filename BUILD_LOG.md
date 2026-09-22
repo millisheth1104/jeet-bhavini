@@ -2305,3 +2305,25 @@ which the user didn't ask to touch.
 
 Verified both languages at 375px: names read noticeably larger, still fit
 inside the arch with no overflow, no console errors.
+
+## Hero guest line: replaced the cursive "you" with italic Cormorant Garamond
+
+User found the script comparisons too cursive across the board, so a second
+round offered less-loopy alternatives - italic serifs (not script at all)
+alongside the most restrained script/handwriting faces on Google Fonts.
+User picked Cormorant Garamond italic.
+
+`.hero__guest` font-family: `"Alex Brush", "Great Vibes", cursive` ->
+`"Cormorant Garamond", "Great Vibes", serif`, with explicit `font-style:
+italic; font-weight: 600` (Cormorant defaults upright, unlike a script
+face). Added the `1,600` italic weight to the Google Fonts request - only
+`1,300`/`1,400` were loaded before, which would have faked the weight via
+browser synthesis rather than rendering the real cut. The mask-reveal
+`.calligraphy-word` animation is font-agnostic (a generic left-to-right
+wipe), so it needed no changes.
+
+Gujarati's `.hero__guest.gu` override already forces its own font-style:
+normal on the Rasa/Noto stack - untouched, unaffected by this.
+
+Verified both languages: English renders italic Cormorant Garamond 600,
+Gujarati stays on its own stack, no overflow, no console errors.
