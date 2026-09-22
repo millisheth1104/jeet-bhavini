@@ -2289,3 +2289,19 @@ Refined the calligraphy writing experience based on visual review:
 
 
 
+
+## Invite card: dropped the shloka couplet, enlarged the names
+
+User asked to remove the Devanagari shloka ("वक्रतुण्ड महाकाय...") from the
+invite card's arch and make "Jeet"/"Bhavini" bigger.
+
+Removed the `<p class="invite__shloka">` block from `index.html` and its
+now-dead `.invite__shloka` rule (base + the mobile-media-query margin
+override) from `styles.css` - kept the "॥ श्री गणेशाય નમઃ ॥" line above it,
+which the user didn't ask to touch.
+
+`.invite__name` font-size: `clamp(1.6rem, 7.2cqw, 2.6rem)` ->
+`clamp(2rem, 9cqw, 3.3rem)`.
+
+Verified both languages at 375px: names read noticeably larger, still fit
+inside the arch with no overflow, no console errors.

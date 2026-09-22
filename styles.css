@@ -1314,18 +1314,6 @@ html[data-lang="gu"] .hero__guest .calligraphy-word,
   transform: scale(1.05);
 }
 
-.invite__shloka {
-  font-family: var(--devanagari);
-  font-size: clamp(0.62rem, 2.8cqw, 1rem);
-  line-height: 1.45;
-  max-width: 62cqw;
-  color: #7b4f23;
-  margin: 0 0 clamp(0.2rem, 0.7cqw, 0.4rem);
-  letter-spacing: 0.01em;
-  font-weight: 500;
-  text-wrap: pretty;
-}
-
 .invite__parties {
   width: 100%;
   max-width: 74cqw;
@@ -1335,7 +1323,7 @@ html[data-lang="gu"] .hero__guest .calligraphy-word,
 .invite__name {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(1.6rem, 7.2cqw, 2.6rem);
+  font-size: clamp(2rem, 9cqw, 3.3rem);
   line-height: 1.05;
   color: #321d10;
   letter-spacing: 0.02em;
@@ -1381,9 +1369,6 @@ html[data-lang="gu"] .hero__guest .calligraphy-word,
   .invite__ganesha-motif {
     width: 36px;
     margin: 0.1rem auto 0.15rem;
-  }
-  .invite__shloka {
-    margin: 0 0 0.25rem;
   }
   .invite__weds {
     margin: 0.2rem 0;
