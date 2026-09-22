@@ -981,14 +981,9 @@ Jabuani & Nakrani Family 🌸</textarea>
   }
 
   function formatGuestLink(slug, cards) {
-    var allNames = (W.events || []).map(function (e) { return e.key; });
     var cleanSlug = String(slug || "guest").replace(/^\/+|\/+$/g, "");
     var base = getBaseUrl();
-    var link = base + encodeURIComponent(cleanSlug);
-    if (cards && cards.length && cards.length < allNames.length) {
-      link += "?c=" + cards.join(",");
-    }
-    return link;
+    return base + encodeURIComponent(cleanSlug);
   }
 
   // ---- Phone Number Normalization & WhatsApp Deep Link ----------------

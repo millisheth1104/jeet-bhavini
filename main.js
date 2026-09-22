@@ -138,10 +138,40 @@
         var lastSeg = segments[segments.length - 1];
         // Ignore static file extensions and base folder names
         if (lastSeg !== "jeet-bhavini" && lastSeg !== "wedding" && lastSeg.indexOf(".") === -1) {
-          var rawSlug = decodeURIComponent(lastSeg).replace(/[-_+]+/g, " ").trim();
-          var formatted = rawSlug.replace(/\band\b/gi, "&").replace(/\b\w/g, function (l) { return l.toUpperCase(); });
-          if (!GUEST) GUEST = { n: formatted, c: [] };
-          else GUEST.n = formatted;
+          var cleanSlug = decodeURIComponent(lastSeg).toLowerCase().trim()
+            .replace(/&/g, "and")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+
+          // Check if guest exists in window.WEDDING_GUESTS or localStorage
+          var matchedGuest = null;
+          var guestList = (window.WEDDING_GUESTS && Array.isArray(window.WEDDING_GUESTS)) ? window.WEDDING_GUESTS : null;
+          if (!guestList) {
+            try {
+              guestList = JSON.parse(localStorage.getItem("wedding-guest-links") || "[]");
+            } catch (e) {}
+          }
+          if (Array.isArray(guestList)) {
+            for (var gi = 0; gi < guestList.length; gi++) {
+              var candidate = guestList[gi];
+              if (candidate && candidate.slug && candidate.slug.toLowerCase() === cleanSlug) {
+                matchedGuest = candidate;
+                break;
+              }
+            }
+          }
+
+          if (matchedGuest) {
+            GUEST = {
+              n: matchedGuest.name,
+              c: matchedGuest.cards || []
+            };
+          } else {
+            var rawSlug = decodeURIComponent(lastSeg).replace(/[-_+]+/g, " ").trim();
+            var formatted = rawSlug.replace(/\band\b/gi, "&").replace(/\b\w/g, function (l) { return l.toUpperCase(); });
+            if (!GUEST) GUEST = { n: formatted, c: [] };
+            else GUEST.n = formatted;
+          }
         }
       }
     }
