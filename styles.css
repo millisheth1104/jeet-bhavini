@@ -112,7 +112,7 @@ html[data-lang="gu"] .countdown__title { line-height: 1.4; }
 *, *::before, *::after { box-sizing: border-box; }
 
 /* Scaled up base font size sitewide (desktop: 20px, mobile: 17.5px balanced) */
-html { font-size: 20px; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; overscroll-behavior-y: none; }
+html { font-size: 20px; -webkit-text-size-adjust: 100%; scroll-behavior: auto; overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; }
 @media (max-width: 560px) {
   html { font-size: 17.5px; }
   :root {
@@ -246,13 +246,7 @@ img { max-width: 100%; display: block; }
   transition: opacity .9s ease, visibility .9s;
 }
 body.intro-open { overflow: hidden; }
-html.is-scroll-locked,
-body.is-scroll-locked {
-  overflow: hidden !important;
-  touch-action: none !important;
-  overscroll-behavior: none !important;
-  height: 100% !important;
-}
+
 
 .intro.is-done {
   opacity: 0;
@@ -3096,6 +3090,26 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
 .reveal--right { opacity: 0; translate: 32px 0; will-change: opacity, translate; }
 .reveal--right.is-in { opacity: 1; translate: 0 0; will-change: auto; }
 
+/* ---- hardware-accelerated scrolling & parallax performance ---- */
+[data-par] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.scroll-card {
+  contain: layout style;
+}
+
+.scroll-card__unroll-track {
+  will-change: height;
+  transform: translateZ(0);
+}
+
+.scroll-card__roller {
+  transform: translateZ(0);
+}
+
 /* ---- layout containment for silky 60/120fps scrolling ---- */
 .events {
   contain: layout style;
@@ -3106,7 +3120,10 @@ body.is-closing .ctrl[aria-pressed="true"] { background: var(--gold); color: #FB
 .postcard-sec,
 .countdown,
 .families,
-.compliments {
+.compliments,
+.venue,
+.timeline,
+.closing {
   content-visibility: auto;
   contain-intrinsic-size: auto 650px;
 }

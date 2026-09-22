@@ -11,46 +11,14 @@
   var $  = function (id) { return document.getElementById(id); };
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* -- scroll locking: locked while hero handwriting animates ------------ */
+  /* -- scrolling is fully free and responsive on the garland page --------- */
   var SCROLL_LOCK = (function () {
-    var locked = false;
-
-    function preventDefault(e) {
-      if (!locked) return;
-      if (e.type === "keydown") {
-        var blockedKeys = ["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Space", "Home", "End"];
-        if (blockedKeys.indexOf(e.key) !== -1 || e.keyCode === 32) {
-          e.preventDefault();
-        }
-      } else {
-        e.preventDefault();
-      }
-    }
-
-    function lock() {
-      if (locked) return;
-      locked = true;
-      document.documentElement.classList.add("is-scroll-locked");
-      document.body.classList.add("is-scroll-locked");
-      window.addEventListener("wheel", preventDefault, { passive: false });
-      window.addEventListener("touchmove", preventDefault, { passive: false });
-      window.addEventListener("keydown", preventDefault, { passive: false });
-    }
-
-    function unlock() {
-      if (!locked) return;
-      locked = false;
-      document.documentElement.classList.remove("is-scroll-locked");
-      document.body.classList.remove("is-scroll-locked");
-      window.removeEventListener("wheel", preventDefault);
-      window.removeEventListener("touchmove", preventDefault);
-      window.removeEventListener("keydown", preventDefault);
-    }
-
-    return { lock: lock, unlock: unlock, isLocked: function () { return locked; } };
+    return {
+      lock: function () {},
+      unlock: function () {},
+      isLocked: function () { return false; }
+    };
   }());
-
-  if (!reduced) SCROLL_LOCK.lock();
 
   /* -- language ------------------------------------------------------------
      The site reads in one language at a time. The visitor's choice is kept in
@@ -494,7 +462,10 @@
       clearTimeout(timer2);
       document.body.classList.remove("intro-open");
       document.body.classList.remove("page-proper");
-      window.scrollTo(0, 0);
+      var curY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      if (curY < 10) {
+        window.scrollTo(0, 0);
+      }
       if (!stage) {
         if (triggerGuestHandwriting) triggerGuestHandwriting();
         return;
@@ -905,7 +876,6 @@
       var tFinish = setTimeout(function () {
         var cue = $("scrollCue");
         if (cue) cue.classList.add("is-shown");
-        SCROLL_LOCK.unlock();
         calligraphyState.isWriting = false;
         calligraphyState.hasAnimated = true;
       }, 350);
@@ -928,13 +898,11 @@
         pen.classList.add("is-hidden");
         if (below) below.classList.add("is-revealed");
         if (cue) cue.classList.add("is-shown");
-        SCROLL_LOCK.unlock();
         calligraphyState.isWriting = false;
         return;
       }
 
       if (!isReplay) {
-        SCROLL_LOCK.lock();
         if (cue) cue.classList.remove("is-shown");
         if (below) below.classList.remove("is-revealed");
       }
@@ -1060,7 +1028,6 @@
       if (below) below.classList.add("is-revealed");
       var cue = $("scrollCue");
       if (cue) cue.classList.add("is-shown");
-      SCROLL_LOCK.unlock();
       calligraphyState.hasAnimated = true;
     } else if (!document.body.classList.contains("intro-open")) {
       // Direct load without intro: start writing immediately!
@@ -1306,16 +1273,9 @@
        actually means for a scroll-linked animation: it keeps ticking via
        rAF for a few frames after each scroll event to settle, instead of
        only updating exactly when a scroll event fires. */
+    var updateCardHeights;
     (function cardRoll() {
       var cards = Array.prototype.slice.call(list.querySelectorAll(".scroll-card"));
-      // The eyebrow/title/caption/rule above the cards (.events__lead) used
-      // to fade in on the generic one-shot .reveal observer, which fired as
-      // soon as the section's edge crossed into view - well before card 1
-      // had scrolled anywhere near open. Folding it into this SAME
-      // targets/state loop, using the same top-based progress formula, is
-      // what actually makes it arrive in step with card 1 instead of early.
-      // --lead-roll is set on the section itself so every .events__lead
-      // descendant picks it up (custom properties inherit).
       var leadRef = section && section.querySelector(".eyebrow");
       var targets = cards.map(function (c) { 
         return { 
@@ -1343,6 +1303,15 @@
       });
       var ticking = false;
 
+      // Pre-measure and cache sheet heights to prevent layout thrashing on scroll
+      var cachedHeights = [];
+      updateCardHeights = function () {
+        cachedHeights = targets.map(function (tgt) {
+          return (tgt.track && tgt.sheet) ? tgt.sheet.scrollHeight : 0;
+        });
+      };
+      updateCardHeights();
+
       function computeTargets() {
         var vh = window.innerHeight;
         var startY = vh * 0.90, endY = vh * 0.52;
@@ -1363,16 +1332,6 @@
       function tick() {
         computeTargets();
 
-        // Phase 1 (READ): batch read sheet heights before mutating styles
-        var heights = [];
-        for (var hIdx = 0; hIdx < targets.length; hIdx++) {
-          var tCard = targets[hIdx];
-          if (tCard.track && tCard.sheet && !state[hIdx].locked) {
-            heights[hIdx] = tCard.sheet.scrollHeight;
-          }
-        }
-
-        // Phase 2 (WRITE): batch apply CSS properties without layout thrashing
         state.forEach(function (s, i) {
           var d = s.target - s.cur;
           if (Math.abs(d) > 0.001) s.cur += d * LERP_RATE;
@@ -1384,7 +1343,7 @@
             if (s.locked) {
               tgt.track.style.height = "auto";
             } else {
-              var fullH = heights[i] || 0;
+              var fullH = cachedHeights[i] || tgt.sheet.scrollHeight || 0;
               tgt.track.style.height = Math.round(fullH * s.cur) + "px";
             }
           }
@@ -1398,7 +1357,10 @@
       }
 
       window.addEventListener("scroll", kick, { passive: true });
-      window.addEventListener("resize", kick, { passive: true });
+      window.addEventListener("resize", function () {
+        updateCardHeights();
+        kick();
+      }, { passive: true });
       kick();
     }());
 
@@ -1426,7 +1388,10 @@
     var fitPending;
     function scheduleFit() {
       clearTimeout(fitPending);
-      fitPending = setTimeout(fitTitles, 60);
+      fitPending = setTimeout(function () {
+        fitTitles();
+        if (typeof updateCardHeights === "function") updateCardHeights();
+      }, 60);
     }
 
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleFit);
