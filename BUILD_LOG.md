@@ -2334,3 +2334,67 @@ Gujarati stays on its own stack, no overflow, no console errors.
 10.5vw, 60px)`, mobile override `36px` -> `42px`. Verified both languages
 at 375px: still sits cleanly under the "shree ganeshaya namah" line, no
 overflow, no console errors.
+
+## 2026-09-23 — Guest list moved to a shared server store
+
+The Master Guest List lived in `localStorage` only. Every device kept its own
+copy, so deleting a guest on the laptop left them present on the phone, and the
+"N guests" badge disagreed between devices. The Cloud Sync panel (Google Apps
+Script) existed but only pulled on an explicit button press, so it did not fix
+the count.
+
+**Added `api/guests.js`** — a Vercel serverless function backed by Upstash Redis
+over its REST API. No npm dependencies: it uses `fetch` and CommonJS, so the
+project stays build-free.
+
+- `GET /api/guests` → `{ guests, seeded }`
+- `PUT /api/guests` with `{ guests: [...] }` replaces the whole list
+
+Whole-list replacement rather than a per-id `DELETE` route, because the admin
+page already computes the surviving array for every mutation (add, bulk import,
+remove, clear) — one write path instead of five.
+
+**The `seeded` flag is the load-bearing part.** Without it there is no way to
+tell "the store has never been written" from "the admin deliberately deleted
+everyone", and a fresh device would re-seed all 9 guests from `guests.json`,
+resurrecting deletions. Upstash already distinguishes these (absent key vs. a
+key holding `[]`); the API just stops collapsing them into one empty array.
+
+**`admin.html` rewiring**
+- `saveSaved()` now pushes to `/api/guests` after writing localStorage, which
+  keeps the local copy as an offline cache rather than the source of truth.
+- On load, `syncMasterGuests()` mirrors the server exactly when `seeded` is
+  true — including a deliberately emptied list — and only falls back to seeding
+  from `guests.json` when the store has never been written.
+**No auth on writes**, at the user's explicit request. `PUT /api/guests` is open
+to anyone who finds the URL, and the admin page has no passphrase gate either
+(removed earlier). A token guard was built and then removed rather than left as
+unreachable code. Recovery if the list is ever wiped: `guests.json` in the repo,
+plus the page's Export Excel/CSV/JSON buttons.
+
+**`vercel.json`** — added `api/` to the SPA rewrite's negative lookahead so
+`/api/guests` is never swallowed by the catch-all into `index.html`.
+
+### Verified
+
+Logic tested against a stubbed Upstash (11 checks), then the real flow driven in
+headless Chrome over CDP against a local harness:
+
+- first visit seeds 9 guests from `guests.json` and writes them to the store
+- removing a guest drops the badge to 8 and persists to the server
+- a browser with `localStorage` cleared (a stand-in for a second device) loads
+  8, not 9, and the removed guest does not come back
+- after deleting everyone, a fresh device shows 0 rather than re-seeding
+
+### Not done
+
+`main.js` still resolves public guest links from `window.WEDDING_GUESTS` and
+localStorage, so a deleted guest's personal link keeps rendering a card built
+from their slug. Nothing regressed here, but the public side is not yet reading
+the shared store.
+
+Requires provisioning before it works in production: Upstash Redis on the Vercel
+project. The handler accepts either `KV_REST_API_URL`/`KV_REST_API_TOKEN` (what
+Vercel's integration injects) or `UPSTASH_REDIS_REST_URL`/`_TOKEN` (what
+Upstash's own dashboard calls them), since which pair you get depends on the
+path taken through the Storage tab.

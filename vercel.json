@@ -2,6 +2,6 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/((?!assets/|scripts/|.*\\..*).*)$", "destination": "/index.html" }
+    { "source": "/((?!api/|assets/|scripts/|.*\\..*).*)$", "destination": "/index.html" }
   ]
 }

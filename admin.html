@@ -887,19 +887,30 @@ Jabuani & Nakrani Family 🌸</textarea>
     </div>
 
     <!-- Cloud Sync Drawer (Expandable) -->
-    <div id="cloudSyncPanel" style="display:none;background:var(--paper-warm);border:1px solid var(--hairline);border-radius:8px;padding:1rem;margin-bottom:1rem;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">
-        <strong style="font-size:.9rem;color:var(--ink);display:inline-flex;align-items:center;gap:.4rem;">
-          ☁️ Cloud Sync (Multi-Device Live Sync)
+    <div id="cloudSyncPanel" style="display:none;background:var(--paper-warm);border:1px solid var(--hairline);border-radius:8px;padding:1.2rem;margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
+        <strong style="font-size:.95rem;color:var(--ink);display:inline-flex;align-items:center;gap:.4rem;">
+          ☁️ Multi-Device Live Sync (Sync Across All Phones &amp; Laptops)
         </strong>
         <button type="button" class="ghost" id="btnCloseCloudSync" style="padding:.2rem .5rem;font-size:.8rem;">✕ Close</button>
       </div>
-      <p style="font-size:.82rem;color:var(--ink-soft);margin:0 0 .6rem;line-height:1.45;">
-        Connect a Google Apps Script Webhook URL or Cloud JSON endpoint to automatically share and synchronize guest lists across all phones and computers in real-time.
+      <p style="font-size:.82rem;color:var(--ink-soft);margin:0 0 .8rem;line-height:1.5;">
+        To make guest additions and deletions update <strong>live on every phone, tablet, and computer</strong>, connect a free Google Apps Script Web App. Follow these 3 quick steps:
       </p>
+      <div style="background:var(--paper);border:1px solid var(--hairline);border-radius:6px;padding:.8rem;font-size:.8rem;color:var(--ink);margin-bottom:.8rem;line-height:1.6;">
+        <strong>1.</strong> Open <a href="https://script.google.com/home/start" target="_blank" rel="noopener" style="color:var(--brass);font-weight:600;">Google Apps Script (click here)</a> and click <em>New project</em>.<br>
+        <strong>2.</strong> Replace the code with the script below and click <em>Deploy &gt; New deployment &gt; Select type &gt; Web app</em> (set <em>Who has access</em> to <strong>Anyone</strong>).<br>
+        <strong>3.</strong> Copy your Web App URL, paste it into the box below, and click <em>Save &amp; Sync</em>!
+      </div>
+      <div style="display:flex;gap:.5rem;margin-bottom:.8rem;align-items:center;">
+        <button type="button" class="ghost" id="btnCopyAppsScript" style="font-size:.8rem;padding:.35rem .75rem;color:var(--brass);border-color:var(--brass);">
+          📋 Copy Google Apps Script Code
+        </button>
+        <span id="copyScriptNote" style="font-size:.78rem;color:#0f8a3c;display:none;">✓ Code copied to clipboard!</span>
+      </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
         <input type="text" id="cloudSyncUrlInput" placeholder="https://script.google.com/macros/s/.../exec" style="flex:1;min-width:260px;font-size:.82rem;padding:.4rem .6rem;">
-        <button type="button" id="btnSaveCloudSync" style="font-size:.82rem;padding:.45rem .9rem;">Save &amp; Sync</button>
+        <button type="button" id="btnSaveCloudSync" style="font-size:.82rem;padding:.45rem .9rem;">Save &amp; Sync Now</button>
         <button type="button" class="ghost" id="btnPullCloudSync" style="font-size:.82rem;padding:.45rem .9rem;">Pull from Cloud</button>
       </div>
     </div>
@@ -1276,7 +1287,7 @@ Jabuani & Nakrani Family 🌸</textarea>
     return masterListCache;
   }
 
-  function saveSaved(list, skipCloud) {
+  function saveSaved(list, skipRemote) {
     masterListCache = list;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
@@ -1284,9 +1295,34 @@ Jabuani & Nakrani Family 🌸</textarea>
     } catch (e) {
       console.error(e);
     }
-    if (!skipCloud) {
+    if (!skipRemote) {
+      pushToServer(list);
       triggerCloudSyncDebounced();
     }
+  }
+
+  // ---- Shared server store (/api/guests) ------------------------------
+  async function pushToServer(list) {
+    try {
+      var resp = await fetch("/api/guests", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guests: list })
+      });
+      if (!resp.ok) {
+        var body = await resp.json().catch(function () { return {}; });
+        toast("Not saved to server: " + (body.error || resp.status));
+      }
+    } catch (e) {
+      toast("Offline — change saved on this device only");
+    }
+  }
+
+  async function fetchFromServer() {
+    var resp = await fetch("/api/guests", { cache: "no-store" });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    var data = await resp.json();
+    return { guests: Array.isArray(data.guests) ? data.guests : [], seeded: !!data.seeded };
   }
 
   var cloudSyncTimer = null;
@@ -1590,8 +1626,6 @@ Jabuani & Nakrani Family 🌸</textarea>
   }
 
   async function syncMasterGuests(manualNotice) {
-    var isInitialized = localStorage.getItem(DB_INIT_KEY);
-
     // If user clicked "Pull from Cloud" manually:
     if (manualNotice) {
       var cloudUrl = localStorage.getItem(CLOUD_SYNC_KEY) || "";
@@ -1618,26 +1652,27 @@ Jabuani & Nakrani Family 🌸</textarea>
       return;
     }
 
-    // On normal reload: If DB is ALREADY initialized, NEVER override or re-inject deleted guests!
-    if (isInitialized) {
-      renderMasterList();
-      return;
-    }
-
-    // Only on very first visit when DB has never been initialized:
+    // The shared server store is the source of truth for every device.
     try {
+      var server = await fetchFromServer();
+      if (server.seeded) {
+        // Mirror the server exactly, including a deliberately emptied list.
+        saveSaved(server.guests.map(normalizeGuest).filter(Boolean), true);
+        renderMasterList();
+        return;
+      }
+      // Store has never been written: seed it once from the committed guests.json.
       var rResp = await fetch("guests.json?v=" + Date.now(), { cache: "no-store" });
       if (rResp.ok) {
         var repoGuests = await rResp.json();
         if (Array.isArray(repoGuests) && repoGuests.length) {
-          var normRepo = repoGuests.map(normalizeGuest).filter(Boolean);
-          saveSaved(normRepo, true);
+          saveSaved(repoGuests.map(normalizeGuest).filter(Boolean));
           renderMasterList();
           return;
         }
       }
-    } catch (rErr) {
-      console.warn("Repo guests.json fetch:", rErr);
+    } catch (sErr) {
+      console.warn("Server guest fetch failed, using local copy:", sErr);
     }
 
     localStorage.setItem(DB_INIT_KEY, "1");
