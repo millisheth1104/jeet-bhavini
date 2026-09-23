@@ -870,9 +870,6 @@ Jabuani & Nakrani Family 🌸</textarea>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           Download guests.json (For All Devices)
         </button>
-        <button class="ghost" id="btnToggleCloudSync" type="button" title="Sync live across devices via Google Sheets or Webhook">
-          ☁️ Cloud Sync
-        </button>
         <button class="ghost" id="btnExportXlsx" type="button" title="Export entire list with links to Excel">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           Export Excel (.xlsx)
@@ -883,35 +880,6 @@ Jabuani & Nakrani Family 🌸</textarea>
         <button class="ghost" id="btnClearMaster" type="button" style="color:var(--rose);">
           Clear All
         </button>
-      </div>
-    </div>
-
-    <!-- Cloud Sync Drawer (Expandable) -->
-    <div id="cloudSyncPanel" style="display:none;background:var(--paper-warm);border:1px solid var(--hairline);border-radius:8px;padding:1.2rem;margin-bottom:1rem;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
-        <strong style="font-size:.95rem;color:var(--ink);display:inline-flex;align-items:center;gap:.4rem;">
-          ☁️ Multi-Device Live Sync (Sync Across All Phones &amp; Laptops)
-        </strong>
-        <button type="button" class="ghost" id="btnCloseCloudSync" style="padding:.2rem .5rem;font-size:.8rem;">✕ Close</button>
-      </div>
-      <p style="font-size:.82rem;color:var(--ink-soft);margin:0 0 .8rem;line-height:1.5;">
-        To make guest additions and deletions update <strong>live on every phone, tablet, and computer</strong>, connect a free Google Apps Script Web App. Follow these 3 quick steps:
-      </p>
-      <div style="background:var(--paper);border:1px solid var(--hairline);border-radius:6px;padding:.8rem;font-size:.8rem;color:var(--ink);margin-bottom:.8rem;line-height:1.6;">
-        <strong>1.</strong> Open <a href="https://script.google.com/home/start" target="_blank" rel="noopener" style="color:var(--brass);font-weight:600;">Google Apps Script (click here)</a> and click <em>New project</em>.<br>
-        <strong>2.</strong> Replace the code with the script below and click <em>Deploy &gt; New deployment &gt; Select type &gt; Web app</em> (set <em>Who has access</em> to <strong>Anyone</strong>).<br>
-        <strong>3.</strong> Copy your Web App URL, paste it into the box below, and click <em>Save &amp; Sync</em>!
-      </div>
-      <div style="display:flex;gap:.5rem;margin-bottom:.8rem;align-items:center;">
-        <button type="button" class="ghost" id="btnCopyAppsScript" style="font-size:.8rem;padding:.35rem .75rem;color:var(--brass);border-color:var(--brass);">
-          📋 Copy Google Apps Script Code
-        </button>
-        <span id="copyScriptNote" style="font-size:.78rem;color:#0f8a3c;display:none;">✓ Code copied to clipboard!</span>
-      </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
-        <input type="text" id="cloudSyncUrlInput" placeholder="https://script.google.com/macros/s/.../exec" style="flex:1;min-width:260px;font-size:.82rem;padding:.4rem .6rem;">
-        <button type="button" id="btnSaveCloudSync" style="font-size:.82rem;padding:.45rem .9rem;">Save &amp; Sync Now</button>
-        <button type="button" class="ghost" id="btnPullCloudSync" style="font-size:.82rem;padding:.45rem .9rem;">Pull from Cloud</button>
       </div>
     </div>
 
@@ -1250,9 +1218,8 @@ Jabuani & Nakrani Family 🌸</textarea>
     updateWaBubble();
   }
 
-  // ---- Unified Master List Storage (Shared Repository + Local Working Copy + Cloud Sync) ----
+  // ---- Unified Master List Storage (Shared Repository + Local Working Copy) ----
   var DB_INIT_KEY = "wedding-db-initialized";
-  var CLOUD_SYNC_KEY = "wedding-cloud-sync-url";
   var masterListCache = null;
 
   function normalizeGuest(g) {
@@ -1297,7 +1264,6 @@ Jabuani & Nakrani Family 🌸</textarea>
     }
     if (!skipRemote) {
       pushToServer(list);
-      triggerCloudSyncDebounced();
     }
   }
 
@@ -1323,14 +1289,6 @@ Jabuani & Nakrani Family 🌸</textarea>
     if (!resp.ok) throw new Error("HTTP " + resp.status);
     var data = await resp.json();
     return { guests: Array.isArray(data.guests) ? data.guests : [], seeded: !!data.seeded };
-  }
-
-  var cloudSyncTimer = null;
-  function triggerCloudSyncDebounced() {
-    clearTimeout(cloudSyncTimer);
-    cloudSyncTimer = setTimeout(function () {
-      pushToCloudSync(true);
-    }, 1200);
   }
 
   // ---- Event Checkboxes Rendering -------------------------------------
@@ -1567,91 +1525,7 @@ Jabuani & Nakrani Family 🌸</textarea>
     btnExportJson.addEventListener("click", downloadMasterJson);
   }
 
-  // Cloud Sync Drawer toggle & logic
-  var cloudPanel = document.getElementById("cloudSyncPanel");
-  var btnToggleCloudSync = document.getElementById("btnToggleCloudSync");
-  var btnCloseCloudSync = document.getElementById("btnCloseCloudSync");
-  var cloudInput = document.getElementById("cloudSyncUrlInput");
-  var btnSaveCloudSync = document.getElementById("btnSaveCloudSync");
-  var btnPullCloudSync = document.getElementById("btnPullCloudSync");
-
-  var savedCloudUrl = localStorage.getItem(CLOUD_SYNC_KEY) || "";
-  if (cloudInput && savedCloudUrl) cloudInput.value = savedCloudUrl;
-
-  if (btnToggleCloudSync) {
-    btnToggleCloudSync.addEventListener("click", function () {
-      if (!cloudPanel) return;
-      cloudPanel.style.display = (cloudPanel.style.display === "none" || !cloudPanel.style.display) ? "block" : "none";
-    });
-  }
-  if (btnCloseCloudSync) {
-    btnCloseCloudSync.addEventListener("click", function () {
-      if (cloudPanel) cloudPanel.style.display = "none";
-    });
-  }
-  if (btnSaveCloudSync) {
-    btnSaveCloudSync.addEventListener("click", function () {
-      var url = (cloudInput ? cloudInput.value.trim() : "");
-      localStorage.setItem(CLOUD_SYNC_KEY, url);
-      if (url) {
-        toast("Saved Cloud Sync URL! Syncing now...");
-        pushToCloudSync(false);
-      } else {
-        toast("Cleared Cloud Sync URL.");
-      }
-    });
-  }
-  if (btnPullCloudSync) {
-    btnPullCloudSync.addEventListener("click", function () {
-      syncMasterGuests(true);
-    });
-  }
-
-  async function pushToCloudSync(silent) {
-    var url = localStorage.getItem(CLOUD_SYNC_KEY) || "";
-    if (!url || !url.trim()) return;
-    try {
-      var list = loadSaved();
-      var resp = await fetch(url.trim(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "saveGuests", guests: list, timestamp: Date.now() })
-      });
-      if (resp.ok && !silent) {
-        toast("Synced " + list.length + " guests to Cloud!");
-      }
-    } catch (e) {
-      if (!silent) toast("Cloud sync push note: " + e.message);
-    }
-  }
-
-  async function syncMasterGuests(manualNotice) {
-    // If user clicked "Pull from Cloud" manually:
-    if (manualNotice) {
-      var cloudUrl = localStorage.getItem(CLOUD_SYNC_KEY) || "";
-      if (cloudUrl && cloudUrl.trim()) {
-        try {
-          var cResp = await fetch(cloudUrl.trim(), { method: "GET" });
-          if (cResp.ok) {
-            var cloudData = await cResp.json();
-            var cloudGuests = Array.isArray(cloudData) ? cloudData : (cloudData.guests || cloudData.data || []);
-            if (Array.isArray(cloudGuests)) {
-              var normCloud = cloudGuests.map(normalizeGuest).filter(Boolean);
-              saveSaved(normCloud, true);
-              renderMasterList();
-              toast("Pulled " + normCloud.length + " guests from Cloud!");
-              return;
-            }
-          }
-        } catch (cErr) {
-          toast("Cloud pull error: " + cErr.message);
-        }
-      } else {
-        toast("No Cloud Sync URL configured.");
-      }
-      return;
-    }
-
+  async function syncMasterGuests() {
     // The shared server store is the source of truth for every device.
     try {
       var server = await fetchFromServer();
@@ -2067,7 +1941,7 @@ Jabuani & Nakrani Family 🌸</textarea>
   // Initialize
   renderEvents();
   renderMasterList();
-  syncMasterGuests(false);
+  syncMasterGuests();
 }());
 </script>
 </body>
