@@ -2581,3 +2581,27 @@ Verified: switched EN<->GU live at the countdown section - Gujarati now
 reads the new line, English unchanged ("Counting Down to Forever"), clock
 digits still Latin numerals in both languages, no overflow, no console
 errors.
+
+## Hero: "Jabuani Family" only, sheet's Gujarati invite lines, cache-bust
+
+**Why earlier Gujarati changes "weren't showing":** Vercel deployed every
+commit fine (GitHub status: success), but `index.html` still loaded
+`content.js`/`main.js`/`guests.js`/`styles.css` with `?v=20260923a` -
+unchanged since 9/23, so phones (especially WhatsApp's in-app browser) kept
+serving their cached copies of the old files. Bumped all four to
+`?v=20260924a`. Rule: bump `?v=` on every push that touches these files,
+not just when styles.css changes.
+
+**Hero hosts line:** "Jabuani & Nakrani Family" -> "Jabuani Family" /
+"જાબુઆની પરિવાર" per client (also picks up the sheet's જાબુઆની spelling
+this string had missed). The calendar card's "Jabuani & Nakrani Family"
+sign-off is untouched - client only flagged the hero.
+
+**Gujarati invite lines from the sheet**, dropped into the existing slots
+so the personalized "you"/guest name still works:
+`inviteVerb` "સ્નેહપૂર્વક આમંત્રણ પાઠવે છે" -> "ના હાર્દિક આમંત્રણ",
+`inviteOccasion` "શુભ લગ્ન પ્રસંગે" -> "લગ્ન પ્રસંગમાં પધારજો" (sheet
+reads "પ્રસંગમા" - added the missing anusvara). Reads: જાબુઆની પરિવાર /
+ના હાર્દિક આમંત્રણ / આપને / લગ્ન પ્રસંગમાં પધારજો / જીત & ભાવિની.
+
+Verified both languages live-switched, no overflow.

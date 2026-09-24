@@ -307,10 +307,10 @@ window.WEDDING = {
        postposition after the noun, so "ના શુભ લગ્ન પ્રસંગે" cannot sit in
        front of the names the way "to the wedding of" does; it is set as a
        standalone occasion line instead, which is how a kankotri stacks it. */
-    inviteHosts:       { en: "Jabuani & Nakrani Family", gu: "જબુઆણી અને નકરાણી પરિવાર" },
-    inviteVerb:        { en: "cordially invites", gu: "સ્નેહપૂર્વક આમંત્રણ પાઠવે છે" },
+    inviteHosts:       { en: "Jabuani Family", gu: "જાબુઆની પરિવાર" },
+    inviteVerb:        { en: "cordially invites", gu: "ના હાર્દિક આમંત્રણ" },
     inviteYou:         { en: "you", gu: "આપને" },
-    inviteOccasion:    { en: "to the wedding of", gu: "શુભ લગ્ન પ્રસંગે" },
+    inviteOccasion:    { en: "to the wedding of", gu: "લગ્ન પ્રસંગમાં પધારજો" },
 
     eventsEyebrow:     { en: "Celebration Journey", gu: "ઉજવણીની યાદી" },
     eventsTitle:       { en: "Our Events", gu: "અમારા પ્રસંગો" },
