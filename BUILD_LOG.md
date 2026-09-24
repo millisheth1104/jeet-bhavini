@@ -2535,3 +2535,34 @@ compliments, postcard note/button - all refresh correctly in both
 directions, no overflow, no console errors. Confirmed the countdown clock's
 own digits stay Latin numerals in both languages, matching the sheet's
 explicit note.
+
+## Fixed: countdown, gallery, calendar and postcard never switched language
+
+User reported the countdown title stuck in Gujarati ("સદાકાળ સુધીની
+ગણતરી") after switching to English. Root cause was the same class of bug
+fixed twice already today (hosts pairs, event times/compliments): these
+four sections were built once at page load with no `updateXxxUI` hook
+registered in `setLang()`, unlike hero/invitation/events/hosts/compliments.
+
+Audited every top-level section in `main.js` against the registered hooks
+to find all remaining instances rather than patching just the one reported
+- found `gallery()`, `calendar()`, `postcard()` had the identical gap:
+- **countdown()**: title (both the ticking and "arrived" states), the
+  Days/Hours/Minutes/Seconds unit labels, and the sign-off block (couple
+  names, wedding date, "Forever begins today" line) all now refresh -
+  tracked with an `arrived` flag so a language switch after the clock hits
+  zero shows the arrived title in the new language, not the ticking one.
+- **gallery()**: heading/subheading/caption, prev/next aria-labels, and
+  every photo's alt text now refresh without touching the carousel's drag
+  state or rebuilding the deck.
+- **calendar()**: month name, weekday headers, day-cell tooltips, the
+  location line, "Warm Regards" and the family name now rebuild on switch.
+  Also fixed a hardcoded literal here - `calFamily` said "જબુઆણી" (old
+  spelling), not "જાબુઆની" - inline text in main.js instead of content.js,
+  so today's sheet-driven content.js pass never touched it.
+- **postcard()**: couple/dates/venue/address/note/button/postmark text all
+  now refresh.
+
+Verified extensively with live EN<->GU<->EN switching for every field
+above, including the calendar's full day-grid rebuild (31 cells, correct
+weekday headers both languages) - no overflow, no console errors.

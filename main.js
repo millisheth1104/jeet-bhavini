@@ -68,6 +68,10 @@
   var updateEventsUI = null;
   var updateHostsUI = null;
   var updateComplimentsUI = null;
+  var updateGalleryUI = null;
+  var updateCalendarUI = null;
+  var updatePostcardUI = null;
+  var updateCountdownUI = null;
 
   /* Live in-place language switching: updates all visible text and typography
      instantly without jarring reloads, keeping the door animation and audio
@@ -91,6 +95,10 @@
     if (updateEventsUI) updateEventsUI();
     if (updateHostsUI) updateHostsUI();
     if (updateComplimentsUI) updateComplimentsUI();
+    if (updateGalleryUI) updateGalleryUI();
+    if (updateCalendarUI) updateCalendarUI();
+    if (updatePostcardUI) updatePostcardUI();
+    if (updateCountdownUI) updateCountdownUI();
   }
 
   var switchedAt = null;
@@ -1566,9 +1574,17 @@
     var photos = (W.gallery && W.gallery.photos) || [];
     if (!photos.length) { section.hidden = true; return; }
 
-    put("galleryTitle", t(W.gallery.heading));
-    put("gallerySubtitle", t(W.gallery.subheading));
-    put("galleryCaption", t(W.gallery.caption));
+    function renderGalleryText() {
+      put("galleryTitle", t(W.gallery.heading));
+      put("gallerySubtitle", t(W.gallery.subheading));
+      put("galleryCaption", t(W.gallery.caption));
+      if (prevBtn) prevBtn.setAttribute("aria-label", u("aPrevPhoto"));
+      if (nextBtn) nextBtn.setAttribute("aria-label", u("aNextPhoto"));
+      cards.forEach(function (fig, i) {
+        var img = fig.querySelector("img");
+        if (img && photos[i]) img.alt = t(photos[i].alt);
+      });
+    }
 
     /* ---- a depth carousel ---------------------------------------------
        One focused centre card, the rest scaled down and stacked toward the
@@ -1593,11 +1609,11 @@
       return fig;
     });
 
-    prevBtn.setAttribute("aria-label", u("aPrevPhoto"));
-    nextBtn.setAttribute("aria-label", u("aNextPhoto"));
     prevBtn.innerHTML = "&#8249;";
     nextBtn.innerHTML = "&#8250;";
     if (cards.length < 2) { prevBtn.hidden = nextBtn.hidden = true; }
+    renderGalleryText();
+    updateGalleryUI = renderGalleryText;
 
     var current = 0;             // continuous focus position, 0..cards.length-1
     var gap = 190;               // px between card centres, recalculated below
@@ -1786,40 +1802,46 @@
       if (d) marked[d] = true;
     });
 
-    // the month's name and year matching reference
-    var firstEvent = (W.events || [])[0];
-    var mName = firstEvent && firstEvent.dateShort ? t(firstEvent.dateShort.month) : "December";
-    put("calMonth", mName + " " + year);
+    function renderCalendar() {
+      // the month's name and year matching reference
+      var firstEvent = (W.events || [])[0];
+      var mName = firstEvent && firstEvent.dateShort ? t(firstEvent.dateShort.month) : "December";
+      put("calMonth", mName + " " + year);
 
-    var heads = t(W.ui.calWeekdays) || [];
-    heads.forEach(function (h) {
-      grid.appendChild(el("span", "cal__head", h));
-    });
+      grid.innerHTML = "";
+      var heads = t(W.ui.calWeekdays) || [];
+      heads.forEach(function (h) {
+        grid.appendChild(el("span", "cal__head", h));
+      });
 
-    var i;
-    for (i = 0; i < firstWeekday; i++) grid.appendChild(el("span", "cal__pad"));
-    for (i = 1; i <= daysInMonth; i++) {
-      var cell = el("span", marked[i] ? "cal__day cal__day--on" : "cal__day", String(i));
-      if (marked[i]) {
-        cell.setAttribute("aria-current", "date");
-        cell.title = t(W.headline.datesLabel);
+      var i;
+      for (i = 0; i < firstWeekday; i++) grid.appendChild(el("span", "cal__pad"));
+      for (i = 1; i <= daysInMonth; i++) {
+        var cell = el("span", marked[i] ? "cal__day cal__day--on" : "cal__day", String(i));
+        if (marked[i]) {
+          cell.setAttribute("aria-current", "date");
+          cell.title = t(W.headline.datesLabel);
+        }
+        grid.appendChild(cell);
       }
-      grid.appendChild(cell);
+
+      var cityEl = $("calCityLine");
+      if (cityEl) {
+        var city = t(W.headline.city);
+        if (city) cityEl.textContent = city;
+      }
+      var regardsEl = $("calRegardsTitle");
+      if (regardsEl) {
+        regardsEl.textContent = LANG === "gu" ? "સ્નેહાધીન" : "Warm Regards";
+      }
+      var familyEl = $("calFamily");
+      if (familyEl) {
+        familyEl.textContent = LANG === "gu" ? "જાબુઆની અને નાકરાણી પરિવાર" : "Jabuani & Nakrani Family";
+      }
     }
 
-    var cityEl = $("calCityLine");
-    if (cityEl) {
-      var city = t(W.headline.city);
-      if (city) cityEl.textContent = city;
-    }
-    var regardsEl = $("calRegardsTitle");
-    if (regardsEl) {
-      regardsEl.textContent = LANG === "gu" ? "સ્નેહાધીન" : "Warm Regards";
-    }
-    var familyEl = $("calFamily");
-    if (familyEl) {
-      familyEl.textContent = LANG === "gu" ? "જબુઆણી અને નાકરાણી પરિવાર" : "Jabuani & Nakrani Family";
-    }
+    renderCalendar();
+    updateCalendarUI = renderCalendar;
   }());
 
   /* -- postcard location -------------------------------------------------- */
@@ -1828,45 +1850,51 @@
     var pc = W.postcard;
     if (!pc) return;
 
-    var coupleEl = $("pcCouple");
-    if (coupleEl) coupleEl.textContent = t(pc.couple);
+    function renderPostcard() {
+      var coupleEl = $("pcCouple");
+      if (coupleEl) coupleEl.textContent = t(pc.couple);
 
-    var datesEl = $("pcDates");
-    if (datesEl) datesEl.textContent = t(pc.dates);
+      var datesEl = $("pcDates");
+      if (datesEl) datesEl.textContent = t(pc.dates);
 
-    var venueEl = $("pcVenue");
-    if (venueEl) venueEl.textContent = t(pc.venueName);
+      var venueEl = $("pcVenue");
+      if (venueEl) venueEl.textContent = t(pc.venueName);
 
-    var addressEl = $("pcAddress");
-    if (addressEl) {
-      var addr = t(pc.address);
-      addressEl.innerHTML = addr.replace(/\n/g, "<br>");
+      var addressEl = $("pcAddress");
+      if (addressEl) {
+        var addr = t(pc.address);
+        addressEl.innerHTML = addr.replace(/\n/g, "<br>");
+      }
+
+      var noteEl = $("pcNote");
+      if (noteEl) noteEl.textContent = t(pc.note);
+
+      var mapBtn = $("pcMapBtn");
+      var btnLabel = $("pcBtnLabel");
+      if (mapBtn && pc.mapsUrl) mapBtn.href = pc.mapsUrl;
+      if (btnLabel) btnLabel.textContent = t(pc.buttonText);
+
+      var postmarkText = $("postmarkPathText");
+      if (postmarkText && pc.postmarkText) {
+        postmarkText.textContent = t(pc.postmarkText);
+      }
     }
 
-    var noteEl = $("pcNote");
-    if (noteEl) noteEl.textContent = t(pc.note);
-
-    var mapBtn = $("pcMapBtn");
-    var btnLabel = $("pcBtnLabel");
-    if (mapBtn && pc.mapsUrl) mapBtn.href = pc.mapsUrl;
-    if (btnLabel) btnLabel.textContent = t(pc.buttonText);
-
-    var postmarkText = $("postmarkPathText");
-    if (postmarkText && pc.postmarkText) {
-      postmarkText.textContent = t(pc.postmarkText);
-    }
+    renderPostcard();
+    updatePostcardUI = renderPostcard;
   }());
 
   /* -- countdown ---------------------------------------------------------- */
 
   (function countdown() {
     var grid = $("cdGrid");
-    $("cdTitle").innerHTML = u("countdownTitle");
-    var units = [["days", u("cdDays")], ["hours", u("cdHours")],
-                 ["minutes", u("cdMinutes")], ["seconds", u("cdSeconds")]];
+    var unitKeys = [["days", "cdDays"], ["hours", "cdHours"],
+                    ["minutes", "cdMinutes"], ["seconds", "cdSeconds"]];
     var nums = {};
+    var labelEls = {};
+    var arrived = false;
 
-    units.forEach(function (u, ui) {
+    unitKeys.forEach(function (uk, ui) {
       var wrap = el("div", "locket reveal " + (ui % 2 ? "reveal--right" : "reveal--left"));
       wrap.style.setProperty("--d", ui * 90 + "ms");
       var img = el("img");
@@ -1877,18 +1905,36 @@
       var box = el("span", "locket__num");
       var b = el("b", null, "—");
       box.appendChild(b);
-      box.appendChild(el("span", guIf(null), u[1]));
+      var label = el("span", guIf("locket__label"), u(uk[1]));
+      box.appendChild(label);
       wrap.appendChild(box);
 
       grid.appendChild(wrap);
-      nums[u[0]] = b;
+      nums[uk[0]] = b;
+      labelEls[uk[0]] = label;
     });
+
+    function renderCountdownText() {
+      $("cdTitle").innerHTML = u(arrived ? "countdownArrived" : "countdownTitle");
+      unitKeys.forEach(function (uk) {
+        var el2 = labelEls[uk[0]];
+        el2.textContent = u(uk[1]);
+        el2.className = guIf("locket__label") || "";
+      });
+      $("signoffNames").innerHTML = "";
+      $("signoffNames").appendChild(document.createTextNode(t(first) + " "));
+      $("signoffNames").appendChild(el("em", null, "&"));
+      $("signoffNames").appendChild(document.createTextNode(" " + t(second)));
+      put("signoffDate", t(W.headline.datesLabel));
+      put("signoffLine", t(W.footer.line));
+    }
 
     function tick() {
       var ms = startDate - Date.now();
       if (ms <= 0) {
         nums.days.textContent = nums.hours.textContent =
         nums.minutes.textContent = nums.seconds.textContent = "0";
+        arrived = true;
         $("cdTitle").innerHTML = u("countdownArrived");
         return false;
       }
@@ -1904,13 +1950,8 @@
       var id = setInterval(function () { if (!tick()) clearInterval(id); }, 1000);
     }
 
-    // sign-off
-    $("signoffNames").innerHTML = "";
-    $("signoffNames").appendChild(document.createTextNode(t(first) + " "));
-    $("signoffNames").appendChild(el("em", null, "&"));
-    $("signoffNames").appendChild(document.createTextNode(" " + t(second)));
-    put("signoffDate", t(W.headline.datesLabel));
-    put("signoffLine", t(W.footer.line));
+    renderCountdownText();
+    updateCountdownUI = renderCountdownText;
   }());
 
   /* -- compliments + footer ----------------------------------------------- */
