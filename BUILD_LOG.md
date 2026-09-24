@@ -2665,3 +2665,20 @@ smaller than the names above; both now use the same size as `.awaiting li`.
 `?v=` -> 20260924c. Verified in the DOM, both languages, live-switched:
 all text above correct, the three list sizes equal (16.8px), no overflow,
 no console errors.
+
+## Event names per the Gujarati sheet; "ચિ." before Bhavini
+
+Client flagged the event card names/taglines against the reference sheet:
+- Sangeet: title "શામ શાનદાર" -> "સંગીત", tagline "સંગીતની સંધ્યા" ->
+  "સંગીત સંધ્યા".
+- Lagna: title "લગ્ન" -> "લગ્નસમારંભ", tagline "હસ્તમેળાપ" -> "નવજીવનની
+  મંગલ શરૂઆત". Schedule label "બરાત પ્રસ્થાન" -> "બારાત પ્રસ્થાન".
+- Mameru and Mandap Ropan already matched (the sheet's "મંડપ ની" space is a
+  typo; kept "મંડપની").
+"લગ્નસમારંભ" still fits one line at 375px (same height/width class as
+"મંડપ રોપણ").
+
+Invite card: `invitation.brideTitle` = "ચિ." (gu only), so it now reads
+"ચિ. ભાવિની", matching "ચિ. જીત". English unchanged.
+
+`?v=` -> 20260924d. Verified both languages, no overflow, no console errors.

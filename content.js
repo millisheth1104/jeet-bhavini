@@ -70,6 +70,7 @@ window.WEDDING = {
         "અને શ્રીમતી રંજના અરવિંદ જાબુઆનીના સુપુત્ર"
       ],
     },
+    brideTitle: { en: "", gu: "ચિ." },
     brideLine: {
       en: [
         "D/o Mr. Praveen Parbat Nakrani",
@@ -126,10 +127,10 @@ window.WEDDING = {
     },
     {
       key: "sangeet",
-      gu: "શામ શાનદાર",
+      gu: "સંગીત",
       en: "Sangeet",
       enShift: "-0.5em",
-      tagline: { en: "An Evening of Song & Dance", gu: "સંગીતની સંધ્યા" },
+      tagline: { en: "An Evening of Song & Dance", gu: "સંગીત સંધ્યા" },
       ink: "indigo",
       paper: "b",
       illustration: "assets/generated/user_sangeet_final.png",
@@ -172,10 +173,10 @@ window.WEDDING = {
     },
     {
       key: "lagna",
-      gu: "લગ્ન",
+      gu: "લગ્નસમારંભ",
       en: "Wedding",
       enShift: "0.2em",
-      tagline: { en: "The Joining of Hands", gu: "હસ્તમેળાપ" },
+      tagline: { en: "The Joining of Hands", gu: "નવજીવનની મંગલ શરૂઆત" },
       ink: "rose",
       paper: "a",
       illustration: "assets/generated/user_lagna_scene_final.png",
@@ -185,7 +186,7 @@ window.WEDDING = {
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [
-        { label: { en: "Baraat Prastan", gu: "બરાત પ્રસ્થાન" }, value: { en: "4:00 PM", gu: "સાંજે ૪:૦૦ વાગ્યે" } },
+        { label: { en: "Baraat Prastan", gu: "બારાત પ્રસ્થાન" }, value: { en: "4:00 PM", gu: "સાંજે ૪:૦૦ વાગ્યે" } },
         { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: { en: "5:41 PM", gu: "સાંજે ૫:૪૧ વાગ્યે" } },
       ],
       venue: { en: "Oleander Lake Side,\nKarjat", gu: "ઓલિએન્ડર લેકસાઇડ,\nકર્જત" },
