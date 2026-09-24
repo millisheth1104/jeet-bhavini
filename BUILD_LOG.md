@@ -2626,3 +2626,42 @@ personalized slot - "you" by default, or the guest's name from a
 Verified: default "you" and a `?name=Dhrumil-Shah` link both render in
 English with the English styling on the Gujarati page and after a live
 switch, no overflow, no console errors.
+
+## Mameru hosts line, invite-card title + grandparents, calendar fixes
+
+**Mameru card - who brings the mameru.** New optional `hosts` field on an
+event (`{en, gu}`, "\n" = line break), rendered as a quiet italic line under
+the venue, set off by a hairline. Mameru:
+- gu: "ગ.સ્વ. ડાહીબેન કેશવલાલ ભાદાણી ના સુપુત્ર / શ્રી દેવેન્દ્ર ભાઈ
+  તથા ભાદાણી પરિવાર"
+- en: "Mr. Devendra Keshavlal Bhadani / S/o Late Mrs. Dahiben Keshavlal
+  Bhadani & Family"
+Also: the card's venue never refreshed on a language switch (same stale-UI
+bug class) - venue and hosts now both refresh via a shared `fillLines()`,
+and `updateEventsUI` re-measures card heights afterwards so a half-unrolled
+card doesn't clip text whose length changed with the language.
+
+**Invite card.** New `invitation.groomTitle` ("ચિ." in gu, blank in en) and
+`invitation.groomAbove` (grandparents line above the name): "અ. સૌ.
+પ્રેમિલાબેન અને શ્રી નારણભાઈ / કાનજીભાઈ જાબુઆનીના સુપૌત્ર", en "Grandson
+of Mrs. Premila Naran Jabuani / & Mr. Naran Kanji Jabuani". The client's
+screenshot read "નારાણભાઈ" and "જબુઆણી" - normalized to "નારણભાઈ" /
+"જાબુઆની" to match the sheet and the lines directly below it on the same
+card. Title reads `title[LANG]` directly: `t()` falls back to the other
+language on an empty string, which put "ચિ. Jeet" on the English card.
+`party()` refactored around a shared `linesEl()`; bride supports the same
+`brideTitle`/`brideAbove` fields (unset). Two extra lines still sit within
+the arch above the garden art at 375px (checked visually).
+
+**Calendar card.** "OLEANDER FARMS" was hardcoded in index.html - now
+`#calVenueName` filled from `headline.venue` (ઓલિએન્ડર ફાર્મ્સ in gu),
+with letter-spacing/caps turned off in Gujarati. Sign-off "Jabuani &
+Nakrani Family" -> reuses `ui.inviteHosts` ("Jabuani Family" /
+"જાબુઆની પરિવાર") instead of its own hardcoded string.
+
+**Hosts list.** `.awaiting--solo` (ચિ. જય...) and `.awaiting--kids` were
+smaller than the names above; both now use the same size as `.awaiting li`.
+
+`?v=` -> 20260924c. Verified in the DOM, both languages, live-switched:
+all text above correct, the three list sizes equal (16.8px), no overflow,
+no console errors.

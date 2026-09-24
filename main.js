@@ -970,30 +970,32 @@
       if (!host) return;
       host.innerHTML = "";
 
-      function party(person, parents) {
-        host.appendChild(el("p", "invite__name", t(person)));
-        if (parents) {
-          var pEl = el("p", "invite__parents");
-          var val = t(parents);
-          if (Array.isArray(val)) {
-            val.forEach(function (line, idx) {
-              if (idx > 0) pEl.appendChild(document.createElement("br"));
-              pEl.appendChild(document.createTextNode(line));
-            });
-          } else if (typeof val === "string" && val.indexOf("\n") !== -1) {
-            val.split("\n").forEach(function (line, idx) {
-              if (idx > 0) pEl.appendChild(document.createElement("br"));
-              pEl.appendChild(document.createTextNode(line.trim()));
-            });
-          } else {
-            pEl.textContent = val;
-          }
-          host.appendChild(pEl);
-        }
+      // A string, an array of lines, or a "\n"-broken string -> <br>-joined.
+      function linesEl(cls, pair) {
+        var val = t(pair);
+        if (!val || (Array.isArray(val) && !val.length)) return null;
+        var lines = Array.isArray(val) ? val : String(val).split("\n");
+        var pEl = el("p", cls);
+        lines.forEach(function (line, idx) {
+          if (idx > 0) pEl.appendChild(document.createElement("br"));
+          pEl.appendChild(document.createTextNode(String(line).trim()));
+        });
+        return pEl;
       }
-      party(groom, inv.groomLine);
+
+      function party(person, parents, above, title) {
+        var aboveEl = above && linesEl("invite__parents invite__above", above);
+        if (aboveEl) host.appendChild(aboveEl);
+        // Current language only - t() would fall back to the Gujarati "ચિ."
+        // on the English card, where the title is deliberately blank.
+        var ti = title && title[LANG];
+        host.appendChild(el("p", "invite__name", (ti ? ti + " " : "") + t(person)));
+        var pEl = parents && linesEl("invite__parents", parents);
+        if (pEl) host.appendChild(pEl);
+      }
+      party(groom, inv.groomLine, inv.groomAbove, inv.groomTitle);
       host.appendChild(el("p", "invite__weds", "—   " + t(inv.weds) + "   —"));
-      party(bride, inv.brideLine);
+      party(bride, inv.brideLine, inv.brideAbove, inv.brideTitle);
     }
 
     renderInvitation();
@@ -1013,6 +1015,15 @@
        Cards render rolled shut (--roll: 0) and unroll open in step with
        scroll position - see cardRoll() below, which sets --roll every
        frame - replacing the old lateral slide-in entirely. */
+    /* Text with "\n" line breaks into a block, one <br> per break. */
+    function fillLines(div, text, upper) {
+      div.innerHTML = "";
+      String(text || "").split("\n").forEach(function (line, idx) {
+        if (idx > 0) div.appendChild(el("br"));
+        div.appendChild(document.createTextNode(upper ? line.toUpperCase() : line));
+      });
+    }
+
     function eventCard(ev, i) {
       var card = el("article", "scroll-card");
       card.style.setProperty("--roll", 0);
@@ -1118,13 +1129,16 @@
 
       // Venue
       if (ev.venue) {
-        var venLines = t(ev.venue).split("\n");
         var venDiv = el("div", "scroll-card__venue inv__venue");
-        venLines.forEach(function (line, idx) {
-          if (idx > 0) venDiv.appendChild(el("br"));
-          venDiv.appendChild(document.createTextNode(line.toUpperCase()));
-        });
+        fillLines(venDiv, t(ev.venue), true);
         meta.appendChild(venDiv);
+      }
+
+      // Hosting family (e.g. who brings the mameru)
+      if (t(ev.hosts)) {
+        var hostsDiv = el("div", "scroll-card__hosts inv__hosts");
+        fillLines(hostsDiv, t(ev.hosts), false);
+        meta.appendChild(hostsDiv);
       }
 
       body.appendChild(meta);
@@ -1326,6 +1340,11 @@
         var timeEl = card.querySelector(".inv__time");
         if (timeEl && evTimes.length === 1) timeEl.textContent = t(evTimes[0].value);
 
+        var venEl = card.querySelector(".inv__venue");
+        if (venEl && ev.venue) fillLines(venEl, t(ev.venue), true);
+        var hostsEl = card.querySelector(".inv__hosts");
+        if (hostsEl && ev.hosts) fillLines(hostsEl, t(ev.hosts), false);
+
         var dayName = "";
         var dayNum = "";
         var monthName = isGu ? "ડિસેમ્બર" : "DECEMBER";
@@ -1349,7 +1368,9 @@
       });
     }
 
-    updateEventsUI = updateEvents;
+    // Text length changes between languages - re-measure the cards so a
+    // half-unrolled card doesn't clip its new content.
+    updateEventsUI = function () { updateEvents(); scheduleFit(); };
   }());
 
   /* -- families ----------------------------------------------------------- */
@@ -1679,6 +1700,8 @@
         grid.appendChild(cell);
       }
 
+      var venueEl = $("calVenueName");
+      if (venueEl) venueEl.textContent = t(W.headline.venue);
       var cityEl = $("calCityLine");
       if (cityEl) {
         var city = t(W.headline.city);
@@ -1690,7 +1713,7 @@
       }
       var familyEl = $("calFamily");
       if (familyEl) {
-        familyEl.textContent = LANG === "gu" ? "જાબુઆની અને નાકરાણી પરિવાર" : "Jabuani & Nakrani Family";
+        familyEl.textContent = t(W.ui.inviteHosts);
       }
     }
 

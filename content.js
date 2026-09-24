@@ -47,6 +47,19 @@ window.WEDDING = {
       en: "request the honour of your presence at the wedding of",
       gu: "ના શુભ લગ્ન પ્રસંગે આપની ઉપસ્થિતિની હાર્દિક અપેક્ષા રાખીએ છીએ",
     },
+    /* Invite card only: title before the groom's name, and the grandparents
+       line above it. Leave any of these "" to hide. */
+    groomTitle: { en: "", gu: "ચિ." },
+    groomAbove: {
+      en: [
+        "Grandson of Mrs. Premila Naran Jabuani",
+        "& Mr. Naran Kanji Jabuani"
+      ],
+      gu: [
+        "અ. સૌ. પ્રેમિલાબેન અને શ્રી નારણભાઈ",
+        "કાનજીભાઈ જાબુઆનીના સુપૌત્ર"
+      ],
+    },
     groomLine: {
       en: [
         "S/o Late Mr. Arvind Naran Jabuani",
@@ -99,6 +112,11 @@ window.WEDDING = {
       dateShort: { day: "01", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: { en: "9:00 AM", gu: "સવારે ૯.૦૦ વાગ્યે" } }],
       venue: { en: "Oleander Ballroom,\nKarjat", gu: "ઓલિએન્ડર બોલરૂમ,\nકર્જત" },
+      /* Who brings the mameru - shown under the venue. "\n" = line break. */
+      hosts: {
+        en: "Mr. Devendra Keshavlal Bhadani\nS/o Late Mrs. Dahiben Keshavlal Bhadani & Family",
+        gu: "ગ.સ્વ. ડાહીબેન કેશવલાલ ભાદાણી ના સુપુત્ર\nશ્રી દેવેન્દ્ર ભાઈ તથા ભાદાણી પરિવાર",
+      },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Traditional Festive", gu: "પરંપરાગત ઉત્સવ પરિધાન" },
       note: {
@@ -297,7 +315,7 @@ window.WEDDING = {
     /* The hero IS the invitation, and these are its lines. Read straight
        through, with the names between the last two:
 
-         Jabuani & Nakrani Family / cordially invite / Mr Dhrumil Shah /
+         Jabuani Family / cordially invite / Mr Dhrumil Shah /
          to the wedding of / Jeet & Bhavini
 
        With no ?for= link there is no name to place, so "you" stands in for
