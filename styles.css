@@ -3027,6 +3027,12 @@ html[data-lang="gu"] .postcard__venue-title {
   font-size: clamp(.82rem, 2.2vw, .92rem);
   letter-spacing: .14em;
 }
+.footer__studio {
+  margin-top: .5em;
+  font-size: .85em;
+  letter-spacing: .1em;
+  opacity: .75;
+}
 
 /* --------------------------------------------------------------------------
    Floating controls

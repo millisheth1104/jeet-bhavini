@@ -1853,8 +1853,15 @@
     updateComplimentsUI = renderCompliments;
   }());
 
-  $("footer").textContent =
-    [W.couple.hashtag, t(W.footer.credit)].filter(Boolean).join("  ·  ");
+  (function renderFooter() {
+    var footer = $("footer");
+    if (!footer) return;
+    footer.innerHTML = "";
+    var topLine = [W.couple.hashtag, t(W.footer.credit)].filter(Boolean).join("  ·  ");
+    if (topLine) footer.appendChild(el("div", "footer__line", topLine));
+    var studio = t(W.footer.studio);
+    if (studio) footer.appendChild(el("div", "footer__studio", studio));
+  }());
 
   /* -- scroll reveal ------------------------------------------------------ */
 

@@ -293,8 +293,9 @@ window.WEDDING = {
 
   footer: {
     line:   { en: "Forever begins today", gu: "સદાકાળનો આરંભ આજથી" },
-    // Deliberately a plain string, not {en, gu} — stays in English even when Gujarati is active.
-    credit: "Designed and created by The Pure Studio",
+    // Both deliberately plain strings, not {en, gu} — stay English even when Gujarati is active.
+    credit: "Crafted with love",
+    studio: "Designed and created by The Pure Studio",
   },
 
   /* ---------------------------------------------------------------------
