@@ -2440,3 +2440,18 @@ project. The handler accepts either `KV_REST_API_URL`/`KV_REST_API_TOKEN` (what
 Vercel's integration injects) or `UPSTASH_REDIS_REST_URL`/`_TOKEN` (what
 Upstash's own dashboard calls them), since which pair you get depends on the
 path taken through the Storage tab.
+
+## Invite card: "Late" for the groom's father, middle name for the bride's father
+
+Per client's WhatsApp markup:
+- Groom's line: "S/o Mr. Arvind Naran Jabuani" -> "S/o Late Mr. Arvind Naran
+  Jabuani"; Gujarati gets "સ્વ." (the standard kankotri abbreviation for
+  "the late") inserted the same way, before the name.
+- Bride's line: "D/o Mr. Praveen Nakrani" -> "D/o Mr. Praveen Parbat
+  Nakrani" (added the father's own father's name, matching how every other
+  name on the card is formatted); "Mrs. Manjula Nakrani" -> "Mrs. Manjula
+  Praveen Nakrani". The Gujarati second line already read "પ્રવીણભાઈ" in
+  it - only the first line needed "પરબતભાઈ" added to match.
+
+Verified both languages at 375px: both lines read correctly, no overflow,
+no console errors.

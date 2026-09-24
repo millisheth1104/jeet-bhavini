@@ -49,21 +49,21 @@ window.WEDDING = {
     },
     groomLine: {
       en: [
-        "S/o Mr. Arvind Naran Jabuani",
+        "S/o Late Mr. Arvind Naran Jabuani",
         "& Mrs. Ranjana Arvind Jabuani"
       ],
       gu: [
-        "સુપુત્ર: શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી",
+        "સુપુત્ર: સ્વ. શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી",
         "તથા અ.સૌ. રંજનાબેન અરવિંદભાઈ જબુઆણી"
       ],
     },
     brideLine: {
       en: [
-        "D/o Mr. Praveen Nakrani",
-        "& Mrs. Manjula Nakrani"
+        "D/o Mr. Praveen Parbat Nakrani",
+        "& Mrs. Manjula Praveen Nakrani"
       ],
       gu: [
-        "સુપુત્રી: શ્રી પ્રવીણભાઈ નકરાણી",
+        "સુપુત્રી: શ્રી પ્રવીણભાઈ પરબતભાઈ નકરાણી",
         "તથા અ.સૌ. મંજુલાબેન પ્રવીણભાઈ નકરાણી"
       ],
     },
