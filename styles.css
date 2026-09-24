@@ -1884,6 +1884,9 @@ html[lang="gu"] .scroll-card__title {
   margin-top: clamp(0.1rem, 0.6cqw, 0.25rem);
   margin-bottom: 0;
 }
+/* Lagna's illustration runs right down to its date line - give the details
+   a little air (there's spare room at the bottom of this card). */
+.scroll-card[data-key="lagna"] .inv__meta { margin-top: clamp(0.7rem, 3.4cqw, 1.1rem); }
 
 /* Date line: DAY | DATE | MONTH */
 .inv__dateline {

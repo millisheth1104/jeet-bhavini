@@ -2682,3 +2682,30 @@ Invite card: `invitation.brideTitle` = "ચિ." (gu only), so it now reads
 "ચિ. ભાવિની", matching "ચિ. જીત". English unchanged.
 
 `?v=` -> 20260924d. Verified both languages, no overflow, no console errors.
+
+## Gallery: client's 9 new photos; Lagna details nudged down
+
+**Gallery.** Replaced the 7 old photos with the client's 9 (CLICK CLICK by
+Yaash Jain shoot), in the order sent: cafe window, cafe arch, beach hands,
+back-to-back, cliff cove, rocks, longtail boat (B&W), longtail boat
+(colour), vintage car. Renamed `gallery-01-…jpg` to `gallery-09-…jpg` from
+the WhatsApp filenames; files are already web-sized (75-260KB), so no
+re-encode. Bilingual alt text for each. Old photos moved to
+`assets/unused/photos-old/` rather than deleted. `og:image` (the link
+preview on WhatsApp etc.) in index.html and 404.html pointed at the old
+`couple-beach-01.jpg` - now `gallery-05-cliff-cove.jpg`, the one landscape
+shot, which fits the preview frame best. The photographer's watermark is
+left as-is. The duplicate copies the client also dropped in the project
+root are left untracked.
+
+**Lagna card.** Its illustration ran right down to the date line (0px gap;
+the other cards have 5-13px). Added a Lagna-only top margin on the details
+block -> 10px gap. There was 73px of spare room at the card's bottom, so
+nothing else moves.
+
+**Font sizes (hosts list).** Client reported the last two lines still
+smaller - confirmed the live site already serves all three at 16.8px (same
+stylesheet as local); their screenshot was a cached copy.
+
+`?v=` -> 20260924e. Verified: all 9 photos load, Lagna gap 10px, no
+overflow, no console errors.
