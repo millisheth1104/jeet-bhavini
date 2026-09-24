@@ -2334,3 +2334,45 @@ Gujarati stays on its own stack, no overflow, no console errors.
 10.5vw, 60px)`, mobile override `36px` -> `42px`. Verified both languages
 at 375px: still sits cleanly under the "shree ganeshaya namah" line, no
 overflow, no console errors.
+
+## Events heading: dropped the always-visible Gujarati subtitle
+
+`#eventsAlt` used to render the OTHER language's "Our Events"/"અમારા
+પ્રસંગો" underneath the heading regardless of the active toggle - user
+asked to remove it. Deleted the element from index.html and the JS block
+that filled it (main.js). The `<h2 id="eventsTitle">` itself still switches
+with the language toggle as normal, same as every other section heading -
+just no second line underneath any more.
+
+## Hosts pairs: added Radhya Deep Velani, fixed language-switching for the whole section
+
+Added a new pair after Pratham/Nidhi: "Our dearest" / "Radhya Deep Velani"
+("અમારી વ્હાલી" / "રાધ્યા દીપ વેલાણી"), per the client's WhatsApp request.
+Checked the "keep font size the same" note against the live site first -
+every pair already renders at the identical 16.8px, no discrepancy to fix.
+
+While verifying, found the whole hosts/awaiting section (`#hostsPaired` +
+`#hostsAwaiting` - both name lists near the footer) never responded to the
+language toggle at all: `families()` built it once at load with no
+`updateXxxUI` hook wired into `setLang()`, unlike every other section.
+Confirmed with the ORIGINAL 8 pairs too, not just the new one - a
+pre-existing bug, not something this change introduced.
+
+Fixed by wrapping the render in `renderHosts()`, called once at load and
+again from `setLang()` via a new `updateHostsUI` hook (matching
+`updateHeroUI`/`updateInvitationUI`/`updateEventsUI`'s existing pattern).
+That rebuild ran into a second issue on the way: the list items carry
+`.reveal`/`.reveal--left`/`.reveal--right` for their scroll-in animation,
+which only the ONE shared IntersectionObserver pass (at initial page load)
+ever adds `.is-in` to - a rebuilt node is never seen by it, so it would
+stay at opacity:0 forever after any language switch. Fixed with a
+`firstRender` flag: the initial build keeps the real `.reveal` classes (so
+the scroll-in still plays once, like every other section), every rebuild
+after that skips straight to `<class> is-in` - already visible, no
+animation, which is correct since the visitor is already looking at the
+section when they flip the toggle.
+
+Verified: switched EN->GU->EN live after scrolling to this section - all 9
+pairs (English names, then the new Radhya Deep Velani pair) render
+correctly and stay fully opaque through every switch, no overflow, no
+console errors.

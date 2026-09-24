@@ -200,6 +200,8 @@ window.WEDDING = {
        { en: "Mrs. Kajal Deep Velani",     gu: "અ.સૌ. કાજલબેન દીપભાઈ વેલાણી" }],
       [{ en: "Pratham Amrut Pokar",        gu: "ચિ. પ્રથમ અમૃતભાઈ પોકાર" },
        { en: "Ms. Nidhi Amrut Pokar",      gu: "કુ. નિધિ અમૃતભાઈ પોકાર" }],
+      [{ en: "Our dearest",                gu: "અમારી વ્હાલી" },
+       { en: "Radhya Deep Velani",         gu: "રાધ્યા દીપ વેલાણી" }],
     ],
   },
 

@@ -66,6 +66,7 @@
   var updateHeroUI = null;
   var updateInvitationUI = null;
   var updateEventsUI = null;
+  var updateHostsUI = null;
 
   /* Live in-place language switching: updates all visible text and typography
      instantly without jarring reloads, keeping the door animation and audio
@@ -87,6 +88,7 @@
     if (updateHeroUI) updateHeroUI();
     if (updateInvitationUI) updateInvitationUI();
     if (updateEventsUI) updateEventsUI();
+    if (updateHostsUI) updateHostsUI();
   }
 
   var switchedAt = null;
@@ -205,12 +207,6 @@
       label("eventsTitle",     "eventsTitle");
       label("familiesEyebrow", "familiesEyebrow");
       label("familiesTitle",   "familiesTitle");
-
-      var alt = $("eventsAlt");
-      if (alt) {
-        alt.textContent = (W.ui.eventsTitle || {})[OTHER] || "";
-        alt.classList.toggle("gu", OTHER === "gu");
-      }
 
       aria("musicBtn",   "aMusic", true);
       aria("topBtn",     "aTop",   true);
@@ -1450,37 +1446,69 @@
 
   (function families() {
     var p = W.hostsPaired, a = W.hostsAwaiting;
-
     var boxA = $("hostsPaired");
-    if (p && p.pairs && p.pairs.length) {
-      boxA.appendChild(el("h3", guIf("hosts__heading reveal"), t(p.heading)));
-      var ul = el("ul", "pairs");
-      p.pairs.forEach(function (pair, pi) {
-        var li = el("li", "reveal " + (pi % 2 ? "reveal--right" : "reveal--left"));
-        li.style.setProperty("--d", (pi % 6) * 60 + "ms");
-        li.appendChild(el("span", guIf("l"), t(pair[0])));
-        li.appendChild(el("span", "dot", "◆"));
-        li.appendChild(el("span", guIf("r"), t(pair[1])));
-        ul.appendChild(li);
-      });
-      boxA.appendChild(ul);
-    } else { boxA.hidden = true; }
-
     var boxB = $("hostsAwaiting");
-    if (a && a.names && a.names.length) {
-      boxB.appendChild(ornRule());
-      boxB.appendChild(el("h3", guIf("hosts__heading reveal"), t(a.heading)));
-      var ul2 = el("ul", "awaiting");
-      a.names.forEach(function (nm, ni) {
-        var li = el("li", guIf("reveal " + (ni % 2 ? "reveal--right" : "reveal--left")));
-        li.style.setProperty("--d", (ni % 6) * 60 + "ms");
-        li.textContent = t(nm);
-        ul2.appendChild(li);
-      });
-      boxB.appendChild(ul2);
-      if (a.solo)     boxB.appendChild(el("p", guIf("awaiting--solo reveal"), t(a.solo)));
-      if (a.children) boxB.appendChild(el("p", guIf("awaiting--kids reveal"), t(a.children)));
-    } else { boxB.hidden = true; }
+
+    /* First call builds with the .reveal scroll-in classes, same as every
+       other section - the shared IntersectionObserver (revealer(), below)
+       does its one querySelectorAll(".reveal") pass after this IIFE runs
+       and picks them up. A language switch calls this again to rebuild the
+       text, but that observer only ever watches what existed at that one
+       pass - new nodes from a rebuild are never seen, so .reveal's opacity:0
+       would never clear and the whole section would vanish. Every later
+       call skips straight to the "already in" state instead: correct,
+       since the visitor is already looking at this section when they flip
+       the toggle - there is nothing left to reveal. */
+    var firstRender = true;
+
+    function revealClass(base) {
+      if (!firstRender) return base + " is-in";
+      return "reveal " + base;
+    }
+
+    function renderHosts() {
+      if (boxA) {
+        boxA.innerHTML = "";
+        if (p && p.pairs && p.pairs.length) {
+          boxA.hidden = false;
+          boxA.appendChild(el("h3", guIf(revealClass("hosts__heading")), t(p.heading)));
+          var ul = el("ul", "pairs");
+          p.pairs.forEach(function (pair, pi) {
+            var li = el("li", revealClass(pi % 2 ? "reveal--right" : "reveal--left"));
+            li.style.setProperty("--d", (pi % 6) * 60 + "ms");
+            li.appendChild(el("span", guIf("l"), t(pair[0])));
+            li.appendChild(el("span", "dot", "◆"));
+            li.appendChild(el("span", guIf("r"), t(pair[1])));
+            ul.appendChild(li);
+          });
+          boxA.appendChild(ul);
+        } else { boxA.hidden = true; }
+      }
+
+      if (boxB) {
+        boxB.innerHTML = "";
+        if (a && a.names && a.names.length) {
+          boxB.hidden = false;
+          boxB.appendChild(ornRule());
+          boxB.appendChild(el("h3", guIf(revealClass("hosts__heading")), t(a.heading)));
+          var ul2 = el("ul", "awaiting");
+          a.names.forEach(function (nm, ni) {
+            var li = el("li", guIf(revealClass(ni % 2 ? "reveal--right" : "reveal--left")));
+            li.style.setProperty("--d", (ni % 6) * 60 + "ms");
+            li.textContent = t(nm);
+            ul2.appendChild(li);
+          });
+          boxB.appendChild(ul2);
+          if (a.solo)     boxB.appendChild(el("p", guIf(revealClass("awaiting--solo")), t(a.solo)));
+          if (a.children) boxB.appendChild(el("p", guIf(revealClass("awaiting--kids")), t(a.children)));
+        } else { boxB.hidden = true; }
+      }
+
+      firstRender = false;
+    }
+
+    renderHosts();
+    updateHostsUI = renderHosts;
   }());
 
   /* -- gallery ------------------------------------------------------------ */
