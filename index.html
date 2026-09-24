@@ -16,6 +16,20 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,600&family=Jost:wght@300;400;500&family=Noto+Serif+Gujarati:wght@400;500;600&family=Noto+Serif+Devanagari:wght@400;500;600&family=Rasa:wght@500;600;700&family=Great+Vibes&family=Mogra&family=Playfair+Display:ital,wght@1,400;1,500;1,600&family=DM+Serif+Display:ital@0;1&display=swap">
 
+<script>
+  (function () {
+    if (location.protocol === "file:") return;
+    var p = location.pathname;
+    var isGh = location.hostname.indexOf("github.io") !== -1;
+    var m = p.match(/^\/([^/]+)/);
+    if (isGh && m && m[1]) {
+      var b = document.createElement("base");
+      b.href = "/" + m[1] + "/";
+      document.head.appendChild(b);
+    }
+  }());
+</script>
+
 <!-- The elephant's body is a JPEG + a mask PNG composited via CSS
      background/mask (see .intro__eleBody, bake_intro3.py) - CSS-referenced
      images are only discovered once the browser parses the stylesheet AND
@@ -50,7 +64,7 @@
 <!-- ?v= is bumped whenever styles.css or a generated asset changes; this
      site is edited in place with no build step, and browsers hold on to
      both the stylesheet and the PNGs otherwise. -->
-<link rel="stylesheet" href="styles.css?v=20260921e">
+<link rel="stylesheet" href="styles.css?v=20260923a">
 </head>
 <body>
 
@@ -460,7 +474,8 @@
   </button>
 </div>
 
-<script src="content.js?v=20260921e"></script>
-<script src="main.js?v=20260921e"></script>
+<script src="guests.js?v=20260923a"></script>
+<script src="content.js?v=20260923a"></script>
+<script src="main.js?v=20260923a"></script>
 </body>
 </html>

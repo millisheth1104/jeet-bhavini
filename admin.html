@@ -735,16 +735,16 @@
         </div>
       </div>
       <p class="card-desc">
-        Upload an Excel (<code>.xlsx</code> / <code>.xls</code>) or <code>.csv</code> file.
+        Upload an Excel (<code>.xlsx</code> / <code>.xls</code>), <code>.csv</code>, or <code>.json</code> file.
         The sheet should contain columns for <strong>Name</strong>, <strong>Events</strong> (e.g. "All" or "Mameru, Lagna"), and optional <strong>Phone</strong> number (e.g. <code>9876543210</code> or <code>+91 98765 43210</code>).
         All imported guests will be merged directly into your Master Guest List below.
       </p>
 
       <div class="dropzone" id="dropzone">
         <span class="dropzone-icon">📊</span>
-        <div class="dropzone-title">Click to choose file or drag and drop spreadsheet here</div>
-        <div class="dropzone-desc">Supports Excel (.xlsx, .xls) and CSV (.csv)</div>
-        <input type="file" id="fileInput" accept=".xlsx, .xls, .csv">
+        <div class="dropzone-title">Click to choose file or drag and drop spreadsheet / guests.json here</div>
+        <div class="dropzone-desc">Supports Excel (.xlsx, .xls), CSV (.csv), and JSON (.json)</div>
+        <input type="file" id="fileInput" accept=".xlsx, .xls, .csv, .json">
       </div>
     </div>
   </div>
@@ -866,12 +866,16 @@ Jabuani & Nakrani Family 🌸</textarea>
         <span class="badge" id="masterCountBadge" style="background:var(--brass-soft);color:var(--brass);font-size:.88rem;padding:.25rem .7rem;">0 guests</span>
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
+        <button class="ghost" id="btnExportJson" type="button" title="Download updated guests.json file to commit to GitHub so everyone sees these guests" style="color:var(--brass);border-color:var(--brass);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download guests.json (For All Devices)
+        </button>
         <button class="ghost" id="btnExportXlsx" type="button" title="Export entire list with links to Excel">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          Export to Excel (.xlsx)
+          Export Excel (.xlsx)
         </button>
         <button class="ghost" id="btnExportCsv" type="button" title="Export entire list to CSV">
-          Export to CSV
+          Export CSV
         </button>
         <button class="ghost" id="btnClearMaster" type="button" style="color:var(--rose);">
           Clear All
@@ -917,7 +921,7 @@ Jabuani & Nakrani Family 🌸</textarea>
 
 <div class="toast" id="toast"></div>
 
-<script src="content.js?v=20260921d"></script>
+<script src="content.js?v=20260923a"></script>
 <script>
 (function () {
   "use strict";
@@ -955,14 +959,9 @@ Jabuani & Nakrani Family 🌸</textarea>
   }
 
   function formatGuestLink(slug, cards) {
-    var allNames = (W.events || []).map(function (e) { return e.key; });
     var cleanSlug = String(slug || "guest").replace(/^\/+|\/+$/g, "");
     var base = getBaseUrl();
-    var link = base + encodeURIComponent(cleanSlug);
-    if (cards && cards.length && cards.length < allNames.length) {
-      link += "?c=" + cards.join(",");
-    }
-    return link;
+    return base + encodeURIComponent(cleanSlug);
   }
 
   // ---- Phone Number Normalization & WhatsApp Deep Link ----------------
@@ -1219,38 +1218,77 @@ Jabuani & Nakrani Family 🌸</textarea>
     updateWaBubble();
   }
 
-  // ---- Storage Helpers (Unified LocalStorage) -------------------------
-  function loadSaved() {
+  // ---- Unified Master List Storage (Shared Repository + Local Working Copy) ----
+  var DB_INIT_KEY = "wedding-db-initialized";
+  var masterListCache = null;
+
+  function normalizeGuest(g) {
+    if (!g || !g.name) return null;
+    if (!g.slug) g.slug = slugify(g.name);
+    if (!g.cards || !Array.isArray(g.cards) || !g.cards.length) {
+      g.cards = (W.events || []).map(function (e) { return e.key; });
+    }
+    g.link = formatGuestLink(g.slug, g.cards);
+    if (!g.id) g.id = "g-" + Math.random().toString(36).slice(2, 9);
+    return g;
+  }
+
+  function loadLocalOnly() {
     try {
-      var list = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      var updated = false;
-      var allNames = (W.events || []).map(function (e) { return e.key; });
-      list.forEach(function (g) {
-        if (!g.slug && g.name) {
-          g.slug = slugify(g.name);
-          updated = true;
-        }
-        var expectedLink = formatGuestLink(g.slug, g.cards);
-        if (g.link !== expectedLink) {
-          g.link = expectedLink;
-          updated = true;
-        }
-      });
-      if (updated) {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
-      }
-      return list;
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       return [];
     }
   }
 
-  function saveSaved(list) {
+  function loadSaved() {
+    if (masterListCache !== null) {
+      return masterListCache;
+    }
+    var list = loadLocalOnly();
+    list.forEach(function (g) { normalizeGuest(g); });
+    masterListCache = list;
+    return masterListCache;
+  }
+
+  function saveSaved(list, skipRemote) {
+    masterListCache = list;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      localStorage.setItem(DB_INIT_KEY, "1");
     } catch (e) {
       console.error(e);
     }
+    if (!skipRemote) {
+      pushToServer(list);
+    }
+  }
+
+  // ---- Shared server store (/api/guests) ------------------------------
+  async function pushToServer(list) {
+    try {
+      var resp = await fetch("/api/guests", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guests: list })
+      });
+      if (!resp.ok) {
+        var body = await resp.json().catch(function () { return {}; });
+        toast("Not saved to server: " + (body.error || resp.status));
+      }
+    } catch (e) {
+      toast("Offline — change saved on this device only");
+    }
+  }
+
+  async function fetchFromServer() {
+    var resp = await fetch("/api/guests", { cache: "no-store" });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    var data = await resp.json();
+    return { guests: Array.isArray(data.guests) ? data.guests : [], seeded: !!data.seeded };
   }
 
   // ---- Event Checkboxes Rendering -------------------------------------
@@ -1462,6 +1500,59 @@ Jabuani & Nakrani Family 🌸</textarea>
     downloadFile(csvContent, "Jeet_Bhavini_Master_Guest_List.csv", "text/csv;charset=utf-8;");
   });
 
+  // Export Entire Master List to guests.json (For Repository Sharing)
+  function downloadMasterJson() {
+    var all = loadSaved();
+    if (!all.length) { toast("Master guest list is empty"); return; }
+    var cleanList = all.map(function (g) {
+      return {
+        id: g.id || ("g-" + Math.random().toString(36).slice(2, 9)),
+        name: g.name,
+        phone: g.phone || "",
+        slug: g.slug || slugify(g.name),
+        cards: g.cards || (W.events || []).map(function (e) { return e.key; }),
+        link: formatGuestLink(g.slug || slugify(g.name), g.cards),
+        createdAt: g.createdAt || Date.now()
+      };
+    });
+    var jsonStr = JSON.stringify(cleanList, null, 2);
+    downloadFile(jsonStr, "guests.json", "application/json;charset=utf-8;");
+    toast("Downloaded guests.json! Push to GitHub to share with all devices.");
+  }
+
+  var btnExportJson = document.getElementById("btnExportJson");
+  if (btnExportJson) {
+    btnExportJson.addEventListener("click", downloadMasterJson);
+  }
+
+  async function syncMasterGuests() {
+    // The shared server store is the source of truth for every device.
+    try {
+      var server = await fetchFromServer();
+      if (server.seeded) {
+        // Mirror the server exactly, including a deliberately emptied list.
+        saveSaved(server.guests.map(normalizeGuest).filter(Boolean), true);
+        renderMasterList();
+        return;
+      }
+      // Store has never been written: seed it once from the committed guests.json.
+      var rResp = await fetch("guests.json?v=" + Date.now(), { cache: "no-store" });
+      if (rResp.ok) {
+        var repoGuests = await rResp.json();
+        if (Array.isArray(repoGuests) && repoGuests.length) {
+          saveSaved(repoGuests.map(normalizeGuest).filter(Boolean));
+          renderMasterList();
+          return;
+        }
+      }
+    } catch (sErr) {
+      console.warn("Server guest fetch failed, using local copy:", sErr);
+    }
+
+    localStorage.setItem(DB_INIT_KEY, "1");
+    renderMasterList();
+  }
+
   // =========================================================================
   // BULK IMPORT LOGIC (PARSES AND ADDS TO MASTER LIST)
   // =========================================================================
@@ -1493,7 +1584,23 @@ Jabuani & Nakrani Family 🌸</textarea>
     var ext = file.name.split(".").pop().toLowerCase();
     toast("Reading " + file.name + "...");
 
-    if (ext === "csv") {
+    if (ext === "json") {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          var parsed = JSON.parse(e.target.result);
+          var list = Array.isArray(parsed) ? parsed : (parsed.guests || parsed.data || []);
+          if (Array.isArray(list) && list.length) {
+            processParsedRows(list);
+          } else {
+            toast("No guests found in JSON file");
+          }
+        } catch (err) {
+          toast("Invalid JSON file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    } else if (ext === "csv") {
       var reader = new FileReader();
       reader.onload = function (e) {
         parseCSVText(e.target.result);
@@ -1519,7 +1626,7 @@ Jabuani & Nakrani Family 🌸</textarea>
       };
       reader.readAsArrayBuffer(file);
     } else {
-      toast("Unsupported file format. Please upload .xlsx, .xls, or .csv");
+      toast("Unsupported file format. Please upload .xlsx, .xls, .csv, or .json");
     }
   }
 
@@ -1574,8 +1681,8 @@ Jabuani & Nakrani Family 🌸</textarea>
 
     rows.forEach(function (row) {
       var keys = Object.keys(row);
-      var name = "";
-      var phone = "";
+      var name = row.name ? String(row.name).trim() : "";
+      var phone = row.phone ? String(row.phone).trim() : "";
       var eventsStr = "";
       var separateEvents = {};
 
@@ -1583,9 +1690,9 @@ Jabuani & Nakrani Family 🌸</textarea>
         var cleanK = k.toLowerCase().trim();
         var val = String(row[k]).trim();
 
-        if (cleanK === "name" || cleanK === "guest name" || cleanK === "guest" || cleanK === "invitee" || cleanK === "family") {
+        if (!name && (cleanK === "name" || cleanK === "guest name" || cleanK === "guest" || cleanK === "invitee" || cleanK === "family")) {
           name = val;
-        } else if (cleanK === "phone" || cleanK === "mobile" || cleanK === "whatsapp" || cleanK === "number" || cleanK === "contact") {
+        } else if (!phone && (cleanK === "phone" || cleanK === "mobile" || cleanK === "whatsapp" || cleanK === "number" || cleanK === "contact")) {
           phone = val;
         } else if (cleanK === "events" || cleanK === "ceremonies" || cleanK === "functions" || cleanK === "cards") {
           eventsStr = val;
@@ -1603,7 +1710,9 @@ Jabuani & Nakrani Family 🌸</textarea>
 
       // Determine selected events
       var selectedCards = [];
-      if (Object.keys(separateEvents).length > 0) {
+      if (Array.isArray(row.cards) && row.cards.length) {
+        selectedCards = row.cards.slice();
+      } else if (Object.keys(separateEvents).length > 0) {
         allEventKeys.forEach(function (k) {
           if (separateEvents[k]) selectedCards.push(k);
         });
@@ -1832,6 +1941,7 @@ Jabuani & Nakrani Family 🌸</textarea>
   // Initialize
   renderEvents();
   renderMasterList();
+  syncMasterGuests();
 }());
 </script>
 </body>
