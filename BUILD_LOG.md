@@ -2605,3 +2605,24 @@ reads "પ્રસંગમા" - added the missing anusvara). Reads: જાબ
 ના હાર્દિક આમંત્રણ / આપને / લગ્ન પ્રસંગમાં પધારજો / જીત & ભાવિની.
 
 Verified both languages live-switched, no overflow.
+
+## Hero guest line: English only, in both languages
+
+Client asked for the "આપને" line to read in English. That line is the
+personalized slot - "you" by default, or the guest's name from a
+`?for=`/`?name=` link - so it now stays English on the Gujarati page too:
+- `renderGuestHandwriting()` always writes "you" or `GUEST.n` as given;
+  no more "આપને", and no more auto-transliterating guest names into
+  Gujarati script.
+- Removed the now-unused `toGujaratiText()` / `transliterateWordToGu()`
+  helpers (~5KB, only called from that branch).
+- Removed the `html[data-lang="gu"] .hero__guest` CSS block that forced
+  Noto Serif Gujarati upright on this line, so it keeps the same italic
+  Cormorant Garamond look as English.
+- Dropped the unused `ui.inviteYou` key; comment in content.js points to
+  where the line is now set.
+- Bumped `?v=` to 20260924b so phones fetch the new files.
+
+Verified: default "you" and a `?name=Dhrumil-Shah` link both render in
+English with the English styling on the Gujarati page and after a live
+switch, no overflow, no console errors.

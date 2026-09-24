@@ -622,140 +622,6 @@
   }());
   /* -- authentic calligraphy cursive handwriting animation -------------- */
 
-  function toGujaratiText(str) {
-    if (!str) return "";
-    var s = String(str).trim();
-    if (!s || s.toLowerCase() === "you") return u("inviteYou") || "આપને";
-    if (/[\u0A80-\u0AFF]/.test(s)) return s;
-
-    var dict = {
-      "and": "અને", "&": "અને", "+": "અને",
-      "family": "પરિવાર", "parivar": "પરિવાર", "friends": "મિત્રો", "with": "સહિત",
-      "mr": "શ્રી", "mr.": "શ્રી", "shri": "શ્રી", "shree": "શ્રી",
-      "mrs": "શ્રીમતી", "mrs.": "શ્રીમતી", "smt": "શ્રીમતી", "smt.": "શ્રીમતી",
-      "dr": "ડો.", "dr.": "ડો.", "miss": "કુ.", "kumar": "કુમાર", "kumari": "કુમારી",
-      "bhai": "ભાઈ", "ben": "બેન", "ba": "બા", "bhabhi": "ભાભી",
-      "kaka": "કાકા", "kaki": "કાકી", "mama": "મામા", "mami": "મામી",
-      "fua": "ફુઆ", "fui": "ફોઈ", "dada": "દાદા", "dadi": "દાદી", "nana": "નાના", "nani": "નાની",
-      "shah": "શાહ", "patel": "પટેલ", "mehta": "મહેતા", "joshi": "જોષી",
-      "desai": "દેસાઈ", "nakrani": "નકરાણી", "jabuani": "જબુઆણી",
-      "priya": "પ્રિયા", "raj": "રાજ", "jeet": "જીત", "bhavini": "ભાવિની",
-      "dhrumil": "ધ્રુમિલ", "ramesh": "રમેશ", "bhavna": "ભાવના", "ankit": "અંકિત",
-      "kirit": "કિરીટ", "amit": "અમિત", "rahul": "રાહુલ", "pooja": "પૂજા",
-      "neha": "નેહા", "sanjay": "સંજય", "manoj": "મનોજ", "sunil": "સુનિલ",
-      "anil": "અનિલ", "jay": "જય", "vijay": "વિજય", "chetan": "ચેતન",
-      "deepak": "દીપક", "dipak": "દીપક", "harsh": "હર્ષ", "parth": "પાર્થ",
-      "kunal": "કુણાલ", "chirag": "ચિરાગ", "bhavesh": "ભાવેશ", "hitesh": "હિતેશ",
-      "kamlesh": "કમલેશ", "mukesh": "મુકેશ", "nilesh": "નિલેશ", "paresh": "પરેશ",
-      "rajesh": "રાજેશ", "suresh": "સુરેશ", "yogesh": "યોગેશ", "pramod": "પ્રમોદ",
-      "naresh": "નરેશ", "mahesh": "મહેશ", "dinesh": "દિનેશ", "ganesh": "ગણેશ",
-      "ashok": "અશોક", "vinod": "વિનોદ", "vijaybhai": "વિજયભાઈ", "rameshbhai": "રમેશભાઈ",
-      "anilbhai": "અનિલભાઈ", "kiritbhai": "કિરીટભાઈ", "sunilbhai": "સુનિલભાઈ",
-      "vedant": "વેદાંત", "sneha": "સ્નેહા", "hardik": "હાર્દિક", "nirav": "નીરવ",
-      "mehul": "મેહુલ", "ketan": "કેતન", "jignesh": "જીજ્ઞેશ", "vipul": "વિપુલ",
-      "dimple": "ડિમ્પલ", "alpa": "અલ્પા", "tina": "ટીના", "mona": "મોના",
-      "hetal": "હેતલ", "sejal": "સેજલ", "payal": "પાયલ", "rekha": "રેખા",
-      "geeta": "ગીતા", "dina": "દીના", "shital": "શીતલ", "sheetal": "શીતલ",
-      "mital": "મિતલ", "kajal": "કાજલ", "priti": "પ્રીતિ", "preeti": "પ્રીતિ",
-      "dipti": "દીપ્તિ", "deepti": "દીપ્તિ"
-    };
-
-    var words = s.split(/(\s+|[,&+/])/);
-    return words.map(function (w) {
-      var low = w.toLowerCase().trim();
-      if (dict[low]) return dict[low];
-      if (/^[,\s&+/]+$/.test(w)) return w === "&" ? " અને " : w;
-      return transliterateWordToGu(w);
-    }).join("");
-  }
-
-  function transliterateWordToGu(word) {
-    if (!word) return "";
-    var w = word.toLowerCase();
-
-    var cMulti = [
-      ["chh", "છ"], ["kh", "ખ"], ["gh", "ઘ"], ["ch", "ચ"], ["jh", "ઝ"],
-      ["th", "થ"], ["dh", "ધ"], ["bh", "ભ"], ["ph", "ફ"], ["sh", "શ"],
-      ["gn", "જ્ઞ"], ["tr", "ત્ર"], ["ksh", "ક્ષ"], ["gy", "જ્ઞ"], ["pr", "પ્ર"]
-    ];
-    var cSingle = {
-      "k": "ક", "g": "ગ", "j": "જ", "t": "ત", "d": "દ", "n": "ન",
-      "p": "પ", "b": "બ", "m": "મ", "y": "ય", "r": "ર", "l": "લ",
-      "v": "વ", "w": "વ", "s": "સ", "h": "હ", "z": "ઝ", "f": "ફ", "c": "ક"
-    };
-    var vInit = {
-      "aa": "આ", "a": "અ", "ee": "ઈ", "i": "ઇ", "oo": "ઊ", "u": "ઉ",
-      "e": "એ", "ai": "ઐ", "o": "ઓ", "au": "ઔ", "an": "અં", "am": "અં"
-    };
-    var vMatra = [
-      ["aa", "ા"], ["ee", "ી"], ["oo", "ૂ"], ["ai", "ૈ"], ["au", "ૌ"],
-      ["a", ""], ["i", "િ"], ["u", "ુ"], ["e", "ે"], ["o", "ો"]
-    ];
-
-    var res = "";
-    var i = 0;
-    var isStart = true;
-
-    while (i < w.length) {
-      var matched = false;
-
-      for (var m = 0; m < cMulti.length; m++) {
-        var mc = cMulti[m][0];
-        if (w.substr(i, mc.length) === mc) {
-          res += cMulti[m][1];
-          i += mc.length;
-          matched = true;
-          isStart = false;
-          break;
-        }
-      }
-      if (matched) {
-        for (var vm = 0; vm < vMatra.length; vm++) {
-          var vstr = vMatra[vm][0];
-          if (w.substr(i, vstr.length) === vstr) {
-            res += vMatra[vm][1];
-            i += vstr.length;
-            break;
-          }
-        }
-        continue;
-      }
-
-      var ch = w[i];
-      if (cSingle[ch]) {
-        res += cSingle[ch];
-        i += 1;
-        isStart = false;
-        for (var vm2 = 0; vm2 < vMatra.length; vm2++) {
-          var vstr2 = vMatra[vm2][0];
-          if (w.substr(i, vstr2.length) === vstr2) {
-            res += vMatra[vm2][1];
-            i += vstr2.length;
-            break;
-          }
-        }
-        continue;
-      }
-
-      if (isStart) {
-        for (var iv in vInit) {
-          if (w.substr(i, iv.length) === iv) {
-            res += vInit[iv];
-            i += iv.length;
-            matched = true;
-            isStart = false;
-            break;
-          }
-        }
-        if (matched) continue;
-      }
-
-      res += w[i];
-      i += 1;
-    }
-    return res;
-  }
-
   var calligraphyState = {
     hasAnimated: false,
     isWriting: false,
@@ -779,25 +645,13 @@
     var cue = $("scrollCue");
     if (!host) return;
 
-    var isGu = LANG === "gu";
-    host.classList.toggle("gu", isGu);
+    // The guest line stays in English on both languages, by client request -
+    // "you" or the guest's own name, never "આપને" or a transliteration.
+    host.classList.remove("gu");
 
-    var rawText = "";
-    if (isGu) {
-      if (!GUEST || !GUEST.n || GUEST.n.trim().toLowerCase() === "you") {
-        rawText = u("inviteYou") || "આપને";
-      } else {
-        rawText = toGujaratiText(GUEST.n);
-      }
-    } else {
-      if (!GUEST || !GUEST.n || GUEST.n.trim().toLowerCase() === "you") {
-        rawText = u("inviteYou") || "you";
-      } else {
-        rawText = GUEST.n;
-      }
-    }
-    rawText = String(rawText).trim();
-    if (!rawText) rawText = isGu ? "આપને" : "you";
+    var rawText = (!GUEST || !GUEST.n || GUEST.n.trim().toLowerCase() === "you")
+      ? "you" : GUEST.n;
+    rawText = String(rawText).trim() || "you";
 
     host.hidden = false;
     host.setAttribute("aria-label", rawText);

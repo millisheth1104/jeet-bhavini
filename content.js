@@ -300,8 +300,10 @@ window.WEDDING = {
          Jabuani & Nakrani Family / cordially invite / Mr Dhrumil Shah /
          to the wedding of / Jeet & Bhavini
 
-       With no ?for= link there is no name to place, so `inviteYou` stands in
-       for one and the sentence still reads.
+       With no ?for= link there is no name to place, so "you" stands in for
+       one and the sentence still reads. That line - "you" or the guest's
+       name - stays in English on both languages, by client request (set in
+       main.js, renderGuestHandwriting).
 
        The Gujarati is not a word-for-word match. Gujarati puts the
        postposition after the noun, so "ના શુભ લગ્ન પ્રસંગે" cannot sit in
@@ -309,7 +311,6 @@ window.WEDDING = {
        standalone occasion line instead, which is how a kankotri stacks it. */
     inviteHosts:       { en: "Jabuani Family", gu: "જાબુઆની પરિવાર" },
     inviteVerb:        { en: "cordially invites", gu: "ના હાર્દિક આમંત્રણ" },
-    inviteYou:         { en: "you", gu: "આપને" },
     inviteOccasion:    { en: "to the wedding of", gu: "લગ્ન પ્રસંગમાં પધારજો" },
 
     eventsEyebrow:     { en: "Celebration Journey", gu: "ઉજવણીની યાદી" },

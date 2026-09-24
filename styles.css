@@ -994,22 +994,6 @@ html[data-lang="gu"] .hero__lead {
   font-style: normal;
 }
 
-html[lang="gu"] .hero__guest,
-html[data-lang="gu"] .hero__guest,
-.hero__guest.gu,
-.hero__guest.gu .calligraphy-word,
-html[lang="gu"] .hero__guest .calligraphy-word,
-html[data-lang="gu"] .hero__guest .calligraphy-word,
-#heroGuest.gu,
-#heroGuest.gu * {
-  font-family: "Noto Serif Gujarati", "Rasa", serif !important;
-  font-size: clamp(2.2rem, 9.2vw, 3.4rem);
-  line-height: 1.25;
-  letter-spacing: 0.01em;
-  font-weight: 600;
-  font-style: normal !important;
-}
-
 /* Elements below the guest handwriting (hidden until calligraphy name finishes) */
 .hero__below {
   opacity: 0;
