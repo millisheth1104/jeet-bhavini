@@ -2566,3 +2566,18 @@ to find all remaining instances rather than patching just the one reported
 Verified extensively with live EN<->GU<->EN switching for every field
 above, including the calendar's full day-grid rebuild (31 cells, correct
 weekday headers both languages) - no overflow, no console errors.
+
+## Countdown title: replaced with the sheet's "just a few moments now" line
+
+This was the one row from the Gujarati reference sheet left unresolved
+earlier ("બસ, હવે ક્ષણોની જ વાર..." didn't map to anything obviously, so it
+was flagged rather than guessed). Client confirmed it replaces
+`ui.countdownTitle.gu` ("<em>સદાકાળ</em> સુધીની ગણતરી" -> "બસ, હવે
+ક્ષણોની જ વાર..."). Dropped the `<em>` emphasis - the new line has no
+single word that plays the role "Forever" did in the English version, and
+the client's text is plain everywhere they've sent it.
+
+Verified: switched EN<->GU live at the countdown section - Gujarati now
+reads the new line, English unchanged ("Counting Down to Forever"), clock
+digits still Latin numerals in both languages, no overflow, no console
+errors.

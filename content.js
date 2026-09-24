@@ -318,7 +318,7 @@ window.WEDDING = {
     familiesEyebrow:   { en: "Our Families", gu: "અમારો પરિવાર" },
     familiesTitle:     { en: "With Love", gu: "સ્નેહીજનો" },
 
-    countdownTitle:    { en: "Counting Down to <em>Forever</em>", gu: "<em>સદાકાળ</em> સુધીની ગણતરી" },
+    countdownTitle:    { en: "Counting Down to <em>Forever</em>", gu: "બસ, હવે ક્ષણોની જ વાર..." },
     countdownArrived:  { en: "Today is <em>Forever</em>", gu: "આજે જ <em>સદાકાળ</em>" },
     cdDays:            { en: "Days", gu: "દિવસ" },
     cdHours:           { en: "Hours", gu: "કલાક" },
