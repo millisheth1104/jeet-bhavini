@@ -2455,3 +2455,13 @@ Per client's WhatsApp markup:
 
 Verified both languages at 375px: both lines read correctly, no overflow,
 no console errors.
+
+## Hosts pairs: "Late" on Arvind Naran Jabuani too
+
+The "Late Mr." fix from the invite card only touched `invitation.groomLine`
+- the same person also appears as his own pair in the "With love, yours
+affectionately" list (`hostsPaired.pairs`), which the client flagged
+separately with the same correction: "Mr. Arvind Naran Jabuani" -> "Late
+Mr. Arvind Naran Jabuani", Gujarati "શ્રી" -> "સ્વ. શ્રી".
+
+Verified both languages, no overflow, no console errors.

@@ -188,7 +188,7 @@ window.WEDDING = {
        { en: "Mrs. Premila Naran Jabuani", gu: "અ.સૌ. પ્રેમિલાબેન નારણભાઈ જબુઆણી" }],
       [{ en: "Mr. Dhiraj Naran Jabuani",  gu: "શ્રી ધીરજભાઈ નારણભાઈ જબુઆણી" },
        { en: "Mrs. Bhavna Dhiraj Jabuani", gu: "અ.સૌ. ભાવનાબેન ધીરજભાઈ જબુઆણી" }],
-      [{ en: "Mr. Arvind Naran Jabuani",  gu: "શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી" },
+      [{ en: "Late Mr. Arvind Naran Jabuani",  gu: "સ્વ. શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી" },
        { en: "Mrs. Ranjana Arvind Jabuani", gu: "અ.સૌ. રંજનાબેન અરવિંદભાઈ જબુઆણી" }],
       [{ en: "Mr. Bhumit Dhiraj Jabuani", gu: "શ્રી ભૂમિતભાઈ ધીરજભાઈ જબુઆણી" },
        { en: "Mrs. Prachi Bhumit Jabuani", gu: "અ.સૌ. પ્રાચીબેન ભૂમિતભાઈ જબુઆણી" }],
