@@ -293,7 +293,8 @@ window.WEDDING = {
 
   footer: {
     line:   { en: "Forever begins today", gu: "સદાકાળનો આરંભ આજથી" },
-    credit: { en: "Crafted with love", gu: "પ્રેમથી બનાવેલું" },
+    // Deliberately a plain string, not {en, gu} — stays in English even when Gujarati is active.
+    credit: "Crafted with love",
   },
 
   /* ---------------------------------------------------------------------
