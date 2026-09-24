@@ -3234,5 +3234,11 @@ html[data-lang="gu"] .hosts__heading {
 html[data-lang="gu"] .scroll-cue__label { margin-right: -.015em; }
 /* Those labels lean on tracking for their weight; give it back as size. */
 html[data-lang="gu"] .eyebrow,
-html[data-lang="gu"] .compliments__heading { font-size: .88rem; }
+html[data-lang="gu"] .compliments__heading { font-size: .95rem; }
 html[data-lang="gu"] .locket__num span { font-size: clamp(0.52rem, 1.8vw, 0.78rem); }
+
+/* Hero screen, Gujarati: the script reads smaller than Latin at the same
+   size, so nudge the family line, invitation lines, and names up slightly. */
+html[data-lang="gu"] .hero__lead { font-size: clamp(1.05rem, 3.3vw, 1.28rem); }
+html[data-lang="gu"] .hero__names { font-size: clamp(3.1rem, 13.2vw, 6.6rem); }
+html[data-lang="gu"] .scroll-cue { font-size: .88rem; }
