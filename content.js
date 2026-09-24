@@ -53,8 +53,8 @@ window.WEDDING = {
         "& Mrs. Ranjana Arvind Jabuani"
       ],
       gu: [
-        "સુપુત્ર: સ્વ. શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી",
-        "તથા અ.સૌ. રંજનાબેન અરવિંદભાઈ જબુઆણી"
+        "સ્વ. શ્રી અરવિંદભાઈ નારણ જાબુઆની",
+        "અને શ્રીમતી રંજના અરવિંદ જાબુઆનીના સુપુત્ર"
       ],
     },
     brideLine: {
@@ -63,11 +63,11 @@ window.WEDDING = {
         "& Mrs. Manjula Praveen Nakrani"
       ],
       gu: [
-        "સુપુત્રી: શ્રી પ્રવીણભાઈ પરબતભાઈ નકરાણી",
-        "તથા અ.સૌ. મંજુલાબેન પ્રવીણભાઈ નકરાણી"
+        "શ્રી પ્રવીણ પરબત નાકરાણી",
+        "અને શ્રીમતી મંજુલા પ્રવીણ નાકરાણીની સુપુત્રી"
       ],
     },
-    weds: { en: "weds", gu: "સાથે" },
+    weds: { en: "weds", gu: "સંગ" },
     closing: {
       en: "forever begins here",
       gu: "અહીંથી શરૂ થાય છે સદાકાળ",
@@ -88,7 +88,7 @@ window.WEDDING = {
       gu: "મામેરું",
       en: "Mameru",
       enShift: "0.2em",
-      tagline: { en: "Where Blessings Begin", gu: "આશીર્વાદનો આરંભ" },
+      tagline: { en: "Where Blessings Begin", gu: "આશીર્વાદોનો આરંભ" },
       ink: "sage",
       paper: "a",
       illustration: "assets/generated/user_mameru_final.png",
@@ -97,7 +97,7 @@ window.WEDDING = {
       ornament: true,
       date: { en: "Tuesday, 1 December 2026", gu: "મંગળવાર, 1 ડિસેમ્બર 2026" },
       dateShort: { day: "01", month: { en: "December", gu: "ડિસેમ્બર" } },
-      times: [{ label: "", value: "9:00 AM" }],
+      times: [{ label: "", value: { en: "9:00 AM", gu: "સવારે ૯.૦૦ વાગ્યે" } }],
       venue: { en: "Oleander Ballroom,\nKarjat", gu: "ઓલિએન્ડર બોલરૂમ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Traditional Festive", gu: "પરંપરાગત ઉત્સવ પરિધાન" },
@@ -120,7 +120,7 @@ window.WEDDING = {
       ornament: true,
       date: { en: "Tuesday, 1 December 2026", gu: "મંગળવાર, 1 ડિસેમ્બર 2026" },
       dateShort: { day: "01", month: { en: "December", gu: "ડિસેમ્બર" } },
-      times: [{ label: "", value: "7:00 PM" }],
+      times: [{ label: "", value: { en: "7:00 PM", gu: "સાંજે ૭:૦૦ વાગ્યે" } }],
       venue: { en: "Oleander Lawn,\nKarjat", gu: "ઓલિએન્ડર લૉન,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Blooming Glamour", gu: "બ્લૂમિંગ ગ્લેમર" },
@@ -143,7 +143,7 @@ window.WEDDING = {
       ornament: true,
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
-      times: [{ label: "", value: "8:00 AM" }],
+      times: [{ label: "", value: { en: "8:00 AM", gu: "સવારે ૮:૦૦ વાગ્યે" } }],
       venue: { en: "Oleander Ballroom,\nKarjat", gu: "ઓલિએન્ડર બોલરૂમ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Yellow / Festive Ethnic", gu: "પીળા / શુભ પરિધાન" },
@@ -167,8 +167,8 @@ window.WEDDING = {
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [
-        { label: { en: "Baraat Prastan", gu: "બરાત પ્રસ્થાન" }, value: "4:00 PM" },
-        { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: "5:41 PM" },
+        { label: { en: "Baraat Prastan", gu: "બરાત પ્રસ્થાન" }, value: { en: "4:00 PM", gu: "સાંજે ૪:૦૦ વાગ્યે" } },
+        { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: { en: "5:41 PM", gu: "સાંજે ૫:૪૧ વાગ્યે" } },
       ],
       venue: { en: "Oleander Lake Side,\nKarjat", gu: "ઓલિએન્ડર લેકસાઇડ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
@@ -182,25 +182,25 @@ window.WEDDING = {
 
   /* લી. સ્નેહાધીન — the hosting couples, as they appear on the kankotri. */
   hostsPaired: {
-    heading: { en: "With love, yours affectionately", gu: "લી. સ્નેહાધીન" },
+    heading: { en: "With love, yours affectionately", gu: "પ્રેમસહ, આપના સ્નેહી" },
     pairs: [
-      [{ en: "Mr. Naran Kanji Jabuani",   gu: "શ્રી નારણભાઈ કાનજીભાઈ જબુઆણી" },
-       { en: "Mrs. Premila Naran Jabuani", gu: "અ.સૌ. પ્રેમિલાબેન નારણભાઈ જબુઆણી" }],
-      [{ en: "Mr. Dhiraj Naran Jabuani",  gu: "શ્રી ધીરજભાઈ નારણભાઈ જબુઆણી" },
-       { en: "Mrs. Bhavna Dhiraj Jabuani", gu: "અ.સૌ. ભાવનાબેન ધીરજભાઈ જબુઆણી" }],
-      [{ en: "Late Mr. Arvind Naran Jabuani",  gu: "સ્વ. શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી" },
-       { en: "Mrs. Ranjana Arvind Jabuani", gu: "અ.સૌ. રંજનાબેન અરવિંદભાઈ જબુઆણી" }],
-      [{ en: "Mr. Bhumit Dhiraj Jabuani", gu: "શ્રી ભૂમિતભાઈ ધીરજભાઈ જબુઆણી" },
-       { en: "Mrs. Prachi Bhumit Jabuani", gu: "અ.સૌ. પ્રાચીબેન ભૂમિતભાઈ જબુઆણી" }],
-      [{ en: "Mr. Dhruv Dhiraj Jabuani",  gu: "શ્રી ધ્રુવભાઈ ધીરજભાઈ જબુઆણી" },
-       { en: "Mrs. Nishita Dhruv Jabuani", gu: "અ.સૌ. નિશિતાબેન ધ્રુવભાઈ જબુઆણી" }],
-      [{ en: "Mr. Amrut Kanti Pokar",      gu: "શ્રી અમૃતભાઈ કાંતિભાઈ પોકાર" },
-       { en: "Mrs. Sangita Amrut Pokar",   gu: "અ.સૌ. સંગીતાબેન અમૃતભાઈ પોકાર" }],
-      [{ en: "Mr. Deep Vipul Velani",      gu: "શ્રી દીપભાઈ વિપુલભાઈ વેલાણી" },
-       { en: "Mrs. Kajal Deep Velani",     gu: "અ.સૌ. કાજલબેન દીપભાઈ વેલાણી" }],
-      [{ en: "Pratham Amrut Pokar",        gu: "ચિ. પ્રથમ અમૃતભાઈ પોકાર" },
-       { en: "Ms. Nidhi Amrut Pokar",      gu: "કુ. નિધિ અમૃતભાઈ પોકાર" }],
-      [{ en: "Our dearest",                gu: "અમારી વ્હાલી" },
+      [{ en: "Mr. Naran Kanji Jabuani",   gu: "શ્રી નારણ કાનજી જાબુઆની" },
+       { en: "Mrs. Premila Naran Jabuani", gu: "શ્રીમતી પ્રેમિલા નારણ જાબુઆની" }],
+      [{ en: "Mr. Dhiraj Naran Jabuani",  gu: "શ્રી ધીરજ નારણ જાબુઆની" },
+       { en: "Mrs. Bhavna Dhiraj Jabuani", gu: "શ્રીમતી ભાવના ધીરજ જાબુઆની" }],
+      [{ en: "Late Mr. Arvind Naran Jabuani",  gu: "સ્વ. શ્રી અરવિંદ નારણ જાબુઆની" },
+       { en: "Mrs. Ranjana Arvind Jabuani", gu: "શ્રીમતી રંજના અરવિંદ જાબુઆની" }],
+      [{ en: "Mr. Bhumit Dhiraj Jabuani", gu: "શ્રી ભૂમિત ધીરજ જાબુઆની" },
+       { en: "Mrs. Prachi Bhumit Jabuani", gu: "શ્રીમતી પ્રાચી ભૂમિત જાબુઆની" }],
+      [{ en: "Mr. Dhruv Dhiraj Jabuani",  gu: "શ્રી ધ્રુવ ધીરજ જાબુઆની" },
+       { en: "Mrs. Nishita Dhruv Jabuani", gu: "શ્રીમતી નિશિતા ધ્રુવ જાબુઆની" }],
+      [{ en: "Mr. Amrut Kanti Pokar",      gu: "શ્રી અમૃત કાંતિ પોકાર" },
+       { en: "Mrs. Sangita Amrut Pokar",   gu: "શ્રીમતી સંગીતા અમૃત પોકાર" }],
+      [{ en: "Mr. Deep Vipul Velani",      gu: "શ્રી દીપકુમાર વિપુલ વેલાણી" },
+       { en: "Mrs. Kajal Deep Velani",     gu: "શ્રીમતી કાજલ દીપકુમાર વેલાણી" }],
+      [{ en: "Pratham Amrut Pokar",        gu: "ચિ. પ્રથમ અમૃત પોકાર" },
+       { en: "Ms. Nidhi Amrut Pokar",      gu: "કુ. નિધિ અમૃત પોકાર" }],
+      [{ en: "Our dearest",                gu: "અમારી લાડલી" },
        { en: "Radhya Deep Velani",         gu: "રાધ્યા દીપ વેલાણી" }],
     ],
   },
@@ -209,29 +209,29 @@ window.WEDDING = {
   hostsAwaiting: {
     heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
     names: [
-      { en: "Mrs. Vimala Dayaram Kanji Jabuani",  gu: "અ.સૌ. વિમળાબેન દયારામભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Kanta Ravji Kanji Jabuani",     gu: "અ.સૌ. કાન્તાબેન રવજીભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Manjula Haresh Kanji Jabuani",  gu: "અ.સૌ. મંજુલાબેન હરેશભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Aruna Kirti Kanji Jabuani",     gu: "અ.સૌ. અરુણાબેન કીર્તિભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Taruna Pankaj Dayaram Jabuani", gu: "અ.સૌ. તરુણાબેન પંકજભાઈ દયારામભાઈ જબુઆણી" },
-      { en: "Mrs. Nisha Sanjay Ravji Jabuani",    gu: "અ.સૌ. નિશાબેન સંજયભાઈ રવજીભાઈ જબુઆણી" },
-      { en: "Mrs. Anasuya Mehul Dayaram Jabuani", gu: "અ.સૌ. અનસુયાબેન મેહુલભાઈ દયારામભાઈ જબુઆણી" },
-      { en: "Mrs. Bhumika Rajesh Ravji Jabuani",  gu: "અ.સૌ. ભુમિકાબેન રાજેશભાઈ રવજીભાઈ જબુઆણી" },
-      { en: "Mrs. Puja Sudhir Haresh Jabuani",    gu: "અ.સૌ. પુજાબેન સુધિરભાઈ હરેશભાઈ જબુઆણી" },
-      { en: "Mrs. Mayuri Jigar Kirti Jabuani",    gu: "અ.સૌ. મયુરીબેન જિગરભાઈ કીર્તિભાઈ જબુઆણી" },
-      { en: "Mrs. Mohini Keval Kirti Jabuani",    gu: "અ.સૌ. મોહિનીબેન કેવલભાઈ કીર્તિભાઈ જબુઆણી" },
+      { en: "Mrs. Vimala Dayaram Kanji Jabuani",  gu: "શ્રીમતી વિમલાબેન દયારામભાઈ કાનજીભાઈ જાબુઆની" },
+      { en: "Mrs. Kanta Ravji Kanji Jabuani",     gu: "શ્રીમતી કાંતાબેન રવજીભાઈ કાનજીભાઈ જાબુઆની" },
+      { en: "Mrs. Manjula Haresh Kanji Jabuani",  gu: "શ્રીમતી મંજુલાબેન હરેશભાઈ કાનજીભાઈ જાબુઆની" },
+      { en: "Mrs. Aruna Kirti Kanji Jabuani",     gu: "શ્રીમતી અરૂણાબેન કીર્તિભાઈ કાનજીભાઈ જાબુઆની" },
+      { en: "Mrs. Taruna Pankaj Dayaram Jabuani", gu: "શ્રીમતી તરુણા પંકજ દયારામ જાબુઆની" },
+      { en: "Mrs. Nisha Sanjay Ravji Jabuani",    gu: "શ્રીમતી નિશા સંજય રવજી જાબુઆની" },
+      { en: "Mrs. Anasuya Mehul Dayaram Jabuani", gu: "શ્રીમતી અનસૂયા મેહુલ દયારામ જાબુઆની" },
+      { en: "Mrs. Bhumika Rajesh Ravji Jabuani",  gu: "શ્રીમતી ભૂમિકા રાજેશ રવજી જાબુઆની" },
+      { en: "Mrs. Puja Sudhir Haresh Jabuani",    gu: "શ્રીમતી પૂજા સુધીર હરેશ જાબુઆની" },
+      { en: "Mrs. Mayuri Jigar Kirti Jabuani",    gu: "શ્રીમતી મયુરી જીગર કીર્તિ જાબુઆની" },
+      { en: "Mrs. Mohini Keval Kirti Jabuani",    gu: "શ્રીમતી મોહિની કેવલ કીર્તિ જાબુઆની" },
     ],
-    solo: { en: "Jay Pankaj Jabuani", gu: "જય પંકજભાઈ જબુઆણી" },
+    solo: { en: "Jay Pankaj Jabuani", gu: "ચિ. જય પંકજભાઈ જાબુઆની" },
     children: {
       en: "Miti, Khushi, Vanshika, Kashyap, Yakshit, Darsh, Trisha, Bhavyansh, Jiyansh, Kiyanshi",
-      gu: "મિતિ, ખુશી, વંશીકા, કશ્યપ, યક્ષીત, દર્શ, ત્રિશા, ભવ્યાંશ, જિયાંશ, કિયાંશી",
+      gu: "મિતિ, ખુશી, વંશિકા, કશ્યપ, યક્ષિત, દર્શ, ત્રિશા, ભવ્યાંશ, જિયાંશ, કિયાંશી",
     },
   },
 
   gallery: {
-    heading: { en: "Love in Focus", gu: "ફોકસમાં પ્રેમ" },
+    heading: { en: "Love in Focus", gu: "શુભારંભ" },
     subheading: { en: "(Photo Gallery)", gu: "(ફોટો ગેલેરી)" },
-    caption: { en: "Moments we love", gu: "અમને પ્રિય ક્ષણો" },
+    caption: { en: "Moments we love", gu: "જીવનની મધુર ક્ષણો" },
     photos: [
       { src: "assets/photos/couple-beach-01.jpg",  alt: { en: "Jeet and Bhavini walking the shore below a limestone cliff", gu: "દરિયાકિનારે ચાલતાં જીત અને ભાવિની" } },
       { src: "assets/photos/couple-beach-02.jpg",  alt: { en: "Jeet and Bhavini running along the sand", gu: "રેતી પર દોડતાં જીત અને ભાવિની" } },
@@ -255,18 +255,18 @@ window.WEDDING = {
     },
     note: {
       en: "Nestled in the lush hills of Karjat — join us as we celebrate our new beginning.",
-      gu: "કર્જતની રમણીય ટેકરીઓ વચ્ચે — અમારા નવા જીવનના પ્રારંભની ઉજવણીમાં સહભાગી બનો."
+      gu: "કર્જતની નયનરમ્ય વાડીઓ વચ્ચે... એક સોનેરી શરૂઆત, તમારી સ્નેહભરી હાજરી સાથે."
     },
     mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
-    buttonText: { en: "View on Google Maps", gu: "ગૂગલ મેપ્સ પર દિશા જુઓ" },
+    buttonText: { en: "View on Google Maps", gu: "ગૂગલ મેપ્સ પર જુઓ" },
     postmarkText: { en: "JEET & BHAVINI • 01.12.2026 • KARJAT •", gu: "જીત અને ભાવિની • 01.12.2026 • કર્જત •" },
   },
 
   compliments: {
     heading: { en: "With Best Compliments From", gu: "શુભેચ્છા સહ" },
     from: [
-      { name: "Asiatic Surface",         city: { en: "Mumbai",     gu: "મુંબઈ" } },
-      { name: "Pegasus Panel Pvt. Ltd.", city: { en: "Gandhidham", gu: "ગાંધીધામ" } },
+      { name: { en: "Asiatic Surface",         gu: "એશિયાટિક સરફેસ" },         city: { en: "Mumbai",     gu: "મુંબઈ" } },
+      { name: { en: "Pegasus Panel Pvt. Ltd.", gu: "પેગાસસ પેનલ પ્રાઇવેટ લિમિટેડ" }, city: { en: "Gandhidham", gu: "ગાંધીધામ" } },
     ],
   },
 
@@ -312,11 +312,11 @@ window.WEDDING = {
     inviteYou:         { en: "you", gu: "આપને" },
     inviteOccasion:    { en: "to the wedding of", gu: "શુભ લગ્ન પ્રસંગે" },
 
-    eventsEyebrow:     { en: "Celebration Journey", gu: "ઉત્સવની સફર" },
+    eventsEyebrow:     { en: "Celebration Journey", gu: "ઉજવણીની યાદી" },
     eventsTitle:       { en: "Our Events", gu: "અમારા પ્રસંગો" },
 
     familiesEyebrow:   { en: "Our Families", gu: "અમારો પરિવાર" },
-    familiesTitle:     { en: "With Love", gu: "સ્નેહ સહિત" },
+    familiesTitle:     { en: "With Love", gu: "સ્નેહીજનો" },
 
     countdownTitle:    { en: "Counting Down to <em>Forever</em>", gu: "<em>સદાકાળ</em> સુધીની ગણતરી" },
     countdownArrived:  { en: "Today is <em>Forever</em>", gu: "આજે જ <em>સદાકાળ</em>" },

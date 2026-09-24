@@ -2465,3 +2465,73 @@ separately with the same correction: "Mr. Arvind Naran Jabuani" -> "Late
 Mr. Arvind Naran Jabuani", Gujarati "શ્રી" -> "સ્વ. શ્રી".
 
 Verified both languages, no overflow, no console errors.
+
+## Gujarati content pass against the client's reference sheet
+
+Client shared a Google Sheets export ("Jeet Bhavini Wedding Gujarati") with
+their approved Gujarati wording and asked to check the site against it and
+correct anything that didn't match. Went through every row against the
+current `content.js`, applied everything unambiguous, and asked before
+touching the two things that would have been large or risky to guess:
+
+- **Family name spelling, standardized sitewide**: the sheet consistently
+  spells the family names "જાબુઆની" (not "જબુઆણી") and drops the ભાઈ/બેન
+  honorific suffix from every ancestor name except the one person actually
+  being named in that clause (their own name keeps it). Applied throughout
+  `hostsPaired.pairs`, `hostsAwaiting.names`/`.solo`, and the invitation's
+  `groomLine`/`brideLine`.
+- **Titles**: "અ.સૌ." -> "શ્રીમતી" throughout the hosts pairs/awaiting lists,
+  matching the sheet.
+- **Invitation line structure**: restructured `groomLine`/`brideLine` gu
+  from "સુપુત્ર: [father] / [and mother]" to "[father] / and [mother]-ना
+  સુપુત્ર", matching the sheet's clause order. English unchanged.
+- **Section wording swaps**: `eventsEyebrow` ("ઉત્સવની સફર" ->
+  "ઉજવણીની યાદી"), `familiesTitle` ("સ્નેહ સહિત" -> "સ્નેહીજનો"),
+  `hostsPaired.heading` ("લી. સ્નેહાધીન" -> "પ્રેમસહ, આપના સ્નેહી"),
+  `gallery.heading` ("ફોકસમાં પ્રેમ" -> "શુભારંભ"), `gallery.caption`
+  ("અમને પ્રિય ક્ષણો" -> "જીવનની મધુર ક્ષણો"), `invitation.weds`
+  ("સાથે" -> "સંગ"), `postcard.note` and `postcard.buttonText` reworded,
+  Mameru's tagline pluralized ("આશીર્વાદનો" -> "આશીર્વાદોનો"), the
+  Radhya Deep Velani pair's "અમારી વ્હાલી" -> "અમારી લાડલી", children's
+  names vowel-length fixes ("વંશીકા"/"યક્ષીત" -> "વંશિકા"/"યક્ષિત").
+- **Deep Vipul Velani's gu name** -> "દીપકુમાર" (Deepkumar) throughout,
+  per the sheet - flagging that English still says "Deep", not
+  "Deepkumar", since only the gu sheet asked for this.
+- **Compliments sponsor names got a gu translation for the first time**
+  (`compliments.from[].name` was English-only before, restructured to
+  `{en, gu}` like every other bilingual field) - "Asiatic Surface" /
+  "Pegasus Panel Pvt. Ltd." now also read in Gujarati script when toggled.
+
+**Approved, larger change - event times now show Gujarati numerals and
+natural phrasing.** The sheet marks the live countdown clock digits
+"English only" but writes every event's date/time in Gujarati numerals with
+full phrasing (e.g. "સવારે ૯.૦૦ વાગ્યે" instead of "9:00 AM"). Confirmed
+scope with the client before touching code, since it's a schema change, not
+a text edit. `events[].times[].value` went from a plain string (shared
+across languages) to `{en, gu}`; `main.js`'s `eventCard()` now calls
+`t(tm.value)` instead of reading it raw. `events[].date` turned out to
+already be dead code - the scroll-card redesign replaced it with hardcoded
+Gujarati-numeral day/year logic keyed off `isGu`, so no change was needed
+there.
+
+**Two more stale-content bugs found and fixed the same way as the hosts
+pairs bug earlier**: neither the schedule label/value spans nor the
+compliments sponsor list ever refreshed on a language switch -
+`updateEvents()` touched the dateline and year but not the times, and
+`compliments()` had no update hook registered in `setLang()` at all (same
+class of bug as `hostsPaired`, just not yet exercised since nothing in that
+section used to vary by language before this change). Fixed both: added
+schedule-row refresh logic to `updateEvents()`, and wrapped `compliments()`
+in a `renderCompliments()`/`updateComplimentsUI` hook matching the
+established pattern.
+
+**Explicitly skipped, per client's choice**: the sheet's differently-shaped
+Gujarati hero sentence (no "you" placeholder, incompatible with the site's
+personalized `?for=` guest links) - kept the current structure.
+
+Verified extensively: live EN<->GU<->EN switching after the fact (not just
+fresh loads) for invite parent lines, event times, hosts pairs/awaiting,
+compliments, postcard note/button - all refresh correctly in both
+directions, no overflow, no console errors. Confirmed the countdown clock's
+own digits stay Latin numerals in both languages, matching the sheet's
+explicit note.

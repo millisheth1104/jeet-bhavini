@@ -67,6 +67,7 @@
   var updateInvitationUI = null;
   var updateEventsUI = null;
   var updateHostsUI = null;
+  var updateComplimentsUI = null;
 
   /* Live in-place language switching: updates all visible text and typography
      instantly without jarring reloads, keeping the door animation and audio
@@ -89,6 +90,7 @@
     if (updateInvitationUI) updateInvitationUI();
     if (updateEventsUI) updateEventsUI();
     if (updateHostsUI) updateHostsUI();
+    if (updateComplimentsUI) updateComplimentsUI();
   }
 
   var switchedAt = null;
@@ -1237,19 +1239,19 @@
       meta.appendChild(el("div", "scroll-card__year inv__year", isGu ? "૨૦૨૬" : "2026"));
 
       // Schedule / Timings
-      var times = (ev.times || []).filter(function (tm) { return tm.value; });
+      var times = (ev.times || []).filter(function (tm) { return t(tm.value); });
       if (times.length > 1) {
         var sched = el("div", "scroll-card__schedule inv__schedule");
         times.forEach(function (tm) {
           var row = el("div", "inv__schedule-row");
           var lbl = t(tm.label);
           if (lbl) row.appendChild(el("span", "inv__sched-lbl", lbl));
-          row.appendChild(el("span", "inv__sched-val", tm.value));
+          row.appendChild(el("span", "inv__sched-val", t(tm.value)));
           sched.appendChild(row);
         });
         meta.appendChild(sched);
       } else if (times.length === 1) {
-        meta.appendChild(el("div", "scroll-card__time inv__time", times[0].value));
+        meta.appendChild(el("div", "scroll-card__time inv__time", t(times[0].value)));
       }
 
       // Venue
@@ -1448,6 +1450,19 @@
         if (tag && ev.tagline) tag.textContent = t(ev.tagline);
         var yr = card.querySelector(".scroll-card__year");
         if (yr) yr.textContent = isGu ? "૨૦૨૬" : "2026";
+
+        var evTimes = (ev.times || []).filter(function (tm) { return t(tm.value); });
+        var rows = card.querySelectorAll(".inv__schedule-row");
+        if (rows.length && rows.length === evTimes.length) {
+          rows.forEach(function (row, ri) {
+            var lblEl = row.querySelector(".inv__sched-lbl");
+            if (lblEl) lblEl.textContent = t(evTimes[ri].label);
+            var valEl = row.querySelector(".inv__sched-val");
+            if (valEl) valEl.textContent = t(evTimes[ri].value);
+          });
+        }
+        var timeEl = card.querySelector(".inv__time");
+        if (timeEl && evTimes.length === 1) timeEl.textContent = t(evTimes[0].value);
 
         var dayName = "";
         var dayNum = "";
@@ -1903,14 +1918,21 @@
   (function compliments() {
     var c = W.compliments, section = $("compliments");
     if (!c || !c.from || !c.from.length) { section.hidden = true; return; }
-    put("compHeading", t(c.heading));
     var host = $("compList");
-    c.from.forEach(function (f) {
-      var d = el("div");
-      d.appendChild(el("p", "compliments__name", f.name));
-      if (f.city) d.appendChild(el("p", guIf("compliments__city"), t(f.city)));
-      host.appendChild(d);
-    });
+
+    function renderCompliments() {
+      put("compHeading", t(c.heading));
+      host.innerHTML = "";
+      c.from.forEach(function (f) {
+        var d = el("div");
+        d.appendChild(el("p", "compliments__name", t(f.name)));
+        if (f.city) d.appendChild(el("p", guIf("compliments__city"), t(f.city)));
+        host.appendChild(d);
+      });
+    }
+
+    renderCompliments();
+    updateComplimentsUI = renderCompliments;
   }());
 
   $("footer").textContent =
