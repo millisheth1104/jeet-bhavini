@@ -315,7 +315,7 @@ window.WEDDING = {
     introSkip:         { en: "Skip", gu: "છોડો" },
     scrollCue:         { en: "Scroll", gu: "નીચે જુઓ" },
     introCueTitle:     { en: "Ring the bell", gu: "ઘંટ વગાડો" },
-    introCueSub:       { en: "to begin the celebration", gu: "ઉજવણીનો પ્રારંભ કરવા" },
+    introCueSub:       { en: "View the Invitation", gu: "આમંત્રણ નિહાળો" },
     portalCue:         { en: "Tap the gates to enter", gu: "દરવાજા ખોલવા સ્પર્શ કરો" },
 
 

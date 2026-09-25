@@ -2799,3 +2799,10 @@ line in both languages at 375px, no overflow. `?v=` -> 20260925h.
 Client asked to revert 903f5d6. `ui.scrollCue` restored; `?v=` ->
 20260925i (not back to "g") so phones that already cached the "h" files
 still fetch the reverted content.js.
+
+## Intro: "Ring the bell" sub-line -> "View the Invitation"
+
+`ui.introCueSub` "to begin the celebration" / "ઉજવણીનો પ્રારંભ કરવા" ->
+"View the Invitation" / "આમંત્રણ નિહાળો" (client's exact wording). This is
+the line under RING THE BELL on the intro screen - the hero's "Scroll" cue
+stays as reverted. One line in both languages at 375px. `?v=` -> 20260925j.
