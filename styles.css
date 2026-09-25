@@ -3038,6 +3038,14 @@ html[data-lang="gu"] .postcard__venue-title {
   letter-spacing: .1em;
   opacity: .75;
 }
+.footer__studio-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .2em;
+}
+.footer__studio-link:hover,
+.footer__studio-link:focus-visible { opacity: 1; color: var(--dusk-ink, currentColor); }
 
 /* --------------------------------------------------------------------------
    Floating controls

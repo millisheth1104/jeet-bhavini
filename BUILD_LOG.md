@@ -2733,3 +2733,12 @@ The other session's last four commits hadn't bumped `?v=` (still
 caches. `?v=` -> 20260925a now ships both.
 
 Verified both languages at 375px: no overflow, no console errors.
+
+## Footer: "The Pure Studio" links to thepurestudio.in
+
+New `footer.studioLink` ({text, url}) in content.js; `renderFooter()` turns
+that substring of the `studio` line into a link (opens in a new tab,
+`rel="noopener"`), falling back to plain text if the substring isn't found.
+Styled to inherit the footer colour with a thin underline so it reads as a
+link without shouting. `?v=` -> 20260925b. Verified in both languages: link
+text, href, target correct; no console errors.

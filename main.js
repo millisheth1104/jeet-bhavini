@@ -1860,7 +1860,23 @@
     var topLine = [W.couple.hashtag, t(W.footer.credit)].filter(Boolean).join("  ·  ");
     if (topLine) footer.appendChild(el("div", "footer__line", topLine));
     var studio = t(W.footer.studio);
-    if (studio) footer.appendChild(el("div", "footer__studio", studio));
+    if (studio) {
+      var sEl = el("div", "footer__studio");
+      var link = W.footer.studioLink;
+      var at = link && link.text ? studio.indexOf(link.text) : -1;
+      if (at !== -1 && link.url) {
+        sEl.appendChild(document.createTextNode(studio.slice(0, at)));
+        var a = el("a", "footer__studio-link", link.text);
+        a.href = link.url;
+        a.target = "_blank";
+        a.rel = "noopener";
+        sEl.appendChild(a);
+        sEl.appendChild(document.createTextNode(studio.slice(at + link.text.length)));
+      } else {
+        sEl.textContent = studio;
+      }
+      footer.appendChild(sEl);
+    }
   }());
 
   /* -- scroll reveal ------------------------------------------------------ */

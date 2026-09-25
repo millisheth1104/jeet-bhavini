@@ -296,6 +296,8 @@ window.WEDDING = {
     // Both deliberately plain strings, not {en, gu} — stay English even when Gujarati is active.
     credit: "Crafted with love",
     studio: "Designed and created by The Pure Studio",
+    // The part of `studio` that becomes a link, and where it goes.
+    studioLink: { text: "The Pure Studio", url: "https://thepurestudio.in/" },
   },
 
   /* ---------------------------------------------------------------------
