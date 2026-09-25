@@ -186,7 +186,7 @@ window.WEDDING = {
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [
-        { label: { en: "Baraat Prastan", gu: "બારાત પ્રસ્થાન" }, value: { en: "4:00 PM", gu: "સાંજે ૪:૦૦ વાગ્યે" } },
+        { label: { en: "Baraat Prastan", gu: "બારાત પ્રસ્થાન" }, value: { en: "3:30 PM", gu: "સાંજે ૩:૩૦ વાગ્યે" } },
         { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: { en: "5:41 PM", gu: "સાંજે ૫:૪૧ વાગ્યે" } },
       ],
       venue: { en: "Oleander Lake Side,\nKarjat", gu: "ઓલિએન્ડર લેકસાઇડ,\nકર્જત" },

@@ -1952,6 +1952,9 @@ html[lang="gu"] .scroll-card__title {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  /* a floor on the label-to-time gap: with space-between alone, a long label
+     ("બારાત પ્રસ્થાન") ran right into its time and read as one phrase */
+  column-gap: 1.1em;
   font-family: var(--serif);
   font-size: clamp(0.92rem, 3.75cqw, 1.2rem);
   font-weight: 600;
@@ -2055,7 +2058,12 @@ html[lang="gu"] .inv__venue {
 
 .inv--gu .inv__schedule,
 html[lang="gu"] .inv__schedule {
-  max-width: 15rem;
+  /* The Gujarati rows are longer than the 86%-wide details column allows on a
+     phone; take their natural width (still inside the card body) rather
+     than crushing the label into its time. */
+  width: max-content;
+  min-width: min(100%, 16.5rem);
+  max-width: none;
   gap: 0.16rem;
 }
 

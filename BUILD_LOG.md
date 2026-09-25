@@ -2772,3 +2772,18 @@ since the live list lives in the admin/server store, not these seed files.
 
 Client confirmed: `hostsAwaiting` gu "શ્રીમતી અનસૂયા ..." -> "શ્રીમતી અંશુયા
 ...", overriding the reference sheet's spelling. `?v=` -> 20260925f.
+
+## Lagna: Baraat Prastan 3:30 PM; schedule row spacing
+
+- Baraat Prastan 4:00 PM -> 3:30 PM (gu "સાંજે ૪:૦૦" -> "સાંજે ૩:૩૦ વાગ્યે").
+  No other copy of that time on the site (countdown targets Hastamelap).
+- Spacing: rows use `justify-content: space-between`, so a long label had
+  no guaranteed gap. On a phone the Gujarati "બારાત પ્રસ્થાન" left 6px
+  before its time and read as one phrase. Added `column-gap: 1.1em` on
+  `.inv__schedule-row`; and since the Gujarati rows (~190px) are wider than
+  the 86%-wide details column (174px) at 375px, the Gujarati schedule now
+  takes its natural width (`width: max-content; min-width: min(100%,
+  16.5rem)`), which stays inside the card body (202px). Gaps now 18px /
+  34px in Gujarati, times right-aligned in a column, no overflow; English
+  unchanged.
+`?v=` -> 20260925g.
