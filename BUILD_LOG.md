@@ -2787,3 +2787,9 @@ Client confirmed: `hostsAwaiting` gu "શ્રીમતી અનસૂયા .
   34px in Gujarati, times right-aligned in a column, no overflow; English
   unchanged.
 `?v=` -> 20260925g.
+
+## Hero scroll cue: "View the Invitation" / "આમંત્રણ નિહાળો"
+
+`ui.scrollCue` "Scroll" / "નીચે જુઓ" -> "View the Invitation" /
+"આમંત્રણ નિહાળો". Same tracked-caps styling and trailing-tracking fix; one
+line in both languages at 375px, no overflow. `?v=` -> 20260925h.
