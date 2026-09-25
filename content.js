@@ -267,7 +267,7 @@ window.WEDDING = {
   /* * With Best Compliments From * */
   /* Postcard venue and destination section */
   postcard: {
-    couple: { en: "Jeet & Bhavini", gu: "જીત અને ભાવિની" },
+    couple: { en: "Jeet & Bhavini", gu: "જીત વેડ્સ ભાવિની" },
     dates: { en: "1st – 2nd December, 2026", gu: "૧ – ૨ ડિસેમ્બર ૨૦૨૬" },
     venueName: { en: "Oleander Farms", gu: "ઓલિએન્ડર ફાર્મ્સ" },
     address: {

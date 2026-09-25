@@ -2742,3 +2742,10 @@ that substring of the `studio` line into a link (opens in a new tab,
 Styled to inherit the footer colour with a thin underline so it reads as a
 link without shouting. `?v=` -> 20260925b. Verified in both languages: link
 text, href, target correct; no console errors.
+
+## Postcard: "જીત વેડ્સ ભાવિની"
+
+Client: on the postcard (location) card, use "weds" in Gujarati instead of
+"અને". `postcard.couple.gu` "જીત અને ભાવિની" -> "જીત વેડ્સ ભાવિની". English
+unchanged ("Jeet & Bhavini"); the postmark stamp text and photo alt texts
+still use "અને" (not flagged). Fits one line at 375px. `?v=` -> 20260925c.
