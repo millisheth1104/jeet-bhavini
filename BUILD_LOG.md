@@ -2806,3 +2806,18 @@ still fetch the reverted content.js.
 "View the Invitation" / "આમંત્રણ નિહાળો" (client's exact wording). This is
 the line under RING THE BELL on the intro screen - the hero's "Scroll" cue
 stays as reverted. One line in both languages at 375px. `?v=` -> 20260925j.
+
+## Intro bell cue: no letter-spacing, larger, easier to read
+
+Client: remove the letter-spacing and make "Ring the bell" / "View the
+Invitation" bigger - hard to see. The title had `letter-spacing: .3em`,
+which in Gujarati also split the matras ("ઘં ટ  વ ગા ડો").
+- `.intro__cueTitle`: letter-spacing 0 (and dropped the text-indent that
+  compensated for it), clamp(.82,3.6vw,1.25rem) -> clamp(1.15,5.2vw,1.65rem),
+  weight 500 -> 600; no uppercase in Gujarati.
+- `.intro__cueSub`: clamp(.95,4vw,1.35rem) -> clamp(1.2,5.4vw,1.7rem),
+  weight 600; upright (not italic) in Gujarati.
+- Scrim behind the cue a touch darker (.5/.28 -> .62/.36) and text shadow
+  slightly stronger, so the lines hold up over the pale marble and pond.
+At 375px: title 20px, sub 21px, both one line in both languages.
+`?v=` -> 20260925k.
