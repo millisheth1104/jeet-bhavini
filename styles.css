@@ -889,10 +889,12 @@ body:not(.intro-open) #top {
   margin: .45rem 0;
   font-family: var(--serif);
   font-style: italic;
-  font-size: clamp(.95rem, 3vw, 1.15rem);
+  font-size: clamp(1.08rem, 3.5vw, 1.3rem);
   letter-spacing: .02em;
   color: var(--ink-soft);
 }
+/* The family line at the top of the hero reads larger than a section eyebrow. */
+.hero .eyebrow { font-size: clamp(.74rem, 2vw, .84rem); }
 
 /* The guest the link was made for. Set in italic and in rose, so on a page
    of upright serif it is unmistakably the one line addressed to the reader.
@@ -1220,7 +1222,10 @@ html[data-lang="gu"] .hero__lead {
   .deco--garland-b, .deco--garland-d, .deco--lotus { display: none; }
   .deco--garland-a { left: 0;  height: 30vh; }
   .deco--garland-c { right: 0; height: 26vh; }
-  .hero__inner { padding-top: 4vh; }
+  /* Ganesha sits level with the language pill (which is off to the right,
+     so they don't collide) instead of ~75px down under two stacked paddings. */
+  .hero { padding-top: clamp(1rem, 2.4vh, 1.5rem); }
+  .hero__inner { padding-top: 0; }
 }
 
 /* --------------------------------------------------------------------------
@@ -3245,6 +3250,7 @@ html[data-lang="gu"] .locket__num span { font-size: clamp(0.52rem, 1.8vw, 0.78re
 
 /* Hero screen, Gujarati: the script reads smaller than Latin at the same
    size, so nudge the family line, invitation lines, and names up slightly. */
-html[data-lang="gu"] .hero__lead { font-size: clamp(1.05rem, 3.3vw, 1.28rem); }
+html[data-lang="gu"] .hero__lead { font-size: clamp(1.2rem, 3.9vw, 1.45rem); }
+html[data-lang="gu"] .hero .eyebrow { font-size: 1.1rem; }
 html[data-lang="gu"] .hero__names { font-size: clamp(3.1rem, 13.2vw, 6.6rem); }
 html[data-lang="gu"] .scroll-cue { font-size: .88rem; }

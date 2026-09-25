@@ -2709,3 +2709,27 @@ stylesheet as local); their screenshot was a cached copy.
 
 `?v=` -> 20260924e. Verified: all 9 photos load, Lagna gap 10px, no
 overflow, no console errors.
+
+## Hero: Ganesha moved up, invitation lines larger
+
+Client: too much space above the Ganesha, then larger text. On a phone the
+Ganesha started ~73px down - `.hero` padding-top (5vh) stacked on
+`.hero__inner` padding-top (4vh, mobile media query). Mobile now uses a
+small `.hero` padding (clamp 1-1.5rem) and no inner padding: Ganesha sits
+at ~19px, level with the language pill, which is off to the right so they
+don't touch (checked horizontally: Ganesha ends x=208, pill starts x=275).
+
+Text, building on the other session's Gujarati bump (1587763) rather than
+replacing it:
+- `.hero__lead` (invite / occasion lines) clamp(.95,3vw,1.15rem) ->
+  clamp(1.08,3.5vw,1.3rem); Gujarati override -> clamp(1.2,3.9vw,1.45rem).
+- New `.hero .eyebrow` so the family line at the top of the hero can grow
+  without touching every section eyebrow: clamp(.74,2vw,.84rem); Gujarati
+  1.1rem (was .95rem via the shared eyebrow rule).
+At 375px: Gujarati family line 16.6 -> 19.3px, invite lines 18.4 -> 21px.
+
+The other session's last four commits hadn't bumped `?v=` (still
+20260924e), so their footer and hero changes were also stuck behind phone
+caches. `?v=` -> 20260925a now ships both.
+
+Verified both languages at 375px: no overflow, no console errors.
