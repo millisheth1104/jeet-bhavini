@@ -213,7 +213,7 @@ window.WEDDING = {
        { en: "Mrs. Prachi Bhumit Jabuani", gu: "શ્રીમતી પ્રાચી ભૂમિત જાબુઆની" }],
       [{ en: "Mr. Dhruv Dhiraj Jabuani",  gu: "શ્રી ધ્રુવ ધીરજ જાબુઆની" },
        { en: "Mrs. Nishita Dhruv Jabuani", gu: "શ્રીમતી નિશિતા ધ્રુવ જાબુઆની" }],
-      [{ en: "Mr. Amrut Kanti Pokar",      gu: "શ્રી અમૃત કાંતિ પોકાર" },
+      [{ en: "Mr. Amrut Kantilal Pokar",   gu: "શ્રી અમૃત કાંતિલાલ પોકાર" },
        { en: "Mrs. Sangita Amrut Pokar",   gu: "શ્રીમતી સંગીતા અમૃત પોકાર" }],
       [{ en: "Mr. Deep Vipul Velani",      gu: "શ્રી દીપકુમાર વિપુલ વેલાણી" },
        { en: "Mrs. Kajal Deep Velani",     gu: "શ્રીમતી કાજલ દીપકુમાર વેલાણી" }],

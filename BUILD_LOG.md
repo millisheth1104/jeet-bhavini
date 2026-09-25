@@ -2749,3 +2749,12 @@ Client: on the postcard (location) card, use "weds" in Gujarati instead of
 "અને". `postcard.couple.gu` "જીત અને ભાવિની" -> "જીત વેડ્સ ભાવિની". English
 unchanged ("Jeet & Bhavini"); the postmark stamp text and photo alt texts
 still use "અને" (not flagged). Fits one line at 375px. `?v=` -> 20260925c.
+
+## Hosts list: "Kanti" -> "Kantilal"
+
+`hostsPaired`: "શ્રી અમૃત કાંતિ પોકાર" -> "શ્રી અમૃત કાંતિલાલ પોકાર", English
+"Mr. Amrut Kanti Pokar" -> "Mr. Amrut Kantilal Pokar" to match. The guest
+list seed (guests.js / guests.json) still has "Mr Amrut Kanti Pokar & Mrs.
+Sangita Amrut Pokar" for that family's personal invite link - left alone,
+since the live list lives in the admin/server store, not these seed files.
+`?v=` -> 20260925d.
