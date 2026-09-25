@@ -2758,3 +2758,12 @@ list seed (guests.js / guests.json) still has "Mr Amrut Kanti Pokar & Mrs.
 Sangita Amrut Pokar" for that family's personal invite link - left alone,
 since the live list lives in the admin/server store, not these seed files.
 `?v=` -> 20260925d.
+
+## Families list: Anshuya, Pooja, "Radhya"
+
+- `hostsAwaiting`: "Mrs. Anasuya ..." -> "Mrs. Anshuya ...", "Mrs. Puja ..."
+  -> "Mrs. Pooja ..." (English spelling only - the Gujarati "અનસૂયા" is
+  from the reference sheet and "પૂજા" already reads Pooja).
+- `hostsPaired` last pair: "Radhya Deep Velani" / "રાધ્યા દીપ વેલાણી" ->
+  "Radhya" / "રાધ્યા" under "Our dearest" / "અમારી લાડલી".
+`?v=` -> 20260925e. Verified both languages, no console errors.
