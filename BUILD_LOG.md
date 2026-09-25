@@ -2793,3 +2793,9 @@ Client confirmed: `hostsAwaiting` gu "શ્રીમતી અનસૂયા .
 `ui.scrollCue` "Scroll" / "નીચે જુઓ" -> "View the Invitation" /
 "આમંત્રણ નિહાળો". Same tracked-caps styling and trailing-tracking fix; one
 line in both languages at 375px, no overflow. `?v=` -> 20260925h.
+
+## Reverted: hero scroll cue back to "Scroll" / "નીચે જુઓ"
+
+Client asked to revert 903f5d6. `ui.scrollCue` restored; `?v=` ->
+20260925i (not back to "g") so phones that already cached the "h" files
+still fetch the reverted content.js.
