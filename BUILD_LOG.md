@@ -2767,3 +2767,8 @@ since the live list lives in the admin/server store, not these seed files.
 - `hostsPaired` last pair: "Radhya Deep Velani" / "રાધ્યા દીપ વેલાણી" ->
   "Radhya" / "રાધ્યા" under "Our dearest" / "અમારી લાડલી".
 `?v=` -> 20260925e. Verified both languages, no console errors.
+
+## Families list: Gujarati "અંશુયા" to match English "Anshuya"
+
+Client confirmed: `hostsAwaiting` gu "શ્રીમતી અનસૂયા ..." -> "શ્રીમતી અંશુયા
+...", overriding the reference sheet's spelling. `?v=` -> 20260925f.
