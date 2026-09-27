@@ -57,7 +57,7 @@ window.WEDDING = {
       ],
       gu: [
         "અ. સૌ. પ્રેમિલાબેન અને શ્રી નારણભાઈ",
-        "કાનજીભાઈ જાબુઆનીના સુપૌત્ર"
+        "કાનજીભાઈ જબુઆણીના સુપૌત્ર"
       ],
     },
     groomLine: {
@@ -66,8 +66,8 @@ window.WEDDING = {
         "& Mrs. Ranjana Arvind Jabuani"
       ],
       gu: [
-        "સ્વ. શ્રી અરવિંદભાઈ નારણ જાબુઆની",
-        "અને શ્રીમતી રંજના અરવિંદ જાબુઆનીના સુપુત્ર"
+        "સ્વ. શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી",
+        "અને શ્રીમતી રંજનાબેન અરવિંદભાઈ જબુઆણીના સુપુત્ર"
       ],
     },
     brideTitle: { en: "", gu: "ચિ." },
@@ -77,8 +77,8 @@ window.WEDDING = {
         "& Mrs. Manjula Praveen Nakrani"
       ],
       gu: [
-        "શ્રી પ્રવીણ પરબત નાકરાણી",
-        "અને શ્રીમતી મંજુલા પ્રવીણ નાકરાણીની સુપુત્રી"
+        "શ્રી પ્રવીણભાઈ પરબતભાઈ નાકરાણી",
+        "અને શ્રીમતી મંજુલાબેન પ્રવીણભાઈ નાકરાણીની સુપુત્રી"
       ],
     },
     weds: { en: "weds", gu: "સંગ" },
@@ -203,22 +203,22 @@ window.WEDDING = {
   hostsPaired: {
     heading: { en: "With love, yours affectionately", gu: "પ્રેમસહ, આપના સ્નેહી" },
     pairs: [
-      [{ en: "Mr. Naran Kanji Jabuani",   gu: "શ્રી નારણ કાનજી જાબુઆની" },
-       { en: "Mrs. Premila Naran Jabuani", gu: "શ્રીમતી પ્રેમિલા નારણ જાબુઆની" }],
-      [{ en: "Mr. Dhiraj Naran Jabuani",  gu: "શ્રી ધીરજ નારણ જાબુઆની" },
-       { en: "Mrs. Bhavna Dhiraj Jabuani", gu: "શ્રીમતી ભાવના ધીરજ જાબુઆની" }],
-      [{ en: "Late Mr. Arvind Naran Jabuani",  gu: "સ્વ. શ્રી અરવિંદ નારણ જાબુઆની" },
-       { en: "Mrs. Ranjana Arvind Jabuani", gu: "શ્રીમતી રંજના અરવિંદ જાબુઆની" }],
-      [{ en: "Mr. Bhumit Dhiraj Jabuani", gu: "શ્રી ભૂમિત ધીરજ જાબુઆની" },
-       { en: "Mrs. Prachi Bhumit Jabuani", gu: "શ્રીમતી પ્રાચી ભૂમિત જાબુઆની" }],
-      [{ en: "Mr. Dhruv Dhiraj Jabuani",  gu: "શ્રી ધ્રુવ ધીરજ જાબુઆની" },
-       { en: "Mrs. Nishita Dhruv Jabuani", gu: "શ્રીમતી નિશિતા ધ્રુવ જાબુઆની" }],
-      [{ en: "Mr. Amrut Kantilal Pokar",   gu: "શ્રી અમૃત કાંતિલાલ પોકાર" },
-       { en: "Mrs. Sangita Amrut Pokar",   gu: "શ્રીમતી સંગીતા અમૃત પોકાર" }],
+      [{ en: "Mr. Naran Kanji Jabuani",   gu: "શ્રી નારણભાઈ કાનજીભાઈ જબુઆણી" },
+       { en: "Mrs. Premila Naran Jabuani", gu: "શ્રીમતી પ્રેમિલાબેન નારણભાઈ જબુઆણી" }],
+      [{ en: "Mr. Dhiraj Naran Jabuani",  gu: "શ્રી ધીરજભાઈ નારણભાઈ જબુઆણી" },
+       { en: "Mrs. Bhavna Dhiraj Jabuani", gu: "શ્રીમતી ભાવનાબેન ધીરજભાઈ જબુઆણી" }],
+      [{ en: "Late Mr. Arvind Naran Jabuani",  gu: "સ્વ. શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી" },
+       { en: "Mrs. Ranjana Arvind Jabuani", gu: "શ્રીમતી રંજનાબેન અરવિંદભાઈ જબુઆણી" }],
+      [{ en: "Mr. Bhumit Dhiraj Jabuani", gu: "શ્રી ભૂમિત ધીરજભાઈ જબુઆણી" },
+       { en: "Mrs. Prachi Bhumit Jabuani", gu: "શ્રીમતી પ્રાચી ભૂમિત જબુઆણી" }],
+      [{ en: "Mr. Dhruv Dhiraj Jabuani",  gu: "શ્રી ધ્રુવ ધીરજભાઈ જબુઆણી" },
+       { en: "Mrs. Nishita Dhruv Jabuani", gu: "શ્રીમતી નિશિતા ધ્રુવ જબુઆણી" }],
+      [{ en: "Mr. Amrut Kantilal Pokar",   gu: "શ્રી અમૃતભાઈ કાંતિલાલભાઈ પોકાર" },
+       { en: "Mrs. Sangita Amrut Pokar",   gu: "શ્રીમતી સંગીતાબેન અમૃતભાઈ પોકાર" }],
       [{ en: "Mr. Deep Vipul Velani",      gu: "શ્રી દીપકુમાર વિપુલ વેલાણી" },
        { en: "Mrs. Kajal Deep Velani",     gu: "શ્રીમતી કાજલ દીપકુમાર વેલાણી" }],
-      [{ en: "Pratham Amrut Pokar",        gu: "ચિ. પ્રથમ અમૃત પોકાર" },
-       { en: "Ms. Nidhi Amrut Pokar",      gu: "કુ. નિધિ અમૃત પોકાર" }],
+      [{ en: "Mr. Pratham Amrut Pokar",    gu: "ચિ. પ્રથમ અમૃતભાઈ પોકાર" },
+       { en: "Ms. Nidhi Amrut Pokar",      gu: "કુ. નિધિ અમૃતભાઈ પોકાર" }],
       [{ en: "Our dearest",                gu: "અમારી લાડલી" },
        { en: "Radhya",                     gu: "રાધ્યા" }],
     ],
@@ -228,19 +228,19 @@ window.WEDDING = {
   hostsAwaiting: {
     heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
     names: [
-      { en: "Mrs. Vimala Dayaram Kanji Jabuani",  gu: "શ્રીમતી વિમલાબેન દયારામભાઈ કાનજીભાઈ જાબુઆની" },
-      { en: "Mrs. Kanta Ravji Kanji Jabuani",     gu: "શ્રીમતી કાંતાબેન રવજીભાઈ કાનજીભાઈ જાબુઆની" },
-      { en: "Mrs. Manjula Haresh Kanji Jabuani",  gu: "શ્રીમતી મંજુલાબેન હરેશભાઈ કાનજીભાઈ જાબુઆની" },
-      { en: "Mrs. Aruna Kirti Kanji Jabuani",     gu: "શ્રીમતી અરૂણાબેન કીર્તિભાઈ કાનજીભાઈ જાબુઆની" },
-      { en: "Mrs. Taruna Pankaj Dayaram Jabuani", gu: "શ્રીમતી તરુણા પંકજ દયારામ જાબુઆની" },
-      { en: "Mrs. Nisha Sanjay Ravji Jabuani",    gu: "શ્રીમતી નિશા સંજય રવજી જાબુઆની" },
-      { en: "Mrs. Anshuya Mehul Dayaram Jabuani", gu: "શ્રીમતી અંશુયા મેહુલ દયારામ જાબુઆની" },
-      { en: "Mrs. Bhumika Rajesh Ravji Jabuani",  gu: "શ્રીમતી ભૂમિકા રાજેશ રવજી જાબુઆની" },
-      { en: "Mrs. Pooja Sudhir Haresh Jabuani",   gu: "શ્રીમતી પૂજા સુધીર હરેશ જાબુઆની" },
-      { en: "Mrs. Mayuri Jigar Kirti Jabuani",    gu: "શ્રીમતી મયુરી જીગર કીર્તિ જાબુઆની" },
-      { en: "Mrs. Mohini Keval Kirti Jabuani",    gu: "શ્રીમતી મોહિની કેવલ કીર્તિ જાબુઆની" },
+      { en: "Mrs. Vimala Dayaram Kanji Jabuani",  gu: "અ.સૌ. વિમળાબેન દયારામભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Kanta Ravji Kanji Jabuani",     gu: "અ.સૌ. કાન્તાબેન રવજીભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Manjula Haresh Kanji Jabuani",  gu: "અ.સૌ. મંજુલાબેન હરેશભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Aruna Kirti Kanji Jabuani",     gu: "અ.સૌ. અરૂણાબેન કિર્તીભાઈ કાનજીભાઈ જબુઆણી" },
+      { en: "Mrs. Taruna Pankaj Dayaram Jabuani", gu: "અ.સૌ. તરૂણાબેન પંકજભાઈ દયારામભાઈ જબુઆણી" },
+      { en: "Mrs. Nisha Sanjay Ravji Jabuani",    gu: "અ.સૌ. નિશાબેન સંજયભાઈ રવજીભાઈ જબુઆણી" },
+      { en: "Mrs. Anshuya Mehul Dayaram Jabuani", gu: "અ.સૌ. અંશુયાબેન મેહુલભાઈ દયારામભાઈ જબુઆણી" },
+      { en: "Mrs. Bhumika Rajesh Ravji Jabuani",  gu: "અ.સૌ. ભુમિકાબેન રાજેશભાઈ રવજીભાઈ જબુઆણી" },
+      { en: "Mrs. Pooja Sudhir Haresh Jabuani",   gu: "અ.સૌ. પુજાબેન સુધિરભાઈ હરેશભાઈ જબુઆણી" },
+      { en: "Mrs. Mayuri Jigar Kirti Jabuani",    gu: "અ.સૌ. મયુરીબેન જીગરભાઈ કિર્તીભાઈ જબુઆણી" },
+      { en: "Mrs. Mohini Keval Kirti Jabuani",    gu: "અ.સૌ. મોહિનીબેન કેવલભાઈ કિર્તીભાઈ જબુઆણી" },
     ],
-    solo: { en: "Jay Pankaj Jabuani", gu: "ચિ. જય પંકજભાઈ જાબુઆની" },
+    solo: { en: "Jay Pankaj Jabuani", gu: "જય પંકજભાઈ જબુઆણી" },
     children: {
       en: "Miti, Khushi, Vanshika, Kashyap, Yakshit, Darsh, Trisha, Bhavyansh, Jiyansh, Kiyanshi",
       gu: "મિતિ, ખુશી, વંશિકા, કશ્યપ, યક્ષિત, દર્શ, ત્રિશા, ભવ્યાંશ, જિયાંશ, કિયાંશી",
@@ -313,8 +313,8 @@ window.WEDDING = {
 
     introEyebrow:      { en: "The wedding of", gu: "શુભ લગ્ન" },
     introSkip:         { en: "Skip", gu: "છોડો" },
-    scrollCue:         { en: "Scroll", gu: "નીચે જુઓ" },
-    introCueTitle:     { en: "Ring the bell", gu: "ઘંટ વગાડો" },
+    scrollCue:         { en: "", gu: "" },
+    introCueTitle:     { en: "", gu: "" },
     introCueSub:       { en: "View the Invitation", gu: "આમંત્રણ નિહાળો" },
     portalCue:         { en: "Tap the gates to enter", gu: "દરવાજા ખોલવા સ્પર્શ કરો" },
 
@@ -334,7 +334,7 @@ window.WEDDING = {
        postposition after the noun, so "ના શુભ લગ્ન પ્રસંગે" cannot sit in
        front of the names the way "to the wedding of" does; it is set as a
        standalone occasion line instead, which is how a kankotri stacks it. */
-    inviteHosts:       { en: "Jabuani Family", gu: "જાબુઆની પરિવાર" },
+    inviteHosts:       { en: "Jabuani Family", gu: "જબુઆણી પરિવાર" },
     inviteVerb:        { en: "cordially invites", gu: "ના હાર્દિક આમંત્રણ" },
     inviteOccasion:    { en: "to the wedding of", gu: "લગ્ન પ્રસંગમાં પધારજો" },
 

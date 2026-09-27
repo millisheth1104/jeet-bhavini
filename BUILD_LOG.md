@@ -2821,3 +2821,35 @@ which in Gujarati also split the matras ("ઘં ટ  વ ગા ડો").
   slightly stronger, so the lines hold up over the pale marble and pond.
 At 375px: title 20px, sub 21px, both one line in both languages.
 `?v=` -> 20260925k.
+
+## Client batch: Jabuani spelling, ભાઈ/બેન, no "Ring the bell", arrow cue
+
+1. **"Ring the bell" removed** (both languages): `ui.introCueTitle` -> "",
+   which `put()` hides; "View the Invitation" / "આમંત્રણ નિહાળો" stays.
+2. **Jabuani in Gujarati is "જબુઆણી"** (client's reference image) - the
+   reference sheet's "જાબુઆની" was wrong. Replaced everywhere: hero family
+   line (also feeds the calendar sign-off), invite card, hosts pairs,
+   awaiting list, solo line. None left.
+3. **ભાઈ/બેન added** where the client boxed them:
+   - Invite card: "સ્વ. શ્રી અરવિંદભાઈ નારણભાઈ / અને શ્રીમતી રંજનાબેન
+     અરવિંદભાઈ ...ના સુપુત્ર"; "શ્રી પ્રવીણભાઈ પરબતભાઈ નાકરાણી / અને
+     શ્રીમતી મંજુલાબેન પ્રવીણભાઈ ...ની સુપુત્રી".
+   - Hosts pairs: Naran/Premila, Dhiraj/Bhavna, Arvind/Ranjana (every name),
+     Bhumit & Dhruv (father's name ધીરજભાઈ only - wives unmarked, left as
+     is), Amrut/Sangita (every name), Pratham & Nidhi (અમૃતભાઈ). Velani and
+     Radhya not marked, unchanged.
+   - Awaiting list: copied from the client's PDF - "અ.સૌ." titles, ભાઈ/બેન
+     on every name, PDF spellings (વિમળાબેન, કાન્તાબેન, અરૂણાબેન, કિર્તીભાઈ,
+     તરૂણાબેન, ભુમિકાબેન, પુજાબેન, સુધિરભાઈ, જીગરભાઈ). Exception: kept
+     "અંશુયાબેન" (the client confirmed Anshuya earlier); the PDF has
+     "અનસુયાબેન". Solo line "જય પંકજભાઈ જબુઆણી" as in the PDF (no ચિ.).
+   - English unchanged ("Eng is perf") except "Mr. Pratham Amrut Pokar"
+     (client marked "MR").
+4. **Hero "Scroll" text removed, down arrow instead** (both languages):
+   `ui.scrollCue` -> "" and `.scroll-cue__label:empty` hidden; the cue's
+   `::after` is now a masked SVG arrow (stem + chevron, brass) that bobs
+   gently instead of the growing line.
+
+Invite card: all parent lines still 2 lines; widest at 17.6-82.4% of card
+width vs the arch aperture 11-90% at that depth. `?v=` -> 20260927a.
+Verified both languages: no "જાબુઆ" in the page, no overflow, no errors.
