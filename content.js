@@ -116,7 +116,7 @@ window.WEDDING = {
       /* Who brings the mameru - shown under the venue. "\n" = line break. */
       hosts: {
         en: "Mr. Devendra Keshavlal Bhadani\nS/o Late Mrs. Dahiben Keshavlal Bhadani & Family",
-        gu: "ગ.સ્વ. ડાહીબેન કેશવલાલ ભાદાણી ના સુપુત્ર\nશ્રી દેવેન્દ્ર ભાઈ તથા ભાદાણી પરિવાર",
+        gu: "ગં.સ્વ. ડાહીબેન કેશવલાલ ભાદાણી ના સુપુત્ર\nશ્રી દેવેન્દ્ર ભાઈ તથા ભાદાણી પરિવાર",
       },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Traditional Festive", gu: "પરંપરાગત ઉત્સવ પરિધાન" },
@@ -186,7 +186,7 @@ window.WEDDING = {
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [
-        { label: { en: "Baraat Prastan", gu: "બારાત પ્રસ્થાન" }, value: { en: "3:30 PM", gu: "સાંજે ૩:૩૦ વાગ્યે" } },
+        { label: { en: "Baraat Prastan", gu: "જાન પ્રસ્થાન" }, value: { en: "3:30 PM", gu: "સાંજે ૩:૩૦ વાગ્યે" } },
         { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: { en: "5:41 PM", gu: "સાંજે ૫:૪૧ વાગ્યે" } },
       ],
       venue: { en: "Oleander Lake Side,\nKarjat", gu: "ઓલિએન્ડર લેકસાઇડ,\nકર્જત" },
@@ -215,7 +215,7 @@ window.WEDDING = {
        { en: "Mrs. Nishita Dhruv Jabuani", gu: "શ્રીમતી નિશિતા ધ્રુવ જબુઆણી" }],
       [{ en: "Mr. Amrut Kantilal Pokar",   gu: "શ્રી અમૃતભાઈ કાંતિલાલભાઈ પોકાર" },
        { en: "Mrs. Sangita Amrut Pokar",   gu: "શ્રીમતી સંગીતાબેન અમૃતભાઈ પોકાર" }],
-      [{ en: "Mr. Deep Vipul Velani",      gu: "શ્રી દીપકુમાર વિપુલ વેલાણી" },
+      [{ en: "Mr. Deep Vipul Velani",      gu: "શ્રી દીપકુમાર વિપુલભાઈ વેલાણી" },
        { en: "Mrs. Kajal Deep Velani",     gu: "શ્રીમતી કાજલ દીપકુમાર વેલાણી" }],
       [{ en: "Mr. Pratham Amrut Pokar",    gu: "ચિ. પ્રથમ અમૃતભાઈ પોકાર" },
        { en: "Ms. Nidhi Amrut Pokar",      gu: "કુ. નિધિ અમૃતભાઈ પોકાર" }],
@@ -234,7 +234,7 @@ window.WEDDING = {
       { en: "Mrs. Aruna Kirti Kanji Jabuani",     gu: "અ.સૌ. અરૂણાબેન કિર્તીભાઈ કાનજીભાઈ જબુઆણી" },
       { en: "Mrs. Taruna Pankaj Dayaram Jabuani", gu: "અ.સૌ. તરૂણાબેન પંકજભાઈ દયારામભાઈ જબુઆણી" },
       { en: "Mrs. Nisha Sanjay Ravji Jabuani",    gu: "અ.સૌ. નિશાબેન સંજયભાઈ રવજીભાઈ જબુઆણી" },
-      { en: "Mrs. Anshuya Mehul Dayaram Jabuani", gu: "અ.સૌ. અંશુયાબેન મેહુલભાઈ દયારામભાઈ જબુઆણી" },
+      { en: "Mrs. Anshuya Mehul Dayaram Jabuani", gu: "અ.સૌ. અનસૂયાબેન મેહુલભાઈ દયારામભાઈ જબુઆણી" },
       { en: "Mrs. Bhumika Rajesh Ravji Jabuani",  gu: "અ.સૌ. ભુમિકાબેન રાજેશભાઈ રવજીભાઈ જબુઆણી" },
       { en: "Mrs. Pooja Sudhir Haresh Jabuani",   gu: "અ.સૌ. પુજાબેન સુધિરભાઈ હરેશભાઈ જબુઆણી" },
       { en: "Mrs. Mayuri Jigar Kirti Jabuani",    gu: "અ.સૌ. મયુરીબેન જીગરભાઈ કિર્તીભાઈ જબુઆણી" },
@@ -267,7 +267,7 @@ window.WEDDING = {
   /* * With Best Compliments From * */
   /* Postcard venue and destination section */
   postcard: {
-    couple: { en: "Jeet & Bhavini", gu: "જીત વેડ્સ ભાવિની" },
+    couple: { en: "Jeet & Bhavini", gu: "જીત સંગ ભાવિની" },
     dates: { en: "1st – 2nd December, 2026", gu: "૧ – ૨ ડિસેમ્બર ૨૦૨૬" },
     venueName: { en: "Oleander Farms", gu: "ઓલિએન્ડર ફાર્મ્સ" },
     address: {
@@ -335,7 +335,7 @@ window.WEDDING = {
        front of the names the way "to the wedding of" does; it is set as a
        standalone occasion line instead, which is how a kankotri stacks it. */
     inviteHosts:       { en: "Jabuani Family", gu: "જબુઆણી પરિવાર" },
-    inviteVerb:        { en: "cordially invites", gu: "ના હાર્દિક આમંત્રણ" },
+    inviteVerb:        { en: "cordially invites", gu: "નું હાર્દિક આમંત્રણ" },
     inviteOccasion:    { en: "to the wedding of", gu: "લગ્ન પ્રસંગમાં પધારજો" },
 
     eventsEyebrow:     { en: "Celebration Journey", gu: "ઉજવણીની યાદી" },

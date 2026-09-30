@@ -2853,3 +2853,12 @@ At 375px: title 20px, sub 21px, both one line in both languages.
 Invite card: all parent lines still 2 lines; widest at 17.6-82.4% of card
 width vs the arch aperture 11-90% at that depth. `?v=` -> 20260927a.
 Verified both languages: no "જાબુઆ" in the page, no overflow, no errors.
+
+## 2026-09-30 — Gujarati-only client corrections
+- Mameru hosts: ગ.સ્વ. → ગં.સ્વ. (client handwriting, anusvara).
+- Lagna schedule: "બારાત પ્રસ્થાન" → "જાન પ્રસ્થાન".
+- Awaiting list: અંશુયાબેન → અનસૂયાબેન (client now wants PDF spelling).
+- Families list: "દીપકુમાર વિપુલ વેલાણી" → "વિપુલભાઈ".
+- Postcard couple: "જીત વેડ્સ ભાવિની" → "જીત સંગ ભાવિની".
+- Hero verb line: "ના હાર્દિક આમંત્રણ" → "નું હાર્દિક આમંત્રણ" (read from handwriting; આમંત્રણ is neuter).
+- English untouched. Cache `?v=20260930a`.
