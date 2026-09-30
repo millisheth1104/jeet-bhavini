@@ -115,7 +115,7 @@ window.WEDDING = {
       venue: { en: "Oleander Ballroom,\nKarjat", gu: "ઓલિએન્ડર બોલરૂમ,\nકર્જત" },
       /* Who brings the mameru - shown under the venue. "\n" = line break. */
       hosts: {
-        en: "Mr. Devendra Keshavlal Bhadani\nS/o Late Mrs. Dahiben Keshavlal Bhadani & Family",
+        en: "Mr. Devendra Keshavlal Bhadani\nS/o Mrs. Dahiben Keshavlal Bhadani & Family",
         gu: "ગં.સ્વ. ડાહીબેન કેશવલાલ ભાદાણી ના સુપુત્ર\nશ્રી દેવેન્દ્ર ભાઈ તથા ભાદાણી પરિવાર",
       },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
@@ -186,7 +186,7 @@ window.WEDDING = {
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [
-        { label: { en: "Baraat Prastan", gu: "જાન પ્રસ્થાન" }, value: { en: "3:30 PM", gu: "સાંજે ૩:૩૦ વાગ્યે" } },
+        { label: { en: "Jaan Prastan", gu: "જાન પ્રસ્થાન" }, value: { en: "3:30 PM", gu: "સાંજે ૩:૩૦ વાગ્યે" } },
         { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: { en: "5:41 PM", gu: "સાંજે ૫:૪૧ વાગ્યે" } },
       ],
       venue: { en: "Oleander Lake Side,\nKarjat", gu: "ઓલિએન્ડર લેકસાઇડ,\nકર્જત" },

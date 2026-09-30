@@ -2862,3 +2862,5 @@ Verified both languages: no "જાબુઆ" in the page, no overflow, no error
 - Postcard couple: "જીત વેડ્સ ભાવિની" → "જીત સંગ ભાવિની".
 - Hero verb line: "ના હાર્દિક આમંત્રણ" → "નું હાર્દિક આમંત્રણ" (read from handwriting; આમંત્રણ is neuter).
 - English untouched. Cache `?v=20260930a`.
+
+- English: Mameru hosts "S/o Late Mrs. Dahiben" -> "S/o Mrs. Dahiben"; Lagna "Baraat Prastan" -> "Jaan Prastan". `?v=20260930b`.
