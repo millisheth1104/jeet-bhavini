@@ -16,6 +16,35 @@
    details blank until you have them.
    --------------------------------------------------------------------------- */
 
+/* The groom-side closing family list (see WEDDING.hostsPaired below) -
+   defined once here and reused as the bride-side placeholder too, so the
+   "clone" is a real shared reference, not two copies of Gujarati text that
+   could quietly drift apart. Give `bride` in hostsPaired its own object of
+   this same shape once the real bride-side names are ready. */
+var HOSTS_PAIRED_GROOM = {
+  heading: { en: "With love, yours affectionately", gu: "પ્રેમસહ, આપના સ્નેહી" },
+  pairs: [
+    [{ en: "Mr. Naran Kanji Jabuani",   gu: "શ્રી નારણભાઈ કાનજીભાઈ જબુઆણી" },
+     { en: "Mrs. Premila Naran Jabuani", gu: "શ્રીમતી પ્રેમિલાબેન નારણભાઈ જબુઆણી" }],
+    [{ en: "Mr. Dhiraj Naran Jabuani",  gu: "શ્રી ધીરજભાઈ નારણભાઈ જબુઆણી" },
+     { en: "Mrs. Bhavna Dhiraj Jabuani", gu: "શ્રીમતી ભાવનાબેન ધીરજભાઈ જબુઆણી" }],
+    [{ en: "Late Mr. Arvind Naran Jabuani",  gu: "સ્વ. શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી" },
+     { en: "Mrs. Ranjana Arvind Jabuani", gu: "શ્રીમતી રંજનાબેન અરવિંદભાઈ જબુઆણી" }],
+    [{ en: "Mr. Bhumit Dhiraj Jabuani", gu: "શ્રી ભૂમિત ધીરજભાઈ જબુઆણી" },
+     { en: "Mrs. Prachi Bhumit Jabuani", gu: "શ્રીમતી પ્રાચી ભૂમિત જબુઆણી" }],
+    [{ en: "Mr. Dhruv Dhiraj Jabuani",  gu: "શ્રી ધ્રુવ ધીરજભાઈ જબુઆણી" },
+     { en: "Mrs. Nishita Dhruv Jabuani", gu: "શ્રીમતી નિશિતા ધ્રુવ જબુઆણી" }],
+    [{ en: "Mr. Amrut Kantilal Pokar",   gu: "શ્રી અમૃતભાઈ કાંતિલાલભાઈ પોકાર" },
+     { en: "Mrs. Sangita Amrut Pokar",   gu: "શ્રીમતી સંગીતાબેન અમૃતભાઈ પોકાર" }],
+    [{ en: "Mr. Deep Vipul Velani",      gu: "શ્રી દીપકુમાર વિપુલભાઈ વેલાણી" },
+     { en: "Mrs. Kajal Deep Velani",     gu: "શ્રીમતી કાજલ દીપકુમાર વેલાણી" }],
+    [{ en: "Mr. Pratham Amrut Pokar",    gu: "ચિ. પ્રથમ અમૃતભાઈ પોકાર" },
+     { en: "Ms. Nidhi Amrut Pokar",      gu: "કુ. નિધિ અમૃતભાઈ પોકાર" }],
+    [{ en: "Our dearest",                gu: "અમારી લાડલી" },
+     { en: "Radhya",                     gu: "રાધ્યા" }],
+  ],
+};
+
 window.WEDDING = {
 
   /* Which language the site opens in for a first-time visitor: "en" or "gu".
@@ -71,6 +100,16 @@ window.WEDDING = {
       ],
     },
     brideTitle: { en: "", gu: "ચિ." },
+    brideAbove: {
+      en: [
+        "Granddaughter of Mrs. Parvati Parbat Nakrani",
+        "& Mr. Parbat Premji Nakrani"
+      ],
+      gu: [
+        "શ્રી પરબત પ્રેમજી નાકરાણી અને",
+        "શ્રીમતી પાર્વતી પરબત નાકરાણી ની પૌત્રી"
+      ],
+    },
     brideLine: {
       en: [
         "D/o Mr. Praveen Parbat Nakrani",
@@ -113,10 +152,18 @@ window.WEDDING = {
       dateShort: { day: "01", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: { en: "9:00 AM", gu: "સવારે ૯.૦૦ વાગ્યે" } }],
       venue: { en: "Oleander Ballroom,\nKarjat", gu: "ઓલિએન્ડર બોલરૂમ,\nકર્જત" },
-      /* Who brings the mameru - shown under the venue. "\n" = line break. */
+      /* Who brings the mameru - shown under the venue. "\n" = line break.
+         Each side performs its OWN Mameru with its own maternal relatives,
+         so this is keyed by side (see main.js side()), not just language. */
       hosts: {
-        en: "Mr. Devendra Keshavlal Bhadani\nS/o Mrs. Dahiben Keshavlal Bhadani & Family",
-        gu: "ગં.સ્વ. ડાહીબેન કેશવલાલ ભાદાણી ના સુપુત્ર\nશ્રી દેવેન્દ્ર ભાઈ તથા ભાદાણી પરિવાર",
+        groom: {
+          en: "Mr. Devendra Keshavlal Bhadani\nS/o Mrs. Dahiben Keshavlal Bhadani & Family",
+          gu: "ગં.સ્વ. ડાહીબેન કેશવલાલ ભાદાણી ના સુપુત્ર\nશ્રી દેવેન્દ્ર ભાઈ તથા ભાદાણી પરિવાર",
+        },
+        bride: {
+          en: "Mr. Harsuk Jivraj Chhabhaiya\nMr. Kishor Jivraj Chhabhaiya\nMrs. Narmada Jivraj Chhabhaiya & Family",
+          gu: "શ્રી હરસુખ જીવરાજ છાભૈયા\nશ્રી કિશોર જીવરાજ છાભૈયા\nશ્રીમતી નર્મદા જીવરાજ છાભૈયા એન્ડ ફેમિલી",
+        },
       },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Traditional Festive", gu: "પરંપરાગત ઉત્સવ પરિધાન" },
@@ -189,6 +236,16 @@ window.WEDDING = {
         { label: { en: "Jaan Prastan", gu: "જાન પ્રસ્થાન" }, value: { en: "3:30 PM", gu: "સાંજે ૩:૩૦ વાગ્યે" } },
         { label: { en: "Hastamelap",     gu: "હસ્તમેળાપ" },      value: { en: "5:41 PM", gu: "સાંજે ૫:૪૧ વાગ્યે" } },
       ],
+      /* The bride's side names the groom's-party arrival "Jaan Aagam"
+         (welcoming the jaan), not "Baraat Prastan" (the groom's side's own
+         "departure" framing) - and times it 5:00 PM, not 4:00. Hastamelap
+         itself is the same moment for both sides, 5:41 PM. */
+      timesBySide: {
+        bride: [
+          { label: { en: "Jaan Aagam", gu: "જાન આગમન" }, value: { en: "5:00 PM", gu: "સાંજે ૫:૦૦ વાગ્યે" } },
+          { label: { en: "Hastamelap", gu: "હસ્તમેળાપ" }, value: { en: "5:41 PM", gu: "સાંજે ૫:૪૧ વાગ્યે" } },
+        ],
+      },
       venue: { en: "Oleander Lake Side,\nKarjat", gu: "ઓલિએન્ડર લેકસાઇડ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Royal Ethnic / Traditional", gu: "શાહી પારંપરિક પરિધાન" },
@@ -199,29 +256,14 @@ window.WEDDING = {
     },
   ],
 
-  /* લી. સ્નેહાધીન — the hosting couples, as they appear on the kankotri. */
+  /* લી. સ્નેહાધીન — the hosting couples, as they appear on the kankotri.
+     Keyed by side (see main.js side()) - bride is the SAME object as groom
+     for now (a real shared reference: edit HOSTS_PAIRED_GROOM above and
+     both sides move together), until real bride-side names replace it with
+     one of its own. */
   hostsPaired: {
-    heading: { en: "With love, yours affectionately", gu: "પ્રેમસહ, આપના સ્નેહી" },
-    pairs: [
-      [{ en: "Mr. Naran Kanji Jabuani",   gu: "શ્રી નારણભાઈ કાનજીભાઈ જબુઆણી" },
-       { en: "Mrs. Premila Naran Jabuani", gu: "શ્રીમતી પ્રેમિલાબેન નારણભાઈ જબુઆણી" }],
-      [{ en: "Mr. Dhiraj Naran Jabuani",  gu: "શ્રી ધીરજભાઈ નારણભાઈ જબુઆણી" },
-       { en: "Mrs. Bhavna Dhiraj Jabuani", gu: "શ્રીમતી ભાવનાબેન ધીરજભાઈ જબુઆણી" }],
-      [{ en: "Late Mr. Arvind Naran Jabuani",  gu: "સ્વ. શ્રી અરવિંદભાઈ નારણભાઈ જબુઆણી" },
-       { en: "Mrs. Ranjana Arvind Jabuani", gu: "શ્રીમતી રંજનાબેન અરવિંદભાઈ જબુઆણી" }],
-      [{ en: "Mr. Bhumit Dhiraj Jabuani", gu: "શ્રી ભૂમિત ધીરજભાઈ જબુઆણી" },
-       { en: "Mrs. Prachi Bhumit Jabuani", gu: "શ્રીમતી પ્રાચી ભૂમિત જબુઆણી" }],
-      [{ en: "Mr. Dhruv Dhiraj Jabuani",  gu: "શ્રી ધ્રુવ ધીરજભાઈ જબુઆણી" },
-       { en: "Mrs. Nishita Dhruv Jabuani", gu: "શ્રીમતી નિશિતા ધ્રુવ જબુઆણી" }],
-      [{ en: "Mr. Amrut Kantilal Pokar",   gu: "શ્રી અમૃતભાઈ કાંતિલાલભાઈ પોકાર" },
-       { en: "Mrs. Sangita Amrut Pokar",   gu: "શ્રીમતી સંગીતાબેન અમૃતભાઈ પોકાર" }],
-      [{ en: "Mr. Deep Vipul Velani",      gu: "શ્રી દીપકુમાર વિપુલભાઈ વેલાણી" },
-       { en: "Mrs. Kajal Deep Velani",     gu: "શ્રીમતી કાજલ દીપકુમાર વેલાણી" }],
-      [{ en: "Mr. Pratham Amrut Pokar",    gu: "ચિ. પ્રથમ અમૃતભાઈ પોકાર" },
-       { en: "Ms. Nidhi Amrut Pokar",      gu: "કુ. નિધિ અમૃતભાઈ પોકાર" }],
-      [{ en: "Our dearest",                gu: "અમારી લાડલી" },
-       { en: "Radhya",                     gu: "રાધ્યા" }],
-    ],
+    groom: HOSTS_PAIRED_GROOM,
+    bride: HOSTS_PAIRED_GROOM,
   },
 
   /* આપના આગમનના અભિલાષી — those awaiting your arrival. */

@@ -40,6 +40,56 @@
   }());
   var OTHER = LANG === "en" ? "gu" : "en";
 
+  /* -- side (groom / bride) -------------------------------------------------
+     The same site, the same cards, but whichever family's maternal relatives
+     perform a given ceremony (Mameru, say) differs by side - a groom-side
+     guest and a bride-side guest should see their own family named there,
+     not the other one's. content.js carries both under ev.hosts.groom /
+     ev.hosts.bride (and W.hostsPaired.groom / .bride for the closing "with
+     love" family list); everything else on a card - date, venue,
+     illustration - is shared and untouched by this.
+
+     This is NOT a visitor-facing switch - there is no button for it
+     anywhere on the site. It is set per guest, the same way the event
+     filter (?c=...) and the guest's name already are: admin.html picks a
+     side when building that guest's link, same as it picks which cards
+     they see. See guestLink() below, which is the only thing allowed to
+     change SIDE after this point - except an explicit ?side= in the URL,
+     which is a manual override for previewing/testing a link, resolved
+     here first so guestLink() knows not to stomp on it. */
+  var SIDES = ["groom", "bride"];
+  var sideForcedByUrl = false;
+  var SIDE = (function () {
+    try {
+      var m = location.search.match(/[?&]side=(groom|bride)/i);
+      if (m) { sideForcedByUrl = true; return m[1].toLowerCase(); }
+    } catch (e) {}
+    return "groom";
+  }());
+
+  /* Resolve a { groom, bride } pair the same way t() resolves { en, gu } -
+     and tolerate a plain value (or a missing side) by falling back through
+     both, so content that hasn't been split by side yet still renders. */
+  function side(v) {
+    if (v == null) return v;
+    if (typeof v === "object" && ("groom" in v || "bride" in v)) {
+      return v[SIDE] || v.groom || v.bride;
+    }
+    return v;
+  }
+
+  /* Most content is the SAME regardless of side - only a few fields on a
+     couple of events (Mameru's title, the Wedding card's schedule) differ.
+     Rather than wrap every event's every field in {groom, bride} (forcing
+     a side split on content that never needs one), an event can carry an
+     OPTIONAL "<key>BySide" sibling - e.g. titleBySide: { bride: {en,gu} } -
+     that overrides ev[key] only for the side(s) it names. Everything else
+     falls straight through to ev[key] untouched. */
+  function sideOverride(ev, key) {
+    var bySide = ev[key + "BySide"];
+    return (bySide && bySide[SIDE]) || ev[key];
+  }
+
   /* Copy in content.js is either a plain string - the same in both languages,
      like a time or a brand name - or an { en, gu } pair. Resolve either. */
   function t(v) {
@@ -100,6 +150,7 @@
     if (updatePostcardUI) updatePostcardUI();
     if (updateCountdownUI) updateCountdownUI();
   }
+
 
   var switchedAt = null;
   try {
@@ -179,7 +230,8 @@
           if (matchedGuest) {
             GUEST = {
               n: matchedGuest.name,
-              c: matchedGuest.cards || []
+              c: matchedGuest.cards || [],
+              s: matchedGuest.side
             };
           } else {
             var rawSlug = decodeURIComponent(lastSeg).replace(/[-_+]+/g, " ").trim();
@@ -204,6 +256,15 @@
     if (GUEST && Array.isArray(GUEST.c) && GUEST.c.length && Array.isArray(W.events)) {
       var keep = GUEST.c;
       W.events = W.events.filter(function (ev) { return keep.indexOf(ev.key) !== -1; });
+    }
+
+    // Which side's family names this guest sees (hosts/hostsPaired, via
+    // side() near the top of the file) - carried by their own link/record,
+    // not a switch on the page. An explicit ?side= in the URL (resolved
+    // before this IIFE ran) is a manual override and wins over whatever
+    // the guest's own data says.
+    if (!sideForcedByUrl && GUEST && SIDES.indexOf(GUEST.s) !== -1) {
+      SIDE = GUEST.s;
     }
   }());
 
@@ -993,9 +1054,18 @@
         var pEl = parents && linesEl("invite__parents", parents);
         if (pEl) host.appendChild(pEl);
       }
-      party(groom, inv.groomLine, inv.groomAbove, inv.groomTitle);
-      host.appendChild(el("p", "invite__weds", "—   " + t(inv.weds) + "   —"));
-      party(bride, inv.brideLine, inv.brideAbove, inv.brideTitle);
+      var groomAbove = SIDE === "groom" ? inv.groomAbove : (inv.groomAboveBySide && inv.groomAboveBySide[SIDE]);
+      var brideAbove = SIDE === "bride" ? inv.brideAbove : (inv.brideAboveBySide && inv.brideAboveBySide[SIDE]);
+
+      if (SIDE === "bride") {
+        party(bride, inv.brideLine, brideAbove, inv.brideTitle);
+        host.appendChild(el("p", "invite__weds", "—   " + t(inv.weds) + "   —"));
+        party(groom, inv.groomLine, groomAbove, inv.groomTitle);
+      } else {
+        party(groom, inv.groomLine, groomAbove, inv.groomTitle);
+        host.appendChild(el("p", "invite__weds", "—   " + t(inv.weds) + "   —"));
+        party(bride, inv.brideLine, brideAbove, inv.brideTitle);
+      }
     }
 
     renderInvitation();
@@ -1058,12 +1128,17 @@
       // Card Content Body (in normal document flow so parchment expands to full height)
       var body = el("div", "scroll-card__body");
 
-      // Header: strictly show active language
+      // Header: strictly show active language. Title can differ by side
+      // (e.g. Mameru/Mandvo - see ev.titleBySide in content.js) even though
+      // it normally shows BOTH languages' own spelling, never t()'d.
+      var titleOv = ev.titleBySide && ev.titleBySide[SIDE];
+      var titleGu = titleOv ? titleOv.gu : ev.gu;
+      var titleEn = titleOv ? titleOv.en : ev.en;
       var header = el("div", "scroll-card__header inv__header");
       if (LANG === "gu") {
-        header.appendChild(el("h3", "scroll-card__title inv__script inv__script--gu", ev.gu));
+        header.appendChild(el("h3", "scroll-card__title inv__script inv__script--gu", titleGu));
       } else {
-        header.appendChild(el("h3", "scroll-card__title inv__script", ev.en));
+        header.appendChild(el("h3", "scroll-card__title inv__script", titleEn));
       }
       if (ev.tagline) {
         header.appendChild(el("p", "scroll-card__tagline", t(ev.tagline)));
@@ -1112,7 +1187,7 @@
       meta.appendChild(el("div", "scroll-card__year inv__year", isGu ? "૨૦૨૬" : "2026"));
 
       // Schedule / Timings
-      var times = (ev.times || []).filter(function (tm) { return t(tm.value); });
+      var times = (sideOverride(ev, "times") || []).filter(function (tm) { return t(tm.value); });
       if (times.length > 1) {
         var sched = el("div", "scroll-card__schedule inv__schedule");
         times.forEach(function (tm) {
@@ -1134,10 +1209,10 @@
         meta.appendChild(venDiv);
       }
 
-      // Hosting family (e.g. who brings the mameru)
-      if (t(ev.hosts)) {
+      // Hosting family (e.g. who brings the mameru) - differs by side
+      if (ev.hosts && t(side(ev.hosts))) {
         var hostsDiv = el("div", "scroll-card__hosts inv__hosts");
-        fillLines(hostsDiv, t(ev.hosts), false);
+        fillLines(hostsDiv, t(side(ev.hosts)), false);
         meta.appendChild(hostsDiv);
       }
 
@@ -1317,9 +1392,10 @@
         if (!card) return;
         var isGu = (LANG === "gu");
         card.classList.toggle("scroll-card--gu", isGu);
+        var titleOv = ev.titleBySide && ev.titleBySide[SIDE];
         var title = card.querySelector(".scroll-card__title");
         if (title) {
-          title.textContent = isGu ? ev.gu : ev.en;
+          title.textContent = isGu ? (titleOv ? titleOv.gu : ev.gu) : (titleOv ? titleOv.en : ev.en);
           title.className = "scroll-card__title inv__script" + (isGu ? " inv__script--gu" : "");
         }
         var tag = card.querySelector(".scroll-card__tagline");
@@ -1327,7 +1403,7 @@
         var yr = card.querySelector(".scroll-card__year");
         if (yr) yr.textContent = isGu ? "૨૦૨૬" : "2026";
 
-        var evTimes = (ev.times || []).filter(function (tm) { return t(tm.value); });
+        var evTimes = (sideOverride(ev, "times") || []).filter(function (tm) { return t(tm.value); });
         var rows = card.querySelectorAll(".inv__schedule-row");
         if (rows.length && rows.length === evTimes.length) {
           rows.forEach(function (row, ri) {
@@ -1343,7 +1419,7 @@
         var venEl = card.querySelector(".inv__venue");
         if (venEl && ev.venue) fillLines(venEl, t(ev.venue), true);
         var hostsEl = card.querySelector(".inv__hosts");
-        if (hostsEl && ev.hosts) fillLines(hostsEl, t(ev.hosts), false);
+        if (hostsEl && ev.hosts) fillLines(hostsEl, t(side(ev.hosts)), false);
 
         var dayName = "";
         var dayNum = "";
@@ -1376,7 +1452,7 @@
   /* -- families ----------------------------------------------------------- */
 
   (function families() {
-    var p = W.hostsPaired, a = W.hostsAwaiting;
+    var a = W.hostsAwaiting;
     var boxA = $("hostsPaired");
     var boxB = $("hostsAwaiting");
 
@@ -1398,6 +1474,10 @@
     }
 
     function renderHosts() {
+      // Re-read fresh every call (not captured once above) so a side
+      // switch - which calls this again via updateHostsUI - picks up the
+      // other family's heading and pairs instead of redrawing the same one.
+      var p = side(W.hostsPaired);
       if (boxA) {
         boxA.innerHTML = "";
         if (p && p.pairs && p.pairs.length) {

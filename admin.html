@@ -766,6 +766,17 @@
       <label>Which ceremonies should they be invited to?</label>
       <div class="events" id="gEvents"></div>
 
+      <label>Which side is this guest from?</label>
+      <!-- Determines which family's name shows on the per-ceremony host
+           lines (e.g. who brings the mameru) and the closing "with love"
+           family list for THIS guest's link - see main.js side(). Reuses
+           the .events card styling for a consistent look, radio not
+           checkbox since it's one or the other. -->
+      <div class="events" id="gSide">
+        <label><input type="radio" name="gSideRadio" value="groom" checked><span>Groom's Side</span></label>
+        <label><input type="radio" name="gSideRadio" value="bride"><span>Bride's Side</span></label>
+      </div>
+
       <div class="row">
         <button id="gGenerate" type="button">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -901,6 +912,7 @@ Jabuani & Nakrani Family 🌸</textarea>
             <th>Guest Name</th>
             <th>Phone</th>
             <th>Invited Ceremonies</th>
+            <th style="width:70px;">Side</th>
             <th>Personal Invitation Link</th>
             <th style="text-align:right;">Actions</th>
           </tr>
@@ -1228,6 +1240,9 @@ Jabuani & Nakrani Family 🌸</textarea>
     if (!g.cards || !Array.isArray(g.cards) || !g.cards.length) {
       g.cards = (W.events || []).map(function (e) { return e.key; });
     }
+    if (!g.side || (g.side !== "bride" && g.side !== "groom")) {
+      g.side = "groom";
+    }
     g.link = formatGuestLink(g.slug, g.cards);
     if (!g.id) g.id = "g-" + Math.random().toString(36).slice(2, 9);
     return g;
@@ -1313,6 +1328,11 @@ Jabuani & Nakrani Family 🌸</textarea>
     return Array.prototype.slice.call(document.querySelectorAll("#gEvents input:checked")).map(function (i) { return i.value; });
   }
 
+  function checkedSide() {
+    var el = document.querySelector("#gSide input:checked");
+    return el ? el.value : "groom";
+  }
+
   function eventKeyToBadge(key) {
     var ev = (W.events || []).find(function (x) { return x.key === key; }) || { en: key };
     return '<span class="badge badge-' + key + '">' + esc(ev.en) + '</span>';
@@ -1379,7 +1399,7 @@ Jabuani & Nakrani Family 🌸</textarea>
     tbody.innerHTML = "";
 
     if (!filtered.length) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);padding:2rem;">No guests matching "' + esc(query) + '"</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ink-faint);padding:2rem;">No guests matching "' + esc(query) + '"</td></tr>';
       return;
     }
 
@@ -1388,6 +1408,13 @@ Jabuani & Nakrani Family 🌸</textarea>
       var waUrl = composeWhatsAppUrl(g.phone, g.name, g.link);
       var badgesHtml = (g.cards || []).map(eventKeyToBadge).join(" ");
       var cleanPhone = cleanPhoneNumber(g.phone);
+      var guestSide = g.side === "bride" ? "bride" : "groom";
+      var sideBadgeHtml = '<span class="badge" style="' +
+        (guestSide === "bride"
+          ? 'background:color-mix(in srgb, var(--rose) 18%, white);color:var(--rose);'
+          : 'background:color-mix(in srgb, var(--brass) 18%, white);color:var(--brass-hover);') +
+        'font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;">' +
+        (guestSide === "bride" ? "Bride" : "Groom") + '</span>';
 
       tr.innerHTML = 
         '<td style="color:var(--ink-faint);font-size:.8rem;">' + (idx + 1) + '</td>' +
@@ -1401,6 +1428,7 @@ Jabuani & Nakrani Family 🌸</textarea>
             : '<span style="color:var(--ink-faint)">—</span>') + 
         '</td>' +
         '<td>' + badgesHtml + '</td>' +
+        '<td>' + sideBadgeHtml + '</td>' +
         '<td>' +
           '<div style="display:flex;gap:.35rem;align-items:center;">' +
             '<input type="text" value="' + esc(g.link) + '" readonly style="font-size:.78rem;padding:.3rem .5rem;width:210px;background:var(--paper);">' +
@@ -1511,6 +1539,7 @@ Jabuani & Nakrani Family 🌸</textarea>
         phone: g.phone || "",
         slug: g.slug || slugify(g.name),
         cards: g.cards || (W.events || []).map(function (e) { return e.key; }),
+        side: g.side || "groom",
         link: formatGuestLink(g.slug || slugify(g.name), g.cards),
         createdAt: g.createdAt || Date.now()
       };
@@ -1836,6 +1865,7 @@ Jabuani & Nakrani Family 🌸</textarea>
     var phone = document.getElementById("gPhone").value.trim();
     var slug = document.getElementById("gSlug").value.trim() || slugify(name);
     var cards = checkedEvents();
+    var side = checkedSide();
 
     if (!name) {
       toast("Please enter a guest or family name");
@@ -1849,9 +1879,10 @@ Jabuani & Nakrani Family 🌸</textarea>
     document.getElementById("gOut").classList.add("is-shown");
     
     var allNames = (W.events || []).map(function (e) { return e.key; });
-    document.getElementById("gPreviewText").textContent = cards.length === allNames.length
+    var sideLabel = side === "bride" ? "bride's side" : "groom's side";
+    document.getElementById("gPreviewText").textContent = (cards.length === allNames.length
       ? "Invited to all ceremonies · Hand-lettered for " + name
-      : "Invited to: " + cards.join(", ") + " · Hand-lettered for " + name;
+      : "Invited to: " + cards.join(", ") + " · Hand-lettered for " + name) + " (" + sideLabel + ")";
 
     // Update WhatsApp & Preview buttons in the single card
     var waUrl = composeWhatsAppUrl(phone, name, link);
@@ -1879,15 +1910,17 @@ Jabuani & Nakrani Family 🌸</textarea>
     if (existingIdx !== -1) {
       list[existingIdx].phone = phone;
       list[existingIdx].cards = cards;
+      list[existingIdx].side = side;
       list[existingIdx].link = link;
       list[existingIdx].slug = slug;
     } else {
-      list.push({ 
-        id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), 
-        slug: slug, 
-        name: name, 
-        phone: phone, 
-        cards: cards, 
+      list.push({
+        id: Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+        slug: slug,
+        name: name,
+        phone: phone,
+        cards: cards,
+        side: side,
         link: link,
         createdAt: Date.now()
       });
@@ -1908,6 +1941,8 @@ Jabuani & Nakrani Family 🌸</textarea>
     document.getElementById("gSlug").value = "";
     slugTouched = false;
     renderEvents();
+    var groomRadio = document.querySelector('#gSide input[value="groom"]');
+    if (groomRadio) groomRadio.checked = true;
     document.getElementById("gOut").classList.remove("is-shown");
     updateWaBubble();
   });
