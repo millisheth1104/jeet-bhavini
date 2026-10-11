@@ -1004,7 +1004,7 @@
       var halt = $("heroGu");
       if (halt) halt.hidden = true;
 
-      put("heroHosts",  u("inviteHosts"));
+      put("heroHosts",  t(side(W.ui.inviteHosts)));
       put("heroInvite", u("inviteVerb"));
       put("heroTo",     u("inviteOccasion"));
     }
@@ -1452,7 +1452,6 @@
   /* -- families ----------------------------------------------------------- */
 
   (function families() {
-    var a = W.hostsAwaiting;
     var boxA = $("hostsPaired");
     var boxB = $("hostsAwaiting");
 
@@ -1478,9 +1477,13 @@
       // switch - which calls this again via updateHostsUI - picks up the
       // other family's heading and pairs instead of redrawing the same one.
       var p = side(W.hostsPaired);
+      var a = side(W.hostsAwaiting);
       if (boxA) {
         boxA.innerHTML = "";
-        if (p && p.pairs && p.pairs.length) {
+        // "With love, yours affectionately" is groom-side only.
+        if (SIDE === "bride") {
+          boxA.hidden = true;
+        } else if (p && p.pairs && p.pairs.length) {
           boxA.hidden = false;
           boxA.appendChild(el("h3", guIf(revealClass("hosts__heading")), t(p.heading)));
           var ul = el("ul", "pairs");
@@ -1498,9 +1501,12 @@
 
       if (boxB) {
         boxB.innerHTML = "";
+        // When hostsPaired is hidden (bride side), hostsAwaiting sits right
+        // under the section's own rule - its usual margin-top double-counts
+        // the rule's own bottom margin and reads as a big empty gap.
+        boxB.classList.toggle("hosts--lead", !!(boxA && boxA.hidden));
         if (a && a.names && a.names.length) {
           boxB.hidden = false;
-          boxB.appendChild(ornRule());
           boxB.appendChild(el("h3", guIf(revealClass("hosts__heading")), t(a.heading)));
           var ul2 = el("ul", "awaiting");
           a.names.forEach(function (nm, ni) {
@@ -1512,6 +1518,7 @@
           boxB.appendChild(ul2);
           if (a.solo)     boxB.appendChild(el("p", guIf(revealClass("awaiting--solo")), t(a.solo)));
           if (a.children) boxB.appendChild(el("p", guIf(revealClass("awaiting--kids")), t(a.children)));
+          boxB.appendChild(ornRule());
         } else { boxB.hidden = true; }
       }
 
@@ -1793,7 +1800,7 @@
       }
       var familyEl = $("calFamily");
       if (familyEl) {
-        familyEl.textContent = t(W.ui.inviteHosts);
+        familyEl.textContent = t(side(W.ui.inviteHosts));
       }
     }
 
@@ -1915,6 +1922,8 @@
 
   (function compliments() {
     var c = W.compliments, section = $("compliments");
+    // Sponsor thank-yous are groom-side only.
+    if (SIDE === "bride") { section.hidden = true; return; }
     if (!c || !c.from || !c.from.length) { section.hidden = true; return; }
     var host = $("compList");
 

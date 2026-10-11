@@ -2146,6 +2146,10 @@ html[lang="gu"] .inv__sched-val {
 .families { background: rgba(237,233,224,.4); }
 
 .hosts { margin-top: clamp(1.2rem, 3.5vw, 2rem); }
+/* hostsAwaiting sitting directly under the section's own rule (hostsPaired
+   hidden, e.g. bride side) - the rule already carries its own bottom
+   margin, so this box needs much less on top of it. */
+.hosts--lead { margin-top: .3rem; }
 /* Before the site was bilingual every one of these carried the .gu class
    unconditionally - the text was always Gujarati - so they all inherited a
    Gujarati SERIF. Now the class is applied only in Gujarati, and the English

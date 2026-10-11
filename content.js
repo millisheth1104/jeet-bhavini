@@ -266,26 +266,52 @@ window.WEDDING = {
     bride: HOSTS_PAIRED_GROOM,
   },
 
-  /* આપના આગમનના અભિલાષી — those awaiting your arrival. */
+  /* આપના આગમનના અભિલાષી — those awaiting your arrival. Keyed by side, same
+     pattern as hostsPaired above - groom keeps the existing Jabuani list,
+     bride gets her own Nakrani list. */
   hostsAwaiting: {
-    heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
-    names: [
-      { en: "Mrs. Vimala Dayaram Kanji Jabuani",  gu: "અ.સૌ. વિમળાબેન દયારામભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Kanta Ravji Kanji Jabuani",     gu: "અ.સૌ. કાન્તાબેન રવજીભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Manjula Haresh Kanji Jabuani",  gu: "અ.સૌ. મંજુલાબેન હરેશભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Aruna Kirti Kanji Jabuani",     gu: "અ.સૌ. અરૂણાબેન કિર્તીભાઈ કાનજીભાઈ જબુઆણી" },
-      { en: "Mrs. Taruna Pankaj Dayaram Jabuani", gu: "અ.સૌ. તરૂણાબેન પંકજભાઈ દયારામભાઈ જબુઆણી" },
-      { en: "Mrs. Nisha Sanjay Ravji Jabuani",    gu: "અ.સૌ. નિશાબેન સંજયભાઈ રવજીભાઈ જબુઆણી" },
-      { en: "Mrs. Anshuya Mehul Dayaram Jabuani", gu: "અ.સૌ. અનસૂયાબેન મેહુલભાઈ દયારામભાઈ જબુઆણી" },
-      { en: "Mrs. Bhumika Rajesh Ravji Jabuani",  gu: "અ.સૌ. ભુમિકાબેન રાજેશભાઈ રવજીભાઈ જબુઆણી" },
-      { en: "Mrs. Pooja Sudhir Haresh Jabuani",   gu: "અ.સૌ. પુજાબેન સુધિરભાઈ હરેશભાઈ જબુઆણી" },
-      { en: "Mrs. Mayuri Jigar Kirti Jabuani",    gu: "અ.સૌ. મયુરીબેન જીગરભાઈ કિર્તીભાઈ જબુઆણી" },
-      { en: "Mrs. Mohini Keval Kirti Jabuani",    gu: "અ.સૌ. મોહિનીબેન કેવલભાઈ કિર્તીભાઈ જબુઆણી" },
-    ],
-    solo: { en: "Jay Pankaj Jabuani", gu: "જય પંકજભાઈ જબુઆણી" },
-    children: {
-      en: "Miti, Khushi, Vanshika, Kashyap, Yakshit, Darsh, Trisha, Bhavyansh, Jiyansh, Kiyanshi",
-      gu: "મિતિ, ખુશી, વંશિકા, કશ્યપ, યક્ષિત, દર્શ, ત્રિશા, ભવ્યાંશ, જિયાંશ, કિયાંશી",
+    groom: {
+      heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
+      names: [
+        { en: "Mrs. Vimala Dayaram Kanji Jabuani",  gu: "અ.સૌ. વિમળાબેન દયારામભાઈ કાનજીભાઈ જબુઆણી" },
+        { en: "Mrs. Kanta Ravji Kanji Jabuani",     gu: "અ.સૌ. કાન્તાબેન રવજીભાઈ કાનજીભાઈ જબુઆણી" },
+        { en: "Mrs. Manjula Haresh Kanji Jabuani",  gu: "અ.સૌ. મંજુલાબેન હરેશભાઈ કાનજીભાઈ જબુઆણી" },
+        { en: "Mrs. Aruna Kirti Kanji Jabuani",     gu: "અ.સૌ. અરૂણાબેન કિર્તીભાઈ કાનજીભાઈ જબુઆણી" },
+        { en: "Mrs. Taruna Pankaj Dayaram Jabuani", gu: "અ.સૌ. તરૂણાબેન પંકજભાઈ દયારામભાઈ જબુઆણી" },
+        { en: "Mrs. Nisha Sanjay Ravji Jabuani",    gu: "અ.સૌ. નિશાબેન સંજયભાઈ રવજીભાઈ જબુઆણી" },
+        { en: "Mrs. Anshuya Mehul Dayaram Jabuani", gu: "અ.સૌ. અનસૂયાબેન મેહુલભાઈ દયારામભાઈ જબુઆણી" },
+        { en: "Mrs. Bhumika Rajesh Ravji Jabuani",  gu: "અ.સૌ. ભુમિકાબેન રાજેશભાઈ રવજીભાઈ જબુઆણી" },
+        { en: "Mrs. Pooja Sudhir Haresh Jabuani",   gu: "અ.સૌ. પુજાબેન સુધિરભાઈ હરેશભાઈ જબુઆણી" },
+        { en: "Mrs. Mayuri Jigar Kirti Jabuani",    gu: "અ.સૌ. મયુરીબેન જીગરભાઈ કિર્તીભાઈ જબુઆણી" },
+        { en: "Mrs. Mohini Keval Kirti Jabuani",    gu: "અ.સૌ. મોહિનીબેન કેવલભાઈ કિર્તીભાઈ જબુઆણી" },
+      ],
+      solo: { en: "Jay Pankaj Jabuani", gu: "જય પંકજભાઈ જબુઆણી" },
+      children: {
+        en: "Miti, Khushi, Vanshika, Kashyap, Yakshit, Darsh, Trisha, Bhavyansh, Jiyansh, Kiyanshi",
+        gu: "મિતિ, ખુશી, વંશિકા, કશ્યપ, યક્ષિત, દર્શ, ત્રિશા, ભવ્યાંશ, જિયાંશ, કિયાંશી",
+      },
+    },
+    bride: {
+      heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
+      names: [
+        { en: "Parbat Premji Nakrani",     gu: "પરબતભાઈ પ્રેમજીભાઈ નાકરાણી" },
+        { en: "Parvati Parbat Nakrani",    gu: "પાર્વતીબેન પરબતભાઈ નાકરાણી" },
+        { en: "Magan Premji Nakrani",      gu: "મગનભાઈ પ્રેમજીભાઈ નાકરાણી" },
+        { en: "Laxmi Magan Nakrani",       gu: "લક્ષ્મીબેન મગનભાઈ નાકરાણી" },
+        { en: "Rajesh Magan Nakrani",      gu: "રાજેશભાઈ મગનભાઈ નાકરાણી" },
+        { en: "Kalpana Rajesh Nakrani",    gu: "કલ્પનાબેન રાજેશભાઈ નાકરાણી" },
+        { en: "Bhupendra Parbat Nakrani",  gu: "ભુપેન્દ્રભાઈ પરબતભાઈ નાકરાણી" },
+        { en: "Kavita Bhupendra Nakrani",  gu: "કવિતાબેન ભુપેન્દ્રભાઈ નાકરાણી" },
+        { en: "Praveen Parbat Nakrani",    gu: "પ્રવીણભાઈ પરબતભાઈ નાકરાણી" },
+        { en: "Manjula Praveen Nakrani",   gu: "મંજુલાબેન પ્રવીણભાઈ નાકરાણી" },
+        { en: "Bhagshree Manoj Sankhala",  gu: "ભાગ્યશ્રીબેન મનોજભાઈ સાંખલા" },
+        { en: "Manoj Ishwar Sankhala",     gu: "મનોજભાઈ ઈશ્વરભાઈ સાંખલા" },
+        { en: "Deep Bhupendra Nakrani",    gu: "દીપભાઈ ભુપેન્દ્રભાઈ નાકરાણી" },
+        { en: "Aayushi Deep Nakrani",      gu: "આયુષીબેન દીપભાઈ નાકરાણી" },
+        { en: "Mehul Rajesh Nakrani",      gu: "મેહુલભાઈ રાજેશભાઈ નાકરાણી" },
+        { en: "Bhakti Bhupendra Nakrani",  gu: "ભક્તિબેન ભુપેન્દ્રભાઈ નાકરાણી" },
+        { en: "Haney Praveen Nakrani",     gu: "હની પ્રવીણભાઈ નાકરાણી" },
+      ],
     },
   },
 
@@ -376,7 +402,10 @@ window.WEDDING = {
        postposition after the noun, so "ના શુભ લગ્ન પ્રસંગે" cannot sit in
        front of the names the way "to the wedding of" does; it is set as a
        standalone occasion line instead, which is how a kankotri stacks it. */
-    inviteHosts:       { en: "Jabuani Family", gu: "જબુઆણી પરિવાર" },
+    inviteHosts: {
+      groom: { en: "Jabuani Family", gu: "જબુઆણી પરિવાર" },
+      bride: { en: "Nakrani Family", gu: "નાકરાણી પરિવાર" },
+    },
     inviteVerb:        { en: "cordially invites", gu: "નું હાર્દિક આમંત્રણ" },
     inviteOccasion:    { en: "to the wedding of", gu: "લગ્ન પ્રસંગમાં પધારજો" },
 
