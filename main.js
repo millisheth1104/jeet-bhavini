@@ -266,6 +266,42 @@
     if (!sideForcedByUrl && GUEST && SIDES.indexOf(GUEST.s) !== -1) {
       SIDE = GUEST.s;
     }
+
+    // 4. Live fallback. window.WEDDING_GUESTS (guests.js) is a static seed
+    // frozen at whatever it last was manually synced to, and localStorage
+    // only has a guest's record in the one browser that ran admin.html -
+    // a real guest opening their own link on their own phone has neither.
+    // If the slug didn't match either of those, check the actual server
+    // list (the same one admin.html writes to) before giving up on their
+    // side/name. Only fires when there was a real slug to test and it
+    // came up empty locally, so the common case pays nothing extra.
+    if (cleanSlug && !matchedGuest) {
+      fetch("/api/guests")
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          var list = data && Array.isArray(data.guests) ? data.guests : [];
+          var liveMatch = null;
+          for (var li = 0; li < list.length; li++) {
+            if (list[li] && list[li].slug && list[li].slug.toLowerCase() === cleanSlug) {
+              liveMatch = list[li];
+              break;
+            }
+          }
+          if (!liveMatch) return;
+
+          GUEST = { n: liveMatch.name, s: liveMatch.side };
+          if (!sideForcedByUrl && SIDES.indexOf(GUEST.s) !== -1) SIDE = GUEST.s;
+
+          // Everything that reads SIDE/GUEST re-renders fresh on each of
+          // these calls (same hooks the language toggle already uses), so
+          // calling them now catches the page up to the late match.
+          if (updateHeroUI)        updateHeroUI();
+          if (updateHostsUI)       updateHostsUI();
+          if (updateComplimentsUI) updateComplimentsUI();
+          if (updateCalendarUI)    updateCalendarUI();
+        })
+        .catch(function () {});
+    }
   }());
 
   (function langToggle() {
@@ -1922,12 +1958,15 @@
 
   (function compliments() {
     var c = W.compliments, section = $("compliments");
-    // Sponsor thank-yous are groom-side only.
-    if (SIDE === "bride") { section.hidden = true; return; }
     if (!c || !c.from || !c.from.length) { section.hidden = true; return; }
     var host = $("compList");
 
     function renderCompliments() {
+      // Re-checked on every call (not just at initial load) so a side
+      // resolved late - e.g. the live-guest-match fallback in guestLink()
+      // - still hides this groom-only section correctly.
+      if (SIDE === "bride") { section.hidden = true; return; }
+      section.hidden = false;
       put("compHeading", t(c.heading));
       host.innerHTML = "";
       c.from.forEach(function (f) {
