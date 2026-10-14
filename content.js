@@ -46,16 +46,18 @@ var HOSTS_PAIRED_GROOM = {
 var HOSTS_PAIRED_BRIDE = {
   heading: { en: "With love, yours affectionately", gu: "પ્રેમસહ, આપના સ્નેહી" },
   pairs: [
-    [{ en: "Mr. Parbat Premji Nakrani",    gu: "શ્રી પરબતભાઈ પ્રેમજીભાઈ નાકરાણી" },
-     { en: "Mrs. Parvati Parbat Nakrani",  gu: "શ્રીમતી પાર્વતીબેન પરબતભાઈ નાકરાણી" }],
-    [{ en: "Mr. Bhupendra Parbat Nakrani", gu: "શ્રી ભુપેન્દ્રભાઈ પરબતભાઈ નાકરાણી" },
-     { en: "Mrs. Kavita Bhupendra Nakrani", gu: "શ્રીમતી કવિતાબેન ભુપેન્દ્રભાઈ નાકરાણી" }],
-    [{ en: "Mr. Praveen Parbat Nakrani",   gu: "શ્રી પ્રવીણભાઈ પરબતભાઈ નાકરાણી" },
-     { en: "Mrs. Manjula Praveen Nakrani", gu: "શ્રીમતી મંજુલાબેન પ્રવીણભાઈ નાકરાણી" }],
-    [{ en: "Mr. Deep Bhupendra Nakrani",   gu: "શ્રી દીપભાઈ ભુપેન્દ્રભાઈ નાકરાણી" },
-     { en: "Mrs. Aayushi Deep Nakrani",    gu: "શ્રીમતી આયુષીબેન દીપભાઈ નાકરાણી" }],
-    [{ en: "Miss. Bhakti Bhupendra Nakrani", gu: "કુ. ભક્તિબેન ભુપેન્દ્રભાઈ નાકરાણી" },
-     { en: "Miss. Haney Praveen Nakrani",    gu: "કુ. હની પ્રવીણભાઈ નાકરાણી" }],
+    [{ en: "Mr. Parbat Premji Nakrani",    gu: "શ્રી પરબતભાઈ પ્રેમજી નાકરાણી" },
+     { en: "Mrs. Parvati Parbat Nakrani",  gu: "શ્રીમતી પાર્વતીબેન પરબત નાકરાણી" }],
+    [{ en: "Mr. Bhupendra Parbat Nakrani", gu: "શ્રી ભૂપેન્દ્રભાઈ પરબત નાકરાણી" },
+     { en: "Mrs. Kavita Bhupendra Nakrani", gu: "શ્રીમતી કવિતાબેન ભૂપેન્દ્ર નાકરાણી" }],
+    [{ en: "Mr. Praveen Parbat Nakrani",   gu: "પ્રવીણભાઈ પરબત નાકરાણી" },
+     { en: "Mrs. Manjula Praveen Nakrani", gu: "શ્રીમતી મંજુલાબેન પ્રવીણ નાકરાણી" }],
+    [{ en: "Mr. Deep Bhupendra Nakrani",   gu: "શ્રી દીપ ભૂપેન્દ્ર નાકરાણી" },
+     { en: "Mrs. Aayushi Deep Nakrani",    gu: "શ્રીમતી આયુષી દીપ નાકરાણી" }],
+    [{ en: "Miss. Bhakti Bhupendra Nakrani", gu: "ચિ. ભક્તિ ભૂપેન્દ્ર નાકરાણી" },
+     { en: "Miss. Haney Praveen Nakrani",    gu: "ચિ. હેની પ્રવીણ નાકરાણી" }],
+    [{ en: "Our dearest", gu: "અમારો લાડકવાયો" },
+     { en: "Sayansh",     gu: "સાયંશ" }],
   ],
 };
 
@@ -311,12 +313,13 @@ window.WEDDING = {
     bride: {
       heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
       names: [
-        { en: "Mrs. Laxmi Magan Nakrani",      gu: "અ.સૌ. લક્ષ્મીબેન મગનભાઈ નાકરાણી" },
-        { en: "Mrs. Kalpana Rajesh Nakrani",   gu: "અ.સૌ. કલ્પનાબેન રાજેશભાઈ નાકરાણી" },
-        { en: "Mrs. Bhagyashree Manoj Sankhala", gu: "અ.સૌ. ભાગ્યશ્રીબેન મનોજભાઈ સાંખલા" },
+        { en: "Mrs. Laxmi Magan Nakrani",       gu: "શ્રીમતી લક્ષ્મીબેન મગન નાકરાણી" },
+        { en: "Mrs. Kalpana Rajesh Nakrani",    gu: "શ્રીમતી કલ્પનાબેન રાજેશ નાકરાણી" },
+        { en: "Mrs. Bhagyashree Manoj Sakhala", gu: "શ્રીમતી ભાગ્યશ્રીબેન મનોજ સાખલા" },
       ],
-      solo: { en: "Mehul Rajesh Nakrani", gu: "મેહુલભાઈ રાજેશભાઈ નાકરાણી" },
-      children: { en: "Sayansh", gu: "સયાંશ" },
+      solo: { en: "Mehul Rajesh Nakrani", gu: "ચિ. મેહુલભાઈ રાજેશ નાકરાણી" },
+      // Sayansh moved to hostsPaired.bride as a pair ("Our dearest" / "Sayansh"),
+      // matching groom's own "Our dearest" / "Radhya" entry - no `children` field here.
     },
   },
 
