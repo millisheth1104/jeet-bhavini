@@ -16,11 +16,7 @@
    details blank until you have them.
    --------------------------------------------------------------------------- */
 
-/* The groom-side closing family list (see WEDDING.hostsPaired below) -
-   defined once here and reused as the bride-side placeholder too, so the
-   "clone" is a real shared reference, not two copies of Gujarati text that
-   could quietly drift apart. Give `bride` in hostsPaired its own object of
-   this same shape once the real bride-side names are ready. */
+/* The groom-side closing family list (see WEDDING.hostsPaired below). */
 var HOSTS_PAIRED_GROOM = {
   heading: { en: "With love, yours affectionately", gu: "પ્રેમસહ, આપના સ્નેહી" },
   pairs: [
@@ -42,6 +38,24 @@ var HOSTS_PAIRED_GROOM = {
      { en: "Ms. Nidhi Amrut Pokar",      gu: "કુ. નિધિ અમૃતભાઈ પોકાર" }],
     [{ en: "Our dearest",                gu: "અમારી લાડલી" },
      { en: "Radhya",                     gu: "રાધ્યા" }],
+  ],
+};
+
+/* The bride-side closing family list - same shape as HOSTS_PAIRED_GROOM
+   above, her own real names (not a shared placeholder). */
+var HOSTS_PAIRED_BRIDE = {
+  heading: { en: "With love, yours affectionately", gu: "પ્રેમસહ, આપના સ્નેહી" },
+  pairs: [
+    [{ en: "Mr. Parbat Premji Nakrani",    gu: "શ્રી પરબતભાઈ પ્રેમજીભાઈ નાકરાણી" },
+     { en: "Mrs. Parvati Parbat Nakrani",  gu: "શ્રીમતી પાર્વતીબેન પરબતભાઈ નાકરાણી" }],
+    [{ en: "Mr. Bhupendra Parbat Nakrani", gu: "શ્રી ભુપેન્દ્રભાઈ પરબતભાઈ નાકરાણી" },
+     { en: "Mrs. Kavita Bhupendra Nakrani", gu: "શ્રીમતી કવિતાબેન ભુપેન્દ્રભાઈ નાકરાણી" }],
+    [{ en: "Mr. Praveen Parbat Nakrani",   gu: "શ્રી પ્રવીણભાઈ પરબતભાઈ નાકરાણી" },
+     { en: "Mrs. Manjula Praveen Nakrani", gu: "શ્રીમતી મંજુલાબેન પ્રવીણભાઈ નાકરાણી" }],
+    [{ en: "Mr. Deep Bhupendra Nakrani",   gu: "શ્રી દીપભાઈ ભુપેન્દ્રભાઈ નાકરાણી" },
+     { en: "Mrs. Aayushi Deep Nakrani",    gu: "શ્રીમતી આયુષીબેન દીપભાઈ નાકરાણી" }],
+    [{ en: "Miss. Bhakti Bhupendra Nakrani", gu: "કુ. ભક્તિબેન ભુપેન્દ્રભાઈ નાકરાણી" },
+     { en: "Miss. Haney Praveen Nakrani",    gu: "કુ. હની પ્રવીણભાઈ નાકરાણી" }],
   ],
 };
 
@@ -257,18 +271,21 @@ window.WEDDING = {
   ],
 
   /* લી. સ્નેહાધીન — the hosting couples, as they appear on the kankotri.
-     Keyed by side (see main.js side()) - bride is the SAME object as groom
-     for now (a real shared reference: edit HOSTS_PAIRED_GROOM above and
-     both sides move together), until real bride-side names replace it with
-     one of its own. */
+     Keyed by side (see main.js side()) - each side has its own real list. */
   hostsPaired: {
     groom: HOSTS_PAIRED_GROOM,
-    bride: HOSTS_PAIRED_GROOM,
+    bride: HOSTS_PAIRED_BRIDE,
   },
 
   /* આપના આગમનના અભિલાષી — those awaiting your arrival. Keyed by side, same
      pattern as hostsPaired above - groom keeps the existing Jabuani list,
-     bride gets her own Nakrani list. */
+     bride gets her own Nakrani list.
+
+     Convention (matches groom's list): `names` lists married women only -
+     each one's own name already carries her husband's first name and the
+     family name (e.g. "Laxmi Magan Nakrani" = wife, husband, family), so
+     his name isn't lost, just folded into hers per the kankotri's own
+     style. An unmarried man goes in `solo`, a child in `children`. */
   hostsAwaiting: {
     groom: {
       heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
@@ -294,24 +311,12 @@ window.WEDDING = {
     bride: {
       heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
       names: [
-        { en: "Parbat Premji Nakrani",     gu: "પરબતભાઈ પ્રેમજીભાઈ નાકરાણી" },
-        { en: "Parvati Parbat Nakrani",    gu: "પાર્વતીબેન પરબતભાઈ નાકરાણી" },
-        { en: "Magan Premji Nakrani",      gu: "મગનભાઈ પ્રેમજીભાઈ નાકરાણી" },
-        { en: "Laxmi Magan Nakrani",       gu: "લક્ષ્મીબેન મગનભાઈ નાકરાણી" },
-        { en: "Rajesh Magan Nakrani",      gu: "રાજેશભાઈ મગનભાઈ નાકરાણી" },
-        { en: "Kalpana Rajesh Nakrani",    gu: "કલ્પનાબેન રાજેશભાઈ નાકરાણી" },
-        { en: "Bhupendra Parbat Nakrani",  gu: "ભુપેન્દ્રભાઈ પરબતભાઈ નાકરાણી" },
-        { en: "Kavita Bhupendra Nakrani",  gu: "કવિતાબેન ભુપેન્દ્રભાઈ નાકરાણી" },
-        { en: "Praveen Parbat Nakrani",    gu: "પ્રવીણભાઈ પરબતભાઈ નાકરાણી" },
-        { en: "Manjula Praveen Nakrani",   gu: "મંજુલાબેન પ્રવીણભાઈ નાકરાણી" },
-        { en: "Bhagshree Manoj Sankhala",  gu: "ભાગ્યશ્રીબેન મનોજભાઈ સાંખલા" },
-        { en: "Manoj Ishwar Sankhala",     gu: "મનોજભાઈ ઈશ્વરભાઈ સાંખલા" },
-        { en: "Deep Bhupendra Nakrani",    gu: "દીપભાઈ ભુપેન્દ્રભાઈ નાકરાણી" },
-        { en: "Aayushi Deep Nakrani",      gu: "આયુષીબેન દીપભાઈ નાકરાણી" },
-        { en: "Mehul Rajesh Nakrani",      gu: "મેહુલભાઈ રાજેશભાઈ નાકરાણી" },
-        { en: "Bhakti Bhupendra Nakrani",  gu: "ભક્તિબેન ભુપેન્દ્રભાઈ નાકરાણી" },
-        { en: "Haney Praveen Nakrani",     gu: "હની પ્રવીણભાઈ નાકરાણી" },
+        { en: "Mrs. Laxmi Magan Nakrani",      gu: "અ.સૌ. લક્ષ્મીબેન મગનભાઈ નાકરાણી" },
+        { en: "Mrs. Kalpana Rajesh Nakrani",   gu: "અ.સૌ. કલ્પનાબેન રાજેશભાઈ નાકરાણી" },
+        { en: "Mrs. Bhagyashree Manoj Sankhala", gu: "અ.સૌ. ભાગ્યશ્રીબેન મનોજભાઈ સાંખલા" },
       ],
+      solo: { en: "Mehul Rajesh Nakrani", gu: "મેહુલભાઈ રાજેશભાઈ નાકરાણી" },
+      children: { en: "Sayansh", gu: "સયાંશ" },
     },
   },
 

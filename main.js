@@ -1516,10 +1516,7 @@
       var a = side(W.hostsAwaiting);
       if (boxA) {
         boxA.innerHTML = "";
-        // "With love, yours affectionately" is groom-side only.
-        if (SIDE === "bride") {
-          boxA.hidden = true;
-        } else if (p && p.pairs && p.pairs.length) {
+        if (p && p.pairs && p.pairs.length) {
           boxA.hidden = false;
           boxA.appendChild(el("h3", guIf(revealClass("hosts__heading")), t(p.heading)));
           var ul = el("ul", "pairs");
