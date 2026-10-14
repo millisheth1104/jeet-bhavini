@@ -1540,6 +1540,7 @@
         boxB.classList.toggle("hosts--lead", !!(boxA && boxA.hidden));
         if (a && a.names && a.names.length) {
           boxB.hidden = false;
+          boxB.appendChild(ornRule());
           boxB.appendChild(el("h3", guIf(revealClass("hosts__heading")), t(a.heading)));
           var ul2 = el("ul", "awaiting");
           a.names.forEach(function (nm, ni) {
