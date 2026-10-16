@@ -175,8 +175,8 @@ window.WEDDING = {
           gu: "ગં.સ્વ. ડાહીબેન કેશવલાલ ભાદાણી ના સુપુત્ર\nશ્રી દેવેન્દ્ર ભાઈ તથા ભાદાણી પરિવાર",
         },
         bride: {
-          en: "Mr. Harsuk Jivraj Chhabhaiya\nMr. Kishor Jivraj Chhabhaiya\nMrs. Narmada Jivraj Chhabhaiya & Family",
-          gu: "શ્રી હરસુખ જીવરાજ છાભૈયા\nશ્રી કિશોર જીવરાજ છાભૈયા\nશ્રીમતી નર્મદા જીવરાજ છાભૈયા એન્ડ ફેમિલી",
+          en: "Mr. Harsuk Jivraj Chhabhaiya\nMr. Kishor Jivraj Chhabhaiya\nMr. Jivraj Premji Chhabhaiya & Family",
+          gu: "શ્રી હરસુખ જીવરાજ છાભૈયા\nશ્રી કિશોર જીવરાજ છાભૈયા\nશ્રી જીવરાજ પ્રેમજી છાભૈયા એન્ડ ફેમિલી",
         },
       },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
