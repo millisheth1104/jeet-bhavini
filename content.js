@@ -224,6 +224,10 @@ window.WEDDING = {
       date: { en: "Wednesday, 2 December 2026", gu: "બુધવાર, 2 ડિસેમ્બર 2026" },
       dateShort: { day: "02", month: { en: "December", gu: "ડિસેમ્બર" } },
       times: [{ label: "", value: { en: "8:00 AM", gu: "સવારે ૮:૦૦ વાગ્યે" } }],
+      // Bride's side starts Mandap Ropan an hour later than groom's side.
+      timesBySide: {
+        bride: [{ label: "", value: { en: "9:00 AM", gu: "સવારે ૯:૦૦ વાગ્યે" } }],
+      },
       venue: { en: "Oleander Ballroom,\nKarjat", gu: "ઓલિએન્ડર બોલરૂમ,\nકર્જત" },
       mapsUrl: "https://www.google.com/maps?q=Oleander+Farms+Luxury+Resort+in+Karjat,+Oleander+Farms+Pvt+Ltd,+Karjat+Chowk+Road,+Wavarle+Village,+Khalapur,+Karjat,+Maharashtra+410201&ftid=0x3be7fb6826b24a5f:0x54850d6bd73b6698",
       dress: { en: "Yellow / Festive Ethnic", gu: "પીળા / શુભ પરિધાન" },
@@ -311,12 +315,17 @@ window.WEDDING = {
     bride: {
       heading: { en: "With warm anticipation of your arrival", gu: "આપના આગમનના અભિલાષી" },
       names: [
+        { en: "Mr. Magan Premji Nakrani",       gu: "શ્રી મગન પ્રેમજી નાકરાણી" },
         { en: "Mrs. Laxmi Magan Nakrani",       gu: "શ્રીમતી લક્ષ્મીબેન મગન નાકરાણી" },
+        { en: "Mr. Rajesh Magan Nakrani",       gu: "શ્રી રાજેશ મગન નાકરાણી" },
         { en: "Mrs. Kalpana Rajesh Nakrani",    gu: "શ્રીમતી કલ્પનાબેન રાજેશ નાકરાણી" },
+        { en: "Mr. Mehul Rajesh Nakrani",       gu: "શ્રી મેહુલ રાજેશ નાકરાણી" },
+        { en: "Mr. Manoj Ishwar Sakhala",       gu: "શ્રી મનોજ ઈશ્વર સાખલા" },
         { en: "Mrs. Bhagyashree Manoj Sakhala", gu: "શ્રીમતી ભાગ્યશ્રીબેન મનોજ સાખલા" },
+        { en: "Our dearest",                    gu: "અમારો લાડકવાયો" },
+        { en: "Sayansh",                        gu: "સાયંશ" },
       ],
-      solo: { en: "Mehul Rajesh Nakrani", gu: "ચિ. મેહુલભાઈ રાજેશ નાકરાણી" },
-      // No `children` field for bride - nothing to show here.
+      // No `solo`/`children` field for bride - Sayansh sits in `names` above.
     },
   },
 
