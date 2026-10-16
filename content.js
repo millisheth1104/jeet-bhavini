@@ -56,8 +56,6 @@ var HOSTS_PAIRED_BRIDE = {
      { en: "Mrs. Aayushi Deep Nakrani",    gu: "શ્રીમતી આયુષી દીપ નાકરાણી" }],
     [{ en: "Miss. Bhakti Bhupendra Nakrani", gu: "ચિ. ભક્તિ ભૂપેન્દ્ર નાકરાણી" },
      { en: "Miss. Haney Praveen Nakrani",    gu: "ચિ. હેની પ્રવીણ નાકરાણી" }],
-    [{ en: "Our dearest", gu: "અમારો લાડકવાયો" },
-     { en: "Sayansh",     gu: "સાયંશ" }],
   ],
 };
 
@@ -318,8 +316,7 @@ window.WEDDING = {
         { en: "Mrs. Bhagyashree Manoj Sakhala", gu: "શ્રીમતી ભાગ્યશ્રીબેન મનોજ સાખલા" },
       ],
       solo: { en: "Mehul Rajesh Nakrani", gu: "ચિ. મેહુલભાઈ રાજેશ નાકરાણી" },
-      // Sayansh moved to hostsPaired.bride as a pair ("Our dearest" / "Sayansh"),
-      // matching groom's own "Our dearest" / "Radhya" entry - no `children` field here.
+      // No `children` field for bride - nothing to show here.
     },
   },
 
