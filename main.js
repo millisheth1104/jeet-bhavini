@@ -296,6 +296,7 @@
           // these calls (same hooks the language toggle already uses), so
           // calling them now catches the page up to the late match.
           if (updateHeroUI)        updateHeroUI();
+          if (updateEventsUI)      updateEventsUI();
           if (updateHostsUI)       updateHostsUI();
           if (updateComplimentsUI) updateComplimentsUI();
           if (updateCalendarUI)    updateCalendarUI();
