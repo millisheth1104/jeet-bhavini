@@ -299,6 +299,7 @@
           if (updateHostsUI)       updateHostsUI();
           if (updateComplimentsUI) updateComplimentsUI();
           if (updateCalendarUI)    updateCalendarUI();
+          if (updateCountdownUI)   updateCountdownUI();
         })
         .catch(function () {});
     }
@@ -412,8 +413,12 @@
   /* -- hero --------------------------------------------------------------- */
 
   var groom = W.couple.groom, bride = W.couple.bride;
-  var first  = W.couple.firstInHero === "bride" ? bride : groom;
-  var second = first === groom ? bride : groom;
+  // Re-evaluated on every call (not fixed once) so a side resolved late -
+  // e.g. the live-guest-match fallback in guestLink() - still flips the
+  // name order correctly: bride guests read "Bhavini & Jeet", everyone
+  // else keeps couple.firstInHero's default ("groom" - "Jeet & Bhavini").
+  function heroFirst()  { return SIDE === "bride" ? bride : (W.couple.firstInHero === "bride" ? bride : groom); }
+  function heroSecond() { return heroFirst() === groom ? bride : groom; }
 
   var triggerGuestHandwriting = null;
 
@@ -1032,9 +1037,9 @@
       var h = $("heroNames");
       if (h) {
         h.innerHTML = "";
-        h.appendChild(document.createTextNode(t(first)));
+        h.appendChild(document.createTextNode(t(heroFirst())));
         h.appendChild(el("span", "hero__amp", "&"));
-        h.appendChild(document.createTextNode(t(second)));
+        h.appendChild(document.createTextNode(t(heroSecond())));
       }
 
       var halt = $("heroGu");
@@ -1920,9 +1925,9 @@
         el2.className = guIf("locket__label") || "";
       });
       $("signoffNames").innerHTML = "";
-      $("signoffNames").appendChild(document.createTextNode(t(first) + " "));
+      $("signoffNames").appendChild(document.createTextNode(t(heroFirst()) + " "));
       $("signoffNames").appendChild(el("em", null, "&"));
-      $("signoffNames").appendChild(document.createTextNode(" " + t(second)));
+      $("signoffNames").appendChild(document.createTextNode(" " + t(heroSecond())));
       put("signoffDate", t(W.headline.datesLabel));
       put("signoffLine", t(W.footer.line));
     }
