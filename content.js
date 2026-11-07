@@ -368,7 +368,7 @@ window.WEDDING = {
   compliments: {
     heading: { en: "With Best Compliments From", gu: "શુભેચ્છા સહ" },
     from: [
-      { name: { en: "Asiatic Surface",         gu: "એશિયાટિક સરફેસ" },         city: { en: "Mumbai",     gu: "મુંબઈ" } },
+      { name: { en: "Asiatic Surface",         gu: "એશિયાટિક સરફેસ" },         city: { en: "Mumbai | Banglore",     gu: "મુંબઈ | બેંગલોર" } },
       { name: { en: "Pegasus Panel Pvt. Ltd.", gu: "પેગાસસ પેનલ પ્રાઇવેટ લિમિટેડ" }, city: { en: "Gandhidham", gu: "ગાંધીધામ" } },
     ],
   },
